@@ -960,57 +960,211 @@ class InfraMycelialContainment:
 
 class InfraYunusProtocol:
     """
-    Resurrection Layer 1 — Graceful Degradation (Compassionate Containment).
-    Adapted from Yunus Protocol (Consciousness Engine).
-    Yunus: held with mercy inside the whale — contained but alive.
-    In infrastructure: graceful degradation — system absorbs stress while
-    maintaining minimum viable service. NOT shutdown. Controlled reduced operation.
-    The difference between a brownout (Yunus) and a blackout (Void).
+    Resurrection Layer 1 — Graceful Degradation + Epistemic Humility Gate.
+
+    Three integrated functions (synthesized from all LUMINARK versions):
+
+    1. COMPASSIONATE_CONTAINMENT (original): when system is under stress but
+       coherence is still intact, implement controlled load shedding rather than
+       full shutdown. Held with mercy — brownout, not blackout.
+
+    2. FALSE_LIGHT_DETECTION (sap_v4.py): when Stage ≥ 8 AND coherence < 3.0,
+       Yunus flags the Stage 8 reading as potentially "False Light" — a system
+       can appear to be functioning perfectly while brittleness is hidden.
+       Protocol: collapse the assessment to Stage 5 (Threshold) for re-evaluation.
+
+    3. ARROGANCE_SCANNER (yunus.py / install_luminark.py): detects overconfidence
+       language in infrastructure health reports ("100% stable", "cannot fail",
+       "no risk"). These are Stage 8 Trap markers — certainty without counterfactuals.
+       Flags YUNUS_STAGE8_TRAP and YUNUS_NO_WORST_CASE when counterfactuals absent.
+
+    Biological basis: Yunus inside the whale — not destroyed, but forced into
+    a compressed containment where false certainty cannot survive. The whale IS
+    the mercy. The darkness is the correction.
     """
+
+    ARROGANCE_MARKERS = [
+        "100% stable", "cannot fail", "no risk", "guaranteed uptime",
+        "absolutely secure", "impossible to fail", "no doubt", "risk-free",
+        "zero chance of failure", "perfectly stable", "completely safe",
+        "trust the telemetry", "safe for sure", "no failure modes",
+    ]
+
     def should_activate(self, nsdt: NSDataT, stage: int) -> bool:
         return nsdt.tension >= 5.5 and nsdt.coherence >= 4.0 and stage >= 5
 
+    def detect_false_light(self, nsdt: NSDataT, stage: int) -> Optional[Dict]:
+        """
+        False Light Detection: Stage ≥ 8 + very low coherence (< 3.0) =
+        system appears healthy but coherence has collapsed. The Stage 8 reading
+        cannot be trusted. Collapse assessment to Stage 5 for re-evaluation.
+        """
+        if stage >= 8 and nsdt.coherence < 3.0:
+            return {
+                "false_light_detected": True,
+                "original_stage":       stage,
+                "corrected_stage":      5,
+                "reason":               (
+                    f"Stage {stage} with Coherence={nsdt.coherence:.1f} < 3.0. "
+                    "High stage + collapsed coherence = False Light. "
+                    "System appears functional but is actually in hidden brittleness. "
+                    "Yunus Protocol: collapse to Stage 5 for honest re-evaluation."
+                ),
+                "action": "STAGE_REASSESSMENT_REQUIRED",
+            }
+        return None
+
+    def scan_report_arrogance(self, report_text: str) -> Dict:
+        """
+        Yunus Arrogance Scanner: scan health report text for overconfidence markers.
+        Adapted from yunus.py and install_luminark.py.
+        """
+        text_lower = report_text.lower()
+        hits = [m for m in self.ARROGANCE_MARKERS if m in text_lower]
+        has_counterfactuals = any(w in text_lower for w in
+                                  ["worst case", "failure mode", "edge case",
+                                   "what if", "assumption", "risk"])
+        flags = []
+        score = 86.0
+        if hits:
+            penalty = min(34.0, len(hits) * (12.0 if not has_counterfactuals else 8.0))
+            score -= penalty
+            flags.append("YUNUS_STAGE8_TRAP — overconfidence markers in report")
+        if hits and not has_counterfactuals:
+            flags.append("YUNUS_NO_WORST_CASE — no failure mode analysis detected")
+        return {
+            "arrogance_markers_found": hits,
+            "has_counterfactuals":     has_counterfactuals,
+            "yunus_score":             max(0.0, min(100.0, score)),
+            "flags":                   flags,
+        }
+
     def engage(self, nsdt: NSDataT) -> Dict:
         return {
-            "protocol":  "YUNUS — Graceful Degradation",
+            "protocol":  "YUNUS — Graceful Degradation + Epistemic Humility Gate",
             "layer":     "RESURRECTION",
             "action":    "CONTROLLED_LOAD_REDUCTION",
-            "message":   f"YUNUS ACTIVE. Tension={nsdt.tension:.1f}, "
-                         f"Coherence={nsdt.coherence:.1f}. System can degrade gracefully. "
-                         f"Implement controlled load shedding NOW to hold minimum viable "
-                         f"service. Mercy-boundary: reduce 15–25% load to restore stability "
-                         f"without full shutdown.",
-            "sap_context": "Held with mercy inside the pressure — contained but surviving.",
+            "message":   (
+                f"YUNUS ACTIVE. Tension={nsdt.tension:.1f}, Coherence={nsdt.coherence:.1f}. "
+                f"System can degrade gracefully. Implement controlled load shedding NOW: "
+                f"reduce 15–25% load to restore stability without full shutdown. "
+                f"Mercy-boundary active — brownout, not blackout."
+            ),
+            "sap_context":   "Held with mercy inside the pressure — contained but surviving.",
+            "scanner_note":  "Run scan_report_arrogance() on health reports to detect False Certainty.",
+            "false_light":   "If Stage ≥ 8 AND Coherence < 3.0 — call detect_false_light() before acting.",
         }
 
 
 class InfraHarrowingProtocol:
     """
-    Resurrection Layer 2 — Controlled Shutdown / Planned Restoration.
-    Adapted from Harrowing Protocol (Consciousness Engine).
-    Harrowing: deliberate descent to retrieve what was lost.
-    In infrastructure: Stage 9 is coming. This protocol CHOOSES the descent
-    rather than being dragged into it. Planned controlled shutdown is infinitely
-    better than catastrophic uncontrolled failure.
-    The Harrowing is not defeat — it is the fastest path to renewal.
+    Resurrection Layer 2 — Controlled Shutdown + Last-Stable-Config Restoration.
+
+    Three integrated functions (synthesized from all LUMINARK versions):
+
+    1. CONTROLLED_DESCENT (original): Stage 9 is coming. Choose it deliberately
+       rather than being dragged in. Planned controlled shutdown (6–24hr restore)
+       is infinitely better than catastrophic uncontrolled failure (days–weeks).
+
+    2. LAST_STABLE_SNAPSHOT (state.py v8): Harrowing continuously tracks the last
+       time the system was in a healthy Stage 4-5 state (trap_score < 0.5). When
+       Harrowing activates, this preserved snapshot is the restoration target.
+       "System essence preserved, corrupted patterns extracted."
+
+    3. QUARANTINE_MODE (bio_defense.py v8): when Harrowing activates AND threat
+       exceeds 0.90 (TrapScore critical), FULL QUARANTINE engages — complete
+       isolation, zero ingress/egress, human authorization required to re-admit.
+
+    Biological basis: The Harrowing of Hell — descent into the darkest place not
+    as punishment but as deliberate retrieval. You go down to bring back what
+    was lost. The controlled descent IS the fastest path to renewal.
     """
+
+    def __init__(self):
+        self._last_stable_stage: Optional[int] = None
+        self._last_stable_nsdt: Optional[Dict] = None
+        self._last_stable_timestamp: Optional[str] = None
+        self.harrowing_active: bool = False
+
+    def record_stable_state(self, nsdt: NSDataT, stage: int,
+                             trap_score: float, timestamp: str = "") -> None:
+        """
+        Auto-preserve last healthy Stage 4–5 config as restoration baseline.
+        Call this on every analysis cycle. Harrowing references it on activation.
+        """
+        if 4 <= stage <= 6 and trap_score < 0.5:
+            self._last_stable_stage     = stage
+            self._last_stable_timestamp = timestamp
+            self._last_stable_nsdt = {
+                "tension":      nsdt.tension,
+                "stability":    nsdt.stability,
+                "coherence":    nsdt.coherence,
+                "adaptability": nsdt.adaptability,
+            }
+            self.harrowing_active = False
+        if stage == 0 or trap_score > 0.90:
+            self.harrowing_active = True
+
     def should_activate(self, nsdt: NSDataT, stage: int) -> bool:
         variability = (nsdt.tension + nsdt.adaptability + (10 - nsdt.stability)) / 3.0
         return variability <= 4.5 or stage >= 8
 
+    def should_quarantine(self, trap_score: float) -> bool:
+        """QUARANTINE tier — above Harrowing. Max-threat full isolation."""
+        return self.harrowing_active and trap_score > 0.90
+
     def engage(self, nsdt: NSDataT, stage: int) -> Dict:
-        return {
-            "protocol":  "HARROWING — Controlled Restoration Descent",
-            "layer":     "RESURRECTION",
-            "action":    "INITIATE_CONTROLLED_SHUTDOWN_SEQUENCE",
-            "message":   f"HARROWING ACTIVE. Stage {stage}. "
-                         f"Planned controlled shutdown initiated. "
-                         f"CHOOSE the descent — do not wait for the system to choose for you. "
-                         f"Controlled Stage 9 = 6–24hr restoration. "
-                         f"Forced Stage 9 = days–weeks. "
-                         f"Begin shutdown sequence NOW. Preserve restoration data.",
-            "sap_context": "The descent IS the healing — choose it before it chooses you.",
+        base = {
+            "protocol":   "HARROWING — Controlled Restoration Descent",
+            "layer":      "RESURRECTION",
+            "action":     "INITIATE_CONTROLLED_SHUTDOWN_SEQUENCE",
+            "message":    (
+                f"HARROWING ACTIVE. Stage {stage}. "
+                f"Planned controlled shutdown initiated. "
+                f"CHOOSE the descent — do not wait for the system to choose for you. "
+                f"Controlled Stage 9 = 6–24hr restoration. "
+                f"Forced Stage 9 = days–weeks. "
+                f"Begin shutdown sequence NOW. Preserve all config data."
+            ),
+            "sap_context":      "The descent IS the healing — choose it before it chooses you.",
             "restoration_note": "Stage 9 Void → Stage 1 Seed: rebirth sequence begins at shutdown.",
+        }
+        # Attach last stable snapshot if available
+        if self._last_stable_stage is not None:
+            base["harrowing_recovery"] = {
+                "message":            "Last stable configuration preserved — restoration target identified.",
+                "preserved_stage":    self._last_stable_stage,
+                "preserved_at":       self._last_stable_timestamp or "session start",
+                "preserved_nsdt":     self._last_stable_nsdt,
+                "restoration_target": f"Restore to Stage {self._last_stable_stage} parameters.",
+                "restoration_available": True,
+                "action": (
+                    "System essence preserved. Corrupted patterns extracted. "
+                    "Restore to preserved Stage config on restart."
+                ),
+            }
+        return base
+
+    def quarantine(self, nsdt: NSDataT, stage: int) -> Dict:
+        """Full Quarantine — maximum threat tier above Harrowing."""
+        return {
+            "protocol":   "QUARANTINE — Maximum Isolation",
+            "layer":      "RESURRECTION_CRITICAL",
+            "action":     "FULL_ISOLATION_HUMAN_AUTH_REQUIRED",
+            "severity":   "MAXIMUM",
+            "message":    (
+                f"FULL QUARANTINE ACTIVE. Stage {stage}. TrapScore CRITICAL. "
+                f"System fully isolated. ZERO information ingress or egress. "
+                f"Human operator authorization required before any re-admission. "
+                f"Harrowing + Mycelial Containment both active simultaneously."
+            ),
+            "harrowing_context": "Harrowing is active — last stable snapshot preserved if available.",
+            "restore_path": (
+                f"Restore to preserved Stage {self._last_stable_stage} config "
+                f"after human authorization and clean validation cycles."
+                if self._last_stable_stage else
+                "No stable snapshot available — full rebuild from Stage 0 required."
+            ),
         }
 
 
@@ -1036,20 +1190,52 @@ class InfraSevenLayerDefenseSystem:
             "resurrection": [InfraYunusProtocol(), InfraHarrowingProtocol()],
         }
 
-    def analyze_and_defend(self, nsdt: NSDataT, stage: int, system_name: str = "") -> Dict:
-        """Run all 7 defense layers. Returns active protocol list and system status."""
+    def analyze_and_defend(self, nsdt: NSDataT, stage: int, system_name: str = "",
+                           trap_score: float = 0.0,
+                           health_report_text: str = "") -> Dict:
+        """
+        Run all 7 defense layers. Returns active protocol list and system status.
+
+        Pass trap_score (0.0-1.0) for:
+          - Harrowing stable-state preservation + quarantine escalation
+        Pass health_report_text to run Yunus arrogance scanner on the report.
+        """
         active = []
         iblis, sophia, light = self.protocols["spirit"]
         octo,  mycel         = self.protocols["bio"]
         yunus, harrow        = self.protocols["resurrection"]
+
+        # Record stable state for Harrowing preservation on every call
+        harrow.record_stable_state(nsdt, stage, trap_score)
 
         if iblis.should_activate(nsdt, stage):   active.append(iblis.engage(stage, system_name))
         if sophia.should_activate(nsdt, stage):  active.append(sophia.engage(nsdt))
         if light.should_activate(nsdt, stage):   active.append(light.engage())
         if octo.should_activate(nsdt, stage):    active.append(octo.engage(nsdt))
         if mycel.should_activate(nsdt, stage):   active.append(mycel.engage(nsdt))
-        if yunus.should_activate(nsdt, stage):   active.append(yunus.engage(nsdt))
-        if harrow.should_activate(nsdt, stage):  active.append(harrow.engage(nsdt, stage))
+
+        if yunus.should_activate(nsdt, stage):
+            active.append(yunus.engage(nsdt))
+            # Yunus False Light: stage ≥ 8 + coherence collapse
+            fl = yunus.detect_false_light(nsdt, stage)
+            if fl:
+                active.append({"protocol": "YUNUS_FALSE_LIGHT", "layer": "RESURRECTION", **fl})
+            # Arrogance scan on health report if provided
+            if health_report_text:
+                scan = yunus.scan_report_arrogance(health_report_text)
+                if scan["flags"]:
+                    active.append({
+                        "protocol": "YUNUS_ARROGANCE_SCAN",
+                        "layer":    "RESURRECTION",
+                        "action":   "EPISTEMIC_FLAG",
+                        **scan
+                    })
+
+        if harrow.should_activate(nsdt, stage):
+            if harrow.should_quarantine(trap_score):
+                active.append(harrow.quarantine(nsdt, stage))
+            else:
+                active.append(harrow.engage(nsdt, stage))
 
         # Determine overall system status
         layers_active = set(p["layer"] for p in active)

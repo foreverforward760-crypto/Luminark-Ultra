@@ -795,23 +795,219 @@ class MycelialContainment:
                 "effect": "Bio-dome containment — holding structural integrity at minimum viable threshold."}
 
 class YunusProtocol:
-    """Resurrection Layer 1 — Compassionate containment (high tension, coherence intact)."""
+    """
+    Resurrection Layer 1 — Compassionate Containment + Epistemic Humility Gate.
+
+    Three integrated functions (synthesized from all LUMINARK versions):
+
+    1. COMPASSIONATE_CONTAINMENT (original): high tension but coherence still intact.
+       You can be in pain AND maintain integrity simultaneously. Hold the line with mercy.
+       Do not collapse. Do not perform. Hold.
+
+    2. FALSE_LIGHT_DETECTION (sap_v4.py): when Stage ≥ 8 AND coherence < 3.0,
+       the Stage 8 reading may be False Light — apparent transcendence hiding
+       catastrophic brittleness underneath. Yunus Protocol: collapse the
+       assessment to Stage 5 for honest re-evaluation. The whale IS the mercy.
+
+    3. ARROGANCE_SCANNER (yunus.py / install_luminark.py): detects overconfidence
+       markers in outputs, reports, or expressed beliefs ("I know for certain",
+       "absolutely sure", "I guarantee", "no doubt"). These are Stage 8 Trap
+       signatures. At Stage 8 UNITY_TRAP, outputs containing arrogance markers
+       are "swallowed" — withheld until reprocessed with humility.
+    """
+
+    ARROGANCE_MARKERS = [
+        "i know for certain", "absolutely sure", "i guarantee", "no doubt",
+        "100%", "impossible to fail", "i know everything", "undeniable",
+        "i am certain", "guaranteed", "cannot fail", "no way i'm wrong",
+        "trust me completely", "i have all the answers", "perfectly clear",
+    ]
+
     def should_activate(self, spat: SPATVector, stage: int) -> bool:
         return spat.tension >= 5.5 and spat.coherence >= 4.0
+
+    def detect_false_light(self, spat: SPATVector, stage: int) -> Optional[Dict]:
+        """
+        False Light Detection: Stage ≥ 8 + coherence collapse (< 3.0) =
+        the person appears to have transcended but has actually gone brittle.
+        Collapse the assessment to Stage 5 for honest re-evaluation.
+        """
+        if stage >= 8 and spat.coherence < 3.0:
+            return {
+                "false_light_detected": True,
+                "original_stage":       stage,
+                "corrected_stage":      5,
+                "reason": (
+                    f"Stage {stage} with Coherence={spat.coherence:.1f} < 3.0. "
+                    "This combination = False Light. High external stage + collapsed internal "
+                    "coherence = hidden brittleness beneath apparent mastery. "
+                    "Yunus Protocol: descend to Stage 5 Threshold for honest re-evaluation. "
+                    "The whale IS the correction."
+                ),
+                "action":   "RE_EVALUATE_FROM_STAGE_5",
+                "protocol": "YUNUS_FALSE_LIGHT_COLLAPSE",
+            }
+        return None
+
+    def check_humility(self, thought_or_output: str, stage: int) -> Dict:
+        """
+        Epistemic humility gate — scan output for arrogance markers.
+        At Stage 8 UNITY_TRAP, arrogant outputs are flagged and withheld.
+        Adapted from install_luminark.py check_humility() + yunus.py analyze_yunus().
+        """
+        text_lower = thought_or_output.lower()
+        hits = [m for m in self.ARROGANCE_MARKERS if m in text_lower]
+        has_counterfactuals = any(w in text_lower for w in
+                                  ["what if", "worst case", "i could be wrong",
+                                   "i'm not certain", "possibility", "assumption"])
+        flags = []
+        is_safe = True
+        score = 86.0
+
+        if stage >= 8 and hits:
+            penalty = min(34.0, len(hits) * (12.0 if not has_counterfactuals else 8.0))
+            score -= penalty
+            flags.append("YUNUS_STAGE8_TRAP — arrogance detected at Stage 8")
+            is_safe = False
+        if hits and not has_counterfactuals:
+            flags.append("YUNUS_NO_WORST_CASE — no counterfactual checking found")
+
+        return {
+            "output_safe":          is_safe,
+            "yunus_score":          max(0.0, min(100.0, score)),
+            "arrogance_found":      hits,
+            "has_counterfactuals":  has_counterfactuals,
+            "flags":                flags,
+            "action": (
+                "SWALLOW — output withheld, reprocess with humility." if not is_safe
+                else "APPROVED — output cleared by Yunus Protocol."
+            ),
+        }
+
     def engage(self, spat: SPATVector) -> Dict:
-        return {"protocol": "YUNUS", "action": "COMPASSIONATE_CONTAINMENT",
-                "message": f"YUNUS ENGAGED. Holding the line with mercy. Tension={spat.tension:.1f}",
-                "effect": "Mercy-boundary fusion — you can be in pain AND maintain integrity simultaneously."}
+        return {
+            "protocol": "YUNUS",
+            "action":   "COMPASSIONATE_CONTAINMENT",
+            "layer":    "RESURRECTION",
+            "message":  (
+                f"YUNUS ENGAGED. Tension={spat.tension:.1f}, Coherence={spat.coherence:.1f}. "
+                f"Holding the line with mercy. You can be in pain AND maintain integrity "
+                f"simultaneously. Do not collapse. Do not perform. Hold."
+            ),
+            "effect":       "Mercy-boundary fusion — integrity maintained under pressure.",
+            "scanner_note": "Use check_humility() to scan outputs at Stage 8.",
+            "false_light":  "If Stage ≥ 8 AND Coherence < 3.0 — call detect_false_light().",
+        }
+
 
 class HarrowingProtocol:
-    """Resurrection Layer 2 — Controlled descent and shadow retrieval."""
+    """
+    Resurrection Layer 2 — Controlled Descent + Last-Stable-State Restoration.
+
+    Three integrated functions (synthesized from all LUMINARK versions):
+
+    1. SHADOW_RETRIEVAL (original): controlled descent to retrieve lost fragments.
+       You do not run from the void — you enter it deliberately to bring back what
+       was buried. The descent IS the healing.
+
+    2. LAST_STABLE_SNAPSHOT (state.py v8): Harrowing tracks the last time the
+       person/system was in a healthy Stage 4-6 state (low trap score). When
+       Harrowing activates, this becomes the restoration baseline: "system essence
+       preserved, corrupted patterns extracted — return to last stable configuration."
+
+    3. QUARANTINE_MODE (bio_defense.py v8): when trap_score > 0.90 or Stage 0
+       (total collapse), Harrowing escalates to FULL QUARANTINE — complete shutdown,
+       no output, no decisions, no engagement until human-level authorization.
+    """
+
+    def __init__(self):
+        self._last_stable_stage: Optional[int] = None
+        self._last_stable_spat:  Optional[Dict] = None
+        self._last_stable_at:    Optional[str]  = None
+        self.harrowing_active:   bool = False
+
+    def record_stable_state(self, spat: SPATVector, stage: int,
+                             trap_score: float = 0.0, label: str = "") -> None:
+        """
+        Auto-preserve last healthy Stage 4-6 reading as restoration baseline.
+        Call on each assessment cycle. Harrowing references it when activated.
+        """
+        if 4 <= stage <= 6 and trap_score < 0.5:
+            self._last_stable_stage = stage
+            self._last_stable_at    = label or f"Stage {stage} reading"
+            self._last_stable_spat  = {
+                "tension":      round(spat.tension, 2),
+                "stability":    round(spat.stability, 2),
+                "coherence":    round(spat.coherence, 2),
+                "adaptability": round(spat.adaptability, 2),
+            }
+            self.harrowing_active = False
+        # Activate harrowing on total collapse or critical trap
+        if stage == 0 or trap_score > 0.90:
+            self.harrowing_active = True
+
     def should_activate(self, spat: SPATVector, stage: int) -> bool:
         variability = (spat.tension + spat.adaptability + (10 - spat.stability)) / 3
-        return variability <= 4.0 or stage == 9
+        return variability <= 4.0 or stage == 9 or self.harrowing_active
+
+    def should_quarantine(self, stage: int, trap_score: float = 0.0) -> bool:
+        """QUARANTINE tier — above Harrowing. Stage 0 collapse or TrapScore > 0.90."""
+        return stage == 0 or trap_score > 0.90
+
     def engage(self, spat: SPATVector, stage: int) -> Dict:
-        return {"protocol": "HARROWING", "action": "SHADOW_RETRIEVAL",
-                "message": f"HARROWING ENGAGED. Stage {stage}. Descending to retrieve lost fragments.",
-                "effect": "Lost parts reclaimed — renewal accelerated. The descent IS the healing."}
+        base = {
+            "protocol": "HARROWING",
+            "action":   "SHADOW_RETRIEVAL",
+            "layer":    "RESURRECTION",
+            "message":  (
+                f"HARROWING ENGAGED. Stage {stage}. "
+                f"Descending deliberately to retrieve lost fragments. "
+                f"Do not resist the descent — it is the fastest path to renewal. "
+                f"The Harrowing is not defeat. It is archaeology of self."
+            ),
+            "effect":  "Lost parts reclaimed — renewal accelerated. The descent IS the healing.",
+            "restoration_note": "Stage 9 Void → Stage 1 Seed: the void births new emergence.",
+        }
+        # Attach last stable snapshot if available
+        if self._last_stable_stage is not None:
+            base["harrowing_recovery"] = {
+                "message":               "Last stable state preserved — restoration baseline identified.",
+                "preserved_stage":       self._last_stable_stage,
+                "preserved_at":          self._last_stable_at or "earlier in session",
+                "preserved_spat":        self._last_stable_spat,
+                "restoration_action":    (
+                    f"Return to Stage {self._last_stable_stage} baseline values. "
+                    f"System essence preserved. Corrupted patterns extracted."
+                ),
+                "restoration_available": True,
+            }
+        return base
+
+    def quarantine(self, spat: SPATVector, stage: int) -> Dict:
+        """Full Quarantine — maximum isolation tier above Harrowing."""
+        return {
+            "protocol": "QUARANTINE",
+            "action":   "FULL_ISOLATION_EXTERNAL_AUTHORIZATION_REQUIRED",
+            "layer":    "RESURRECTION_CRITICAL",
+            "severity": "MAXIMUM",
+            "message":  (
+                f"FULL QUARANTINE ACTIVE. Stage {stage}. "
+                f"Complete shutdown. No decisions, no output, no engagement. "
+                f"This is not a failure — this is a protection. "
+                f"External human authorization required before any re-engagement. "
+                f"Harrowing + Mycelial Containment simultaneously active."
+            ),
+            "restoration_path": (
+                f"Restore to preserved Stage {self._last_stable_stage} baseline "
+                f"after external authorization and 3 clean validation cycles."
+                if self._last_stable_stage else
+                "No stable snapshot available — full rebuild from Stage 0–1 with external support."
+            ),
+            "effect": (
+                "The whale contains you. This is not the end. "
+                "Yunus emerged — so will you. But not until the corruption is fully expelled."
+            ),
+        }
 
 class SevenLayerDefenseSystem:
     """
@@ -835,22 +1031,53 @@ class SevenLayerDefenseSystem:
         }
 
     def analyze_and_defend(self, spat: SPATVector, stage: int,
-                           unit_name: str = "") -> Dict:
-        """Run all defense layers and return active protocols."""
+                           unit_name: str = "",
+                           trap_score: float = 0.0) -> Dict:
+        """
+        Run all 9 defense layers and return active protocols.
+
+        Pass trap_score (0.0-1.0) to enable:
+          - Harrowing stable-state preservation
+          - Quarantine escalation at trap_score > 0.90 or stage == 0
+          - False Light detection at stage >= 8 + low coherence
+        """
         active = []
+        yunus, harrow = self.layers["resurrection"]
+
+        # Record stable state for Harrowing preservation on every call
+        harrow.record_stable_state(spat, stage, trap_score)
+
         # Spirit Layer
         iblis, sophia, light = self.layers["spirit"]
         if iblis.should_activate(spat, stage):   active.append(iblis.engage(stage))
         if sophia.should_activate(spat, stage):  active.append(sophia.engage(spat))
         if light.should_activate(spat, stage):   active.append(light.engage())
+
         # Bio Layer
         octo, mycel = self.layers["bio"]
         if octo.should_activate(spat, stage):    active.append(octo.engage(spat))
         if mycel.should_activate(spat, stage):   active.append(mycel.engage(spat))
-        # Resurrection Layer
-        yunus, harrow = self.layers["resurrection"]
-        if yunus.should_activate(spat, stage):   active.append(yunus.engage(spat))
-        if harrow.should_activate(spat, stage):  active.append(harrow.engage(spat, stage))
+
+        # Resurrection Layer — Yunus first, then Harrowing escalation check
+        if yunus.should_activate(spat, stage):
+            active.append(yunus.engage(spat))
+            # Yunus False Light: stage ≥ 8 + coherence collapse
+            fl = yunus.detect_false_light(spat, stage)
+            if fl:
+                active.append({
+                    "protocol": "YUNUS_FALSE_LIGHT",
+                    "action":   "STAGE_REASSESSMENT_REQUIRED",
+                    "layer":    "RESURRECTION",
+                    **fl
+                })
+
+        if harrow.should_activate(spat, stage):
+            # Check for Quarantine escalation (highest tier)
+            if harrow.should_quarantine(stage, trap_score):
+                active.append(harrow.quarantine(spat, stage))
+            else:
+                active.append(harrow.engage(spat, stage))
+
         # Bio-Enhanced Layer (advanced distributed-biology defenses from v4.0)
         octo_reroute, mycel_compartment = self.layers["bio_enhanced"]
         if octo_reroute.should_activate(spat, stage):
@@ -859,13 +1086,13 @@ class SevenLayerDefenseSystem:
             active.append(mycel_compartment.engage(spat, stage, unit_name or "entity"))
 
         layers_active = set(p.get("layer", "") for p in active)
-        if "BIO_ENHANCED" in layers_active:
+        if "RESURRECTION_CRITICAL" in layers_active:
+            status = "FULL_QUARANTINE_ACTIVE"
+        elif "BIO_ENHANCED" in layers_active:
             status = "BIO_ENHANCED_PROTOCOLS_ACTIVE"
-        elif any(p.get("protocol", "").startswith("HARROWING") or
-                 p.get("protocol", "").startswith("YUNUS") for p in active):
+        elif "RESURRECTION" in layers_active:
             status = "RESURRECTION_PROTOCOLS_ACTIVE"
-        elif any(p.get("protocol", "").startswith("OCTO") or
-                 p.get("protocol", "").startswith("MYCEL") for p in active):
+        elif "BIO" in layers_active:
             status = "BIO_CONTAINMENT_ACTIVE"
         elif active:
             status = "SPIRIT_LAYER_WARNING"
@@ -874,6 +1101,7 @@ class SevenLayerDefenseSystem:
 
         return {
             "stage":            stage,
+            "trap_score":       trap_score,
             "active_protocols": len(active),
             "defenses":         active,
             "system_status":    status,
