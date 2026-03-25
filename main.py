@@ -135,6 +135,14 @@ class ContainerRuleInput(BaseModel):
     container_digit:   int = Field(..., ge=1, le=9, description="Outer Form / Capacity digit (1–9)")
     current_sap_stage: Optional[int] = Field(None, ge=0, le=9, description="Current SAP stage for cross-validation")
 
+class YunusScanInput(BaseModel):
+    text:      str   = Field(..., description="Text or health report to scan for arrogance / overconfidence")
+    stage:     int   = Field(5,  ge=0, le=9, description="Current SAP stage (0–9)")
+    coherence: float = Field(5.0, ge=0.0, le=10.0, description="Current coherence (0–10) — used for False Light detection")
+
+class HarrowingStatusInput(BaseModel):
+    system_id: str = Field(..., description="Infrastructure system ID to check harrowing state for")
+
 # ── utility ────────────────────────────────────────────────────────────────────
 
 def _ts() -> str:
@@ -224,6 +232,59 @@ async def family_dashboard(members: str = "Rick,Daughter,Son"):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# ── OMEGA: Trajectory + Yunus + Harrowing ─────────────────────────────────────
+
+@app.get("/omega/session_trajectory",
+         summary="Session trajectory metrics — stage velocity, risk momentum, rigidity & recovery index")
+async def omega_session_trajectory():
+    """
+    Returns trajectory analytics across all assess_individual() calls in this session:
+      - stage_velocity: dS/dt rate of consciousness stage change
+      - risk_momentum: change in TrapScore trend
+      - rigidity_index: sustained Stage 7–8 fraction (0-1)
+      - recovery_index: fraction of trap events resolved
+      - trajectory_label: human-readable direction summary
+      - harrowing_active: True if session is in critical trap
+      - last_stable_stage: preserved Stage 4–6 restoration target
+    Requires at least 2 prior /omega/assess_individual calls.
+    """
+    try:
+        result = get_omega().get_session_trajectory()
+        return _wrap(result, "/omega/session_trajectory")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/omega/yunus_scan",
+          summary="Yunus Protocol: scan text for arrogance markers and False Light")
+async def omega_yunus_scan(payload: YunusScanInput):
+    """
+    Runs the Yunus Protocol humility check on any text, AI output, or assessment:
+      - Detects overconfidence language (YUNUS_STAGE8_TRAP, YUNUS_NO_WORST_CASE)
+      - At Stage 8 + low coherence: detects False Light (collapse to Stage 5 recommended)
+      - Returns output_safe flag, yunus_score (0-100), flags, recommended action
+    """
+    try:
+        result = get_omega().scan_humility(payload.text, payload.stage, payload.coherence)
+        return _wrap(result, "/omega/yunus_scan")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/omega/harrowing_status",
+         summary="Harrowing Protocol status — last stable snapshot and restoration path")
+async def omega_harrowing_status():
+    """
+    Returns Harrowing Protocol state for the current session:
+      - harrowing_active: True if TrapScore > 0.90 or Stage 0 collapse
+      - last_stable_stage: Stage 4–6 preserved as restoration baseline
+      - restoration_action: specific restore directive
+      - quarantine_risk: True if multiple trap events + high rigidity
+    """
+    try:
+        result = get_omega().get_harrowing_status()
+        return _wrap(result, "/omega/harrowing_status")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ── OVERWATCH endpoints ───────────────────────────────────────────────────────
 
 @app.post("/overwatch/analyze",
@@ -267,6 +328,71 @@ async def overwatch_validate():
         return _wrap(result, "/overwatch/validate")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# ── OVERWATCH: Trajectory + Yunus + Harrowing ─────────────────────────────────
+
+class OverwatchYunusScanInput(BaseModel):
+    text:          str   = Field(..., description="Health report or text to scan for arrogance / False Light")
+    system_id:     str   = Field("default", description="Infrastructure system ID for context")
+    stage:         int   = Field(5,   ge=0, le=9,   description="Current SAP stage (0–9)")
+    nsdt_coherence:float = Field(5.0, ge=0.0, le=10.0, description="Current coherence (0–10)")
+
+
+@app.get("/overwatch/trajectory/{system_id}",
+         summary="Trajectory metrics for an infrastructure system — velocity, momentum, rigidity & recovery")
+async def overwatch_trajectory(system_id: str):
+    """
+    Returns trajectory analytics across all analyze_system() calls for the given system_id:
+      - stage_velocity: dS/dt rate of SAP stage change
+      - risk_momentum: change in TrapScore trend
+      - rigidity_index: sustained Stage 7–8 fraction (0-1)
+      - recovery_index: fraction of trap events resolved
+      - trajectory_label: human-readable direction summary
+      - harrowing_active: True if system is in critical trap
+      - last_stable_stage: preserved Stage 4–6 restoration target
+    Requires at least 2 prior /overwatch/analyze calls for this system_id.
+    """
+    try:
+        result = get_overwatch().get_trajectory_summary(system_id)
+        return _wrap(result, f"/overwatch/trajectory/{system_id}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/overwatch/yunus_scan",
+          summary="Yunus Protocol: scan infrastructure health report for arrogance and False Light")
+async def overwatch_yunus_scan(payload: OverwatchYunusScanInput):
+    """
+    Runs the Yunus Protocol humility check on any infrastructure health report or text:
+      - Detects overconfidence language (YUNUS_STAGE8_TRAP, YUNUS_NO_WORST_CASE)
+      - At Stage 8 + low coherence: detects False Light (collapse to Stage 5 recommended)
+      - Returns output_safe flag, yunus_score (0-100), flags, recommended action
+    """
+    try:
+        result = get_overwatch().scan_report_humility(
+            payload.text, payload.system_id, payload.stage, payload.nsdt_coherence
+        )
+        return _wrap(result, "/overwatch/yunus_scan")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/overwatch/harrowing_status/{system_id}",
+         summary="Harrowing Protocol status — last stable snapshot and restoration path for an infrastructure system")
+async def overwatch_harrowing_status(system_id: str):
+    """
+    Returns Harrowing Protocol state for the specified infrastructure system:
+      - harrowing_active: True if TrapScore > 0.90 or Stage 0 collapse
+      - last_stable_stage: Stage 4–6 preserved as restoration baseline
+      - restoration_action: specific restore directive
+      - quarantine_risk: True if multiple trap events + high rigidity
+    """
+    try:
+        result = get_overwatch().get_harrowing_status(system_id)
+        return _wrap(result, f"/overwatch/harrowing_status/{system_id}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 # ── error handler ──────────────────────────────────────────────────────────────
 

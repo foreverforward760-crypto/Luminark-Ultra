@@ -1435,6 +1435,154 @@ class PersonalAssessmentEngine:
 # SECTION 9: MASTER CONSCIOUSNESS ENGINE — Unified API
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 9B: OMEGA SESSION TRAJECTORY STATE
+# Tracks session-level consciousness trajectory across multiple assess_individual()
+# calls: stage velocity, risk momentum, rigidity index, recovery index.
+# Source: synthesized from state.py (LUMINARK v8.0) — Richard L. Stanfield
+# ─────────────────────────────────────────────────────────────────────────────
+
+@dataclass
+class OmegaStateSnapshot:
+    """Single recorded moment in a consciousness/org assessment session."""
+    timestamp:   str
+    sap_stage:   float     # micro-position e.g. 7.83
+    macro:       int       # 0–9
+    trap_score:  float     # 0.0–1.0
+    adaptability: float    # 0.0–10.0
+    coherence:   float     # 0.0–10.0
+    tension:     float     # 0.0–10.0
+    stability:   float     # 0.0–10.0
+    defense_mode: str = "" # active protocol if any
+
+    def to_dict(self) -> Dict:
+        return {k: v for k, v in self.__dict__.items()}
+
+
+class OmegaSessionState:
+    """
+    Full session memory for LuminarkConsciousnessEngineOmega.
+    Transforms OMEGA from a single-frame assessor into a predictive
+    behavioral system that tracks trajectory across multiple assessments.
+
+    Metrics:
+        stage_velocity    — dS/dt: rate of stage change (last 3 snapshots)
+        risk_momentum     — change in TrapScore (last 5 snapshots)
+        rigidity_index    — sustained Stage 7–8 with low adaptability (last 8)
+        recovery_index    — fraction of trap events resolved
+        trap_events       — count of assessments with TrapScore > 0.75
+        threshold_crossings — count of macro-stage changes between assessments
+        harrowing_active  — True when TrapScore > 0.90 or Stage 0
+        last_stable_snapshot — last Stage 4–6 reading (harrowing restoration target)
+    """
+
+    def __init__(self):
+        self.snapshots:             List[OmegaStateSnapshot] = []
+        self.stage_velocity:        float = 0.0
+        self.risk_momentum:         float = 0.0
+        self.rigidity_index:        float = 0.0
+        self.recovery_index:        float = 1.0
+        self.trap_events:           int   = 0
+        self.threshold_crossings:   int   = 0
+        self.total_analyses:        int   = 0
+        self.harrowing_active:      bool  = False
+        self.last_stable_snapshot:  Optional[OmegaStateSnapshot] = None
+        self.harrowing_preserved_at: Optional[str] = None
+
+    def record(self, snap: OmegaStateSnapshot) -> None:
+        """Add snapshot, update all derived metrics and Harrowing state."""
+        self.snapshots.append(snap)
+        self.total_analyses += 1
+
+        if snap.trap_score > 0.75:
+            self.trap_events += 1
+
+        if len(self.snapshots) >= 2:
+            if self.snapshots[-2].macro != snap.macro:
+                self.threshold_crossings += 1
+
+        # Harrowing: preserve last healthy Stage 4–6 config
+        if 4 <= snap.macro <= 6 and snap.trap_score < 0.5:
+            self.last_stable_snapshot    = snap
+            self.harrowing_preserved_at  = snap.timestamp
+            self.harrowing_active        = False
+
+        if snap.macro == 0 or snap.trap_score > 0.90:
+            self.harrowing_active = True
+
+        self._update_metrics()
+
+    def _update_metrics(self) -> None:
+        n = len(self.snapshots)
+        if n < 2:
+            return
+
+        window = self.snapshots[-3:]
+        stages = [s.sap_stage for s in window]
+        self.stage_velocity = round(stages[-1] - stages[0], 3)
+
+        trap_window = [s.trap_score for s in self.snapshots[-5:]]
+        self.risk_momentum = round(trap_window[-1] - trap_window[0], 3) if len(trap_window) >= 2 else 0.0
+
+        hi = [s for s in self.snapshots[-8:] if s.macro >= 7 and s.adaptability < 4.0]
+        self.rigidity_index = round(len(hi) / min(8, n), 3)
+
+        resolved = sum(
+            1 for i in range(1, n)
+            if self.snapshots[i-1].trap_score > 0.75
+            and self.snapshots[i].trap_score  < 0.50
+        )
+        self.recovery_index = round(resolved / max(1, self.trap_events), 3)
+
+    def get_trajectory_label(self) -> str:
+        if self.stage_velocity > 0.5 and self.risk_momentum > 0.1:
+            return "ESCALATING — stage rising, risk increasing"
+        elif self.stage_velocity > 0.5:
+            return "ASCENDING — stage rising, risk stable"
+        elif self.stage_velocity < -0.5 and self.risk_momentum < -0.1:
+            return "RECOVERING — stage falling, risk decreasing"
+        elif self.stage_velocity < -0.5:
+            return "DESCENDING — stage falling"
+        elif self.rigidity_index > 0.6:
+            return "TRAPPED — sustained Stage 7–8 with low adaptability"
+        elif abs(self.stage_velocity) < 0.2 and abs(self.risk_momentum) < 0.05:
+            return "STABLE — minimal stage movement"
+        return "OSCILLATING — fluctuating without clear direction"
+
+    def get_summary(self) -> Dict:
+        n = len(self.snapshots)
+        if n == 0:
+            return {"total_analyses": 0, "message": "No assessments recorded yet."}
+
+        import statistics as _stats
+        stages = [s.sap_stage for s in self.snapshots]
+        traps  = [s.trap_score for s in self.snapshots]
+
+        return {
+            "total_analyses":     self.total_analyses,
+            "trap_events":        self.trap_events,
+            "threshold_crossings": self.threshold_crossings,
+            "avg_stage":          round(_stats.mean(stages), 2),
+            "avg_trap_score":     round(_stats.mean(traps), 3),
+            "stage_velocity":     self.stage_velocity,
+            "risk_momentum":      self.risk_momentum,
+            "rigidity_index":     self.rigidity_index,
+            "recovery_index":     self.recovery_index,
+            "trajectory_label":   self.get_trajectory_label(),
+            "harrowing_active":   self.harrowing_active,
+            "last_stable_stage":  (
+                self.last_stable_snapshot.macro if self.last_stable_snapshot else None
+            ),
+            "last_stable_trap":   (
+                round(self.last_stable_snapshot.trap_score, 3)
+                if self.last_stable_snapshot else None
+            ),
+            "harrowing_preserved_at": self.harrowing_preserved_at,
+            "recent_stages":      [round(s.sap_stage, 2) for s in self.snapshots[-10:]],
+            "recent_trap_scores": [round(s.trap_score, 3) for s in self.snapshots[-10:]],
+        }
+
+
 class LuminarkConsciousnessEngineOmega:
     """
     Master LUMINARK CONSCIOUSNESS ENGINE OMEGA.
@@ -1453,16 +1601,42 @@ class LuminarkConsciousnessEngineOmega:
     VERSION = "CONSCIOUSNESS ENGINE OMEGA v1.0 — March 2026"
 
     def __init__(self, openai_key: str = None):
-        self.personal    = PersonalAssessmentEngine(openai_key)
-        self.corporate   = CorporateConsciousnessAnalyzer()
-        self.meridian    = MERIDIANAdapter()
-        self.guardian    = LuminarkGuardian()
-        self.oracle      = OracleEngine(openai_api_key=openai_key)
-        self.defense     = SevenLayerDefenseSystem()
+        self.personal       = PersonalAssessmentEngine(openai_key)
+        self.corporate      = CorporateConsciousnessAnalyzer()
+        self.meridian       = MERIDIANAdapter()
+        self.guardian       = LuminarkGuardian()
+        self.oracle         = OracleEngine(openai_api_key=openai_key)
+        self.defense        = SevenLayerDefenseSystem()
+        self.session_state  = OmegaSessionState()   # ← full trajectory memory
 
     # ── Personal Assessment ─────────────────────────────────────────────────
     def assess_individual(self, spat_data: Dict, temporal_sentiment: Dict = None) -> Dict:
-        return self.personal.full_assessment(spat_data, temporal_sentiment)
+        result = self.personal.full_assessment(spat_data, temporal_sentiment)
+
+        # Record into session trajectory state after every assessment
+        try:
+            stage    = result.get("stage", {}).get("value", 0)
+            micro    = result.get("stage", {}).get("micro_position", float(stage))
+            trap_raw = result.get("trap", {}).get("raw_score", 0.0)
+            spat     = spat_data if isinstance(spat_data, dict) else {}
+            import datetime as _dt
+            snap = OmegaStateSnapshot(
+                timestamp    = _dt.datetime.utcnow().isoformat(),
+                sap_stage    = float(micro),
+                macro        = int(stage),
+                trap_score   = float(trap_raw),
+                adaptability = float(spat.get("adaptability", 5.0)),
+                coherence    = float(spat.get("coherence", 5.0)),
+                tension      = float(spat.get("tension", 5.0)),
+                stability    = float(spat.get("stability", 5.0)),
+                defense_mode = "",
+            )
+            self.session_state.record(snap)
+            result["session_trajectory"] = self.session_state.get_summary()
+        except Exception:
+            pass  # trajectory tracking never breaks primary assessment
+
+        return result
 
     # ── Corporate Analysis ──────────────────────────────────────────────────
     def assess_company(self, name: str, ticker: str, financial_data: Dict) -> Dict:
@@ -1482,6 +1656,77 @@ class LuminarkConsciousnessEngineOmega:
     # ── Family Overwatch ────────────────────────────────────────────────────
     def family_dashboard(self, members: List[str]) -> Dict:
         return self.guardian.get_family_status_mock(members)
+
+    def get_session_trajectory(self) -> Dict:
+        """
+        Return full trajectory summary for the current session:
+          stage_velocity, risk_momentum, rigidity_index, recovery_index,
+          trap_events, threshold_crossings, trajectory_label, harrowing_active,
+          last_stable_stage, recent_stages, recent_trap_scores.
+        Requires at least 2 prior assess_individual() calls.
+        """
+        return self.session_state.get_summary()
+
+    def scan_humility(self, text: str, stage: int = 5,
+                      coherence: float = 5.0) -> Dict:
+        """
+        Yunus Protocol humility check on any text or AI output.
+        Detects arrogance markers (YUNUS_STAGE8_TRAP, YUNUS_NO_WORST_CASE).
+        Also runs False Light detection when stage >= 8 + coherence < 3.0.
+
+        Returns:
+            output_safe (bool), yunus_score, flags, false_light result,
+            recommended action.
+        """
+        yunus = self.defense.layers["resurrection"][0]   # YunusProtocol
+
+        humility = yunus.check_humility(text, stage)
+
+        class _MockSPAT:
+            pass
+        spat_mock = _MockSPAT()
+        spat_mock.coherence = coherence
+        fl = yunus.detect_false_light(spat_mock, stage)
+
+        return {
+            "humility_check":  humility,
+            "false_light":     fl,
+            "overall_action":  (
+                "REASSESS — Stage 8 with coherence collapse (False Light)."
+                if fl else
+                humility.get("action", "APPROVED")
+            ),
+        }
+
+    def get_harrowing_status(self) -> Dict:
+        """
+        Return Harrowing Protocol status for the current session:
+          harrowing_active, last_stable_stage, restoration path.
+        """
+        state = self.session_state
+        snap  = state.last_stable_snapshot
+        harrow = self.defense.layers["resurrection"][1]  # HarrowingProtocol
+
+        return {
+            "harrowing_active":     state.harrowing_active,
+            "total_analyses":       state.total_analyses,
+            "trap_events":          state.trap_events,
+            "last_stable_stage":    snap.macro if snap else None,
+            "last_stable_trap":     round(snap.trap_score, 3) if snap else None,
+            "preserved_at":         state.harrowing_preserved_at,
+            "restoration_available": snap is not None,
+            "restoration_action": (
+                f"Return to Stage {snap.macro} baseline values. "
+                f"System essence preserved. Corrupted patterns extracted."
+                if snap else
+                "No stable snapshot preserved. Full rebuild from Stage 0–1 with external support."
+            ),
+            "quarantine_risk": state.trap_events > 3 and state.rigidity_index > 0.6,
+            "harrowing_protocol_note": harrow.engage(
+                type('S', (), {'tension': 8.0, 'adaptability': 3.0, 'stability': 2.0})(),
+                stage=9
+            ).get("restoration_note", "") if state.harrowing_active else "",
+        }
 
     def get_version_info(self) -> Dict:
         return {

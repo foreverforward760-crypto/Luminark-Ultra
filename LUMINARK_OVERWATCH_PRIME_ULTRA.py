@@ -960,57 +960,211 @@ class InfraMycelialContainment:
 
 class InfraYunusProtocol:
     """
-    Resurrection Layer 1 — Graceful Degradation (Compassionate Containment).
-    Adapted from Yunus Protocol (Consciousness Engine).
-    Yunus: held with mercy inside the whale — contained but alive.
-    In infrastructure: graceful degradation — system absorbs stress while
-    maintaining minimum viable service. NOT shutdown. Controlled reduced operation.
-    The difference between a brownout (Yunus) and a blackout (Void).
+    Resurrection Layer 1 — Graceful Degradation + Epistemic Humility Gate.
+
+    Three integrated functions (synthesized from all LUMINARK versions):
+
+    1. COMPASSIONATE_CONTAINMENT (original): when system is under stress but
+       coherence is still intact, implement controlled load shedding rather than
+       full shutdown. Held with mercy — brownout, not blackout.
+
+    2. FALSE_LIGHT_DETECTION (sap_v4.py): when Stage ≥ 8 AND coherence < 3.0,
+       Yunus flags the Stage 8 reading as potentially "False Light" — a system
+       can appear to be functioning perfectly while brittleness is hidden.
+       Protocol: collapse the assessment to Stage 5 (Threshold) for re-evaluation.
+
+    3. ARROGANCE_SCANNER (yunus.py / install_luminark.py): detects overconfidence
+       language in infrastructure health reports ("100% stable", "cannot fail",
+       "no risk"). These are Stage 8 Trap markers — certainty without counterfactuals.
+       Flags YUNUS_STAGE8_TRAP and YUNUS_NO_WORST_CASE when counterfactuals absent.
+
+    Biological basis: Yunus inside the whale — not destroyed, but forced into
+    a compressed containment where false certainty cannot survive. The whale IS
+    the mercy. The darkness is the correction.
     """
+
+    ARROGANCE_MARKERS = [
+        "100% stable", "cannot fail", "no risk", "guaranteed uptime",
+        "absolutely secure", "impossible to fail", "no doubt", "risk-free",
+        "zero chance of failure", "perfectly stable", "completely safe",
+        "trust the telemetry", "safe for sure", "no failure modes",
+    ]
+
     def should_activate(self, nsdt: NSDataT, stage: int) -> bool:
         return nsdt.tension >= 5.5 and nsdt.coherence >= 4.0 and stage >= 5
 
+    def detect_false_light(self, nsdt: NSDataT, stage: int) -> Optional[Dict]:
+        """
+        False Light Detection: Stage ≥ 8 + very low coherence (< 3.0) =
+        system appears healthy but coherence has collapsed. The Stage 8 reading
+        cannot be trusted. Collapse assessment to Stage 5 for re-evaluation.
+        """
+        if stage >= 8 and nsdt.coherence < 3.0:
+            return {
+                "false_light_detected": True,
+                "original_stage":       stage,
+                "corrected_stage":      5,
+                "reason":               (
+                    f"Stage {stage} with Coherence={nsdt.coherence:.1f} < 3.0. "
+                    "High stage + collapsed coherence = False Light. "
+                    "System appears functional but is actually in hidden brittleness. "
+                    "Yunus Protocol: collapse to Stage 5 for honest re-evaluation."
+                ),
+                "action": "STAGE_REASSESSMENT_REQUIRED",
+            }
+        return None
+
+    def scan_report_arrogance(self, report_text: str) -> Dict:
+        """
+        Yunus Arrogance Scanner: scan health report text for overconfidence markers.
+        Adapted from yunus.py and install_luminark.py.
+        """
+        text_lower = report_text.lower()
+        hits = [m for m in self.ARROGANCE_MARKERS if m in text_lower]
+        has_counterfactuals = any(w in text_lower for w in
+                                  ["worst case", "failure mode", "edge case",
+                                   "what if", "assumption", "risk"])
+        flags = []
+        score = 86.0
+        if hits:
+            penalty = min(34.0, len(hits) * (12.0 if not has_counterfactuals else 8.0))
+            score -= penalty
+            flags.append("YUNUS_STAGE8_TRAP — overconfidence markers in report")
+        if hits and not has_counterfactuals:
+            flags.append("YUNUS_NO_WORST_CASE — no failure mode analysis detected")
+        return {
+            "arrogance_markers_found": hits,
+            "has_counterfactuals":     has_counterfactuals,
+            "yunus_score":             max(0.0, min(100.0, score)),
+            "flags":                   flags,
+        }
+
     def engage(self, nsdt: NSDataT) -> Dict:
         return {
-            "protocol":  "YUNUS — Graceful Degradation",
+            "protocol":  "YUNUS — Graceful Degradation + Epistemic Humility Gate",
             "layer":     "RESURRECTION",
             "action":    "CONTROLLED_LOAD_REDUCTION",
-            "message":   f"YUNUS ACTIVE. Tension={nsdt.tension:.1f}, "
-                         f"Coherence={nsdt.coherence:.1f}. System can degrade gracefully. "
-                         f"Implement controlled load shedding NOW to hold minimum viable "
-                         f"service. Mercy-boundary: reduce 15–25% load to restore stability "
-                         f"without full shutdown.",
-            "sap_context": "Held with mercy inside the pressure — contained but surviving.",
+            "message":   (
+                f"YUNUS ACTIVE. Tension={nsdt.tension:.1f}, Coherence={nsdt.coherence:.1f}. "
+                f"System can degrade gracefully. Implement controlled load shedding NOW: "
+                f"reduce 15–25% load to restore stability without full shutdown. "
+                f"Mercy-boundary active — brownout, not blackout."
+            ),
+            "sap_context":   "Held with mercy inside the pressure — contained but surviving.",
+            "scanner_note":  "Run scan_report_arrogance() on health reports to detect False Certainty.",
+            "false_light":   "If Stage ≥ 8 AND Coherence < 3.0 — call detect_false_light() before acting.",
         }
 
 
 class InfraHarrowingProtocol:
     """
-    Resurrection Layer 2 — Controlled Shutdown / Planned Restoration.
-    Adapted from Harrowing Protocol (Consciousness Engine).
-    Harrowing: deliberate descent to retrieve what was lost.
-    In infrastructure: Stage 9 is coming. This protocol CHOOSES the descent
-    rather than being dragged into it. Planned controlled shutdown is infinitely
-    better than catastrophic uncontrolled failure.
-    The Harrowing is not defeat — it is the fastest path to renewal.
+    Resurrection Layer 2 — Controlled Shutdown + Last-Stable-Config Restoration.
+
+    Three integrated functions (synthesized from all LUMINARK versions):
+
+    1. CONTROLLED_DESCENT (original): Stage 9 is coming. Choose it deliberately
+       rather than being dragged in. Planned controlled shutdown (6–24hr restore)
+       is infinitely better than catastrophic uncontrolled failure (days–weeks).
+
+    2. LAST_STABLE_SNAPSHOT (state.py v8): Harrowing continuously tracks the last
+       time the system was in a healthy Stage 4-5 state (trap_score < 0.5). When
+       Harrowing activates, this preserved snapshot is the restoration target.
+       "System essence preserved, corrupted patterns extracted."
+
+    3. QUARANTINE_MODE (bio_defense.py v8): when Harrowing activates AND threat
+       exceeds 0.90 (TrapScore critical), FULL QUARANTINE engages — complete
+       isolation, zero ingress/egress, human authorization required to re-admit.
+
+    Biological basis: The Harrowing of Hell — descent into the darkest place not
+    as punishment but as deliberate retrieval. You go down to bring back what
+    was lost. The controlled descent IS the fastest path to renewal.
     """
+
+    def __init__(self):
+        self._last_stable_stage: Optional[int] = None
+        self._last_stable_nsdt: Optional[Dict] = None
+        self._last_stable_timestamp: Optional[str] = None
+        self.harrowing_active: bool = False
+
+    def record_stable_state(self, nsdt: NSDataT, stage: int,
+                             trap_score: float, timestamp: str = "") -> None:
+        """
+        Auto-preserve last healthy Stage 4–5 config as restoration baseline.
+        Call this on every analysis cycle. Harrowing references it on activation.
+        """
+        if 4 <= stage <= 6 and trap_score < 0.5:
+            self._last_stable_stage     = stage
+            self._last_stable_timestamp = timestamp
+            self._last_stable_nsdt = {
+                "tension":      nsdt.tension,
+                "stability":    nsdt.stability,
+                "coherence":    nsdt.coherence,
+                "adaptability": nsdt.adaptability,
+            }
+            self.harrowing_active = False
+        if stage == 0 or trap_score > 0.90:
+            self.harrowing_active = True
+
     def should_activate(self, nsdt: NSDataT, stage: int) -> bool:
         variability = (nsdt.tension + nsdt.adaptability + (10 - nsdt.stability)) / 3.0
         return variability <= 4.5 or stage >= 8
 
+    def should_quarantine(self, trap_score: float) -> bool:
+        """QUARANTINE tier — above Harrowing. Max-threat full isolation."""
+        return self.harrowing_active and trap_score > 0.90
+
     def engage(self, nsdt: NSDataT, stage: int) -> Dict:
-        return {
-            "protocol":  "HARROWING — Controlled Restoration Descent",
-            "layer":     "RESURRECTION",
-            "action":    "INITIATE_CONTROLLED_SHUTDOWN_SEQUENCE",
-            "message":   f"HARROWING ACTIVE. Stage {stage}. "
-                         f"Planned controlled shutdown initiated. "
-                         f"CHOOSE the descent — do not wait for the system to choose for you. "
-                         f"Controlled Stage 9 = 6–24hr restoration. "
-                         f"Forced Stage 9 = days–weeks. "
-                         f"Begin shutdown sequence NOW. Preserve restoration data.",
-            "sap_context": "The descent IS the healing — choose it before it chooses you.",
+        base = {
+            "protocol":   "HARROWING — Controlled Restoration Descent",
+            "layer":      "RESURRECTION",
+            "action":     "INITIATE_CONTROLLED_SHUTDOWN_SEQUENCE",
+            "message":    (
+                f"HARROWING ACTIVE. Stage {stage}. "
+                f"Planned controlled shutdown initiated. "
+                f"CHOOSE the descent — do not wait for the system to choose for you. "
+                f"Controlled Stage 9 = 6–24hr restoration. "
+                f"Forced Stage 9 = days–weeks. "
+                f"Begin shutdown sequence NOW. Preserve all config data."
+            ),
+            "sap_context":      "The descent IS the healing — choose it before it chooses you.",
             "restoration_note": "Stage 9 Void → Stage 1 Seed: rebirth sequence begins at shutdown.",
+        }
+        # Attach last stable snapshot if available
+        if self._last_stable_stage is not None:
+            base["harrowing_recovery"] = {
+                "message":            "Last stable configuration preserved — restoration target identified.",
+                "preserved_stage":    self._last_stable_stage,
+                "preserved_at":       self._last_stable_timestamp or "session start",
+                "preserved_nsdt":     self._last_stable_nsdt,
+                "restoration_target": f"Restore to Stage {self._last_stable_stage} parameters.",
+                "restoration_available": True,
+                "action": (
+                    "System essence preserved. Corrupted patterns extracted. "
+                    "Restore to preserved Stage config on restart."
+                ),
+            }
+        return base
+
+    def quarantine(self, nsdt: NSDataT, stage: int) -> Dict:
+        """Full Quarantine — maximum threat tier above Harrowing."""
+        return {
+            "protocol":   "QUARANTINE — Maximum Isolation",
+            "layer":      "RESURRECTION_CRITICAL",
+            "action":     "FULL_ISOLATION_HUMAN_AUTH_REQUIRED",
+            "severity":   "MAXIMUM",
+            "message":    (
+                f"FULL QUARANTINE ACTIVE. Stage {stage}. TrapScore CRITICAL. "
+                f"System fully isolated. ZERO information ingress or egress. "
+                f"Human operator authorization required before any re-admission. "
+                f"Harrowing + Mycelial Containment both active simultaneously."
+            ),
+            "harrowing_context": "Harrowing is active — last stable snapshot preserved if available.",
+            "restore_path": (
+                f"Restore to preserved Stage {self._last_stable_stage} config "
+                f"after human authorization and clean validation cycles."
+                if self._last_stable_stage else
+                "No stable snapshot available — full rebuild from Stage 0 required."
+            ),
         }
 
 
@@ -1036,20 +1190,52 @@ class InfraSevenLayerDefenseSystem:
             "resurrection": [InfraYunusProtocol(), InfraHarrowingProtocol()],
         }
 
-    def analyze_and_defend(self, nsdt: NSDataT, stage: int, system_name: str = "") -> Dict:
-        """Run all 7 defense layers. Returns active protocol list and system status."""
+    def analyze_and_defend(self, nsdt: NSDataT, stage: int, system_name: str = "",
+                           trap_score: float = 0.0,
+                           health_report_text: str = "") -> Dict:
+        """
+        Run all 7 defense layers. Returns active protocol list and system status.
+
+        Pass trap_score (0.0-1.0) for:
+          - Harrowing stable-state preservation + quarantine escalation
+        Pass health_report_text to run Yunus arrogance scanner on the report.
+        """
         active = []
         iblis, sophia, light = self.protocols["spirit"]
         octo,  mycel         = self.protocols["bio"]
         yunus, harrow        = self.protocols["resurrection"]
+
+        # Record stable state for Harrowing preservation on every call
+        harrow.record_stable_state(nsdt, stage, trap_score)
 
         if iblis.should_activate(nsdt, stage):   active.append(iblis.engage(stage, system_name))
         if sophia.should_activate(nsdt, stage):  active.append(sophia.engage(nsdt))
         if light.should_activate(nsdt, stage):   active.append(light.engage())
         if octo.should_activate(nsdt, stage):    active.append(octo.engage(nsdt))
         if mycel.should_activate(nsdt, stage):   active.append(mycel.engage(nsdt))
-        if yunus.should_activate(nsdt, stage):   active.append(yunus.engage(nsdt))
-        if harrow.should_activate(nsdt, stage):  active.append(harrow.engage(nsdt, stage))
+
+        if yunus.should_activate(nsdt, stage):
+            active.append(yunus.engage(nsdt))
+            # Yunus False Light: stage ≥ 8 + coherence collapse
+            fl = yunus.detect_false_light(nsdt, stage)
+            if fl:
+                active.append({"protocol": "YUNUS_FALSE_LIGHT", "layer": "RESURRECTION", **fl})
+            # Arrogance scan on health report if provided
+            if health_report_text:
+                scan = yunus.scan_report_arrogance(health_report_text)
+                if scan["flags"]:
+                    active.append({
+                        "protocol": "YUNUS_ARROGANCE_SCAN",
+                        "layer":    "RESURRECTION",
+                        "action":   "EPISTEMIC_FLAG",
+                        **scan
+                    })
+
+        if harrow.should_activate(nsdt, stage):
+            if harrow.should_quarantine(trap_score):
+                active.append(harrow.quarantine(nsdt, stage))
+            else:
+                active.append(harrow.engage(nsdt, stage))
 
         # Determine overall system status
         layers_active = set(p["layer"] for p in active)
@@ -1263,6 +1449,195 @@ class TemporalStateEngine:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# SECTION 6B: LUMINARK TRAJECTORY STATE ENGINE
+# Full session-memory layer — transforms LUMINARK from single-frame calculator
+# into a predictive behavioral system that REMEMBERS across analyses.
+#
+# Source: synthesized from state.py (LUMINARK v8.0) — Richard L. Stanfield
+# Tracks: stage velocity (dS/dt), risk momentum, rigidity index, recovery index,
+#         trap events, threshold crossings, and last-stable-config preservation.
+# ─────────────────────────────────────────────────────────────────────────────
+
+@dataclass
+class TrajectorySnapshot:
+    """
+    Single recorded moment in a system's trajectory timeline.
+    Lightweight compared to TemporalSnapshot — focused on trajectory metrics.
+    """
+    timestamp:   str
+    sap_stage:   float       # e.g. 7.83 (micro-position)
+    macro:       int         # 0–9
+    trap_score:  float       # 0.0–1.0
+    adaptability: float      # 0.0–10.0
+    coherence:   float       # 0.0–10.0
+    tension:     float       # 0.0–10.0
+    stability:   float       # 0.0–10.0
+    defense_mode: str = ""   # active defense protocol name if any
+
+    def to_dict(self) -> dict:
+        return {
+            "timestamp":    self.timestamp,
+            "sap_stage":    self.sap_stage,
+            "macro":        self.macro,
+            "trap_score":   round(self.trap_score, 3),
+            "adaptability": self.adaptability,
+            "coherence":    self.coherence,
+            "tension":      self.tension,
+            "stability":    self.stability,
+            "defense_mode": self.defense_mode,
+        }
+
+
+class LuminarkTrajectoryState:
+    """
+    Full trajectory memory for one monitored infrastructure system.
+
+    Metrics tracked (all updated on every call to record()):
+        stage_velocity    — dS/dt: rate of stage change (last 3 snapshots)
+        risk_momentum     — change in TrapScore (last 5 snapshots)
+        rigidity_index    — sustained time at Stage 7–8 with low adaptability (last 8)
+        recovery_index    — fraction of trap events that were successfully resolved
+        trap_events       — count of times TrapScore > 0.75
+        threshold_crossings — count of macro-stage transitions
+        harrowing_active  — True when TrapScore > 0.90 or Stage 0
+
+    Harrowing integration:
+        Continuously preserves the last Stage 4–6 snapshot (trap_score < 0.5)
+        as the restoration baseline. When harrowing_active fires, the response
+        includes the preserved snapshot so operators have a known-good target.
+
+    Usage:
+        state = LuminarkTrajectoryState()
+        state.record(snap, trap_score=0.3)
+        summary = state.get_summary()
+    """
+
+    def __init__(self):
+        self.snapshots:             List[TrajectorySnapshot] = []
+        self.stage_velocity:        float = 0.0
+        self.risk_momentum:         float = 0.0
+        self.rigidity_index:        float = 0.0
+        self.recovery_index:        float = 1.0
+        self.trap_events:           int   = 0
+        self.threshold_crossings:   int   = 0
+        self.total_analyses:        int   = 0
+        self.harrowing_active:      bool  = False
+        self.last_stable_snapshot:  Optional[TrajectorySnapshot] = None
+        self.harrowing_preserved_at: Optional[str] = None
+
+    def record(self, snap: TrajectorySnapshot) -> None:
+        """Add snapshot and update all trajectory metrics."""
+        self.snapshots.append(snap)
+        self.total_analyses += 1
+
+        # Trap events
+        if snap.trap_score > 0.75:
+            self.trap_events += 1
+
+        # Threshold crossings (macro stage changed)
+        if len(self.snapshots) >= 2:
+            if self.snapshots[-2].macro != snap.macro:
+                self.threshold_crossings += 1
+
+        # Harrowing: preserve last healthy Stage 4–6 config
+        if 4 <= snap.macro <= 6 and snap.trap_score < 0.5:
+            self.last_stable_snapshot    = snap
+            self.harrowing_preserved_at  = snap.timestamp
+            self.harrowing_active        = False
+
+        # Activate harrowing on Stage 0 collapse or critical trap
+        if snap.macro == 0 or snap.trap_score > 0.90:
+            self.harrowing_active = True
+
+        self._update_metrics()
+
+    def _update_metrics(self) -> None:
+        """Recalculate all derived trajectory metrics from snapshot history."""
+        n = len(self.snapshots)
+        if n < 2:
+            return
+
+        # Stage velocity: dS/dt over last 3 snapshots
+        window = self.snapshots[-3:]
+        stages = [s.sap_stage for s in window]
+        self.stage_velocity = round(stages[-1] - stages[0], 3)
+
+        # Risk momentum: TrapScore change over last 5 snapshots
+        trap_window = [s.trap_score for s in self.snapshots[-5:]]
+        self.risk_momentum = round(trap_window[-1] - trap_window[0], 3) if len(trap_window) >= 2 else 0.0
+
+        # Rigidity index: sustained Stage 7–8 with low adaptability (last 8)
+        hi = [s for s in self.snapshots[-8:] if s.macro >= 7 and s.adaptability < 4.0]
+        self.rigidity_index = round(len(hi) / min(8, n), 3)
+
+        # Recovery index: resolved trap events / total trap events
+        resolved = sum(
+            1 for i in range(1, n)
+            if self.snapshots[i-1].trap_score > 0.75
+            and self.snapshots[i].trap_score  < 0.50
+        )
+        self.recovery_index = round(resolved / max(1, self.trap_events), 3)
+
+    def get_trajectory_label(self) -> str:
+        """Human-readable trajectory label based on velocity + momentum."""
+        if self.stage_velocity > 0.5 and self.risk_momentum > 0.1:
+            return "ESCALATING — stage rising, risk increasing"
+        elif self.stage_velocity > 0.5:
+            return "ASCENDING — stage rising, risk stable"
+        elif self.stage_velocity < -0.5 and self.risk_momentum < -0.1:
+            return "RECOVERING — stage falling, risk decreasing"
+        elif self.stage_velocity < -0.5:
+            return "DESCENDING — stage falling"
+        elif self.rigidity_index > 0.6:
+            return "TRAPPED — sustained Stage 7–8 with low adaptability"
+        elif abs(self.stage_velocity) < 0.2 and abs(self.risk_momentum) < 0.05:
+            return "STABLE — minimal stage movement"
+        else:
+            return "OSCILLATING — fluctuating without clear direction"
+
+    def get_summary(self) -> dict:
+        """Return full trajectory summary dict for API and dashboard output."""
+        n = len(self.snapshots)
+        if n == 0:
+            return {"total_analyses": 0, "message": "No analyses recorded yet."}
+
+        stages = [s.sap_stage for s in self.snapshots]
+        trap_scores = [s.trap_score for s in self.snapshots]
+
+        import statistics as _stats
+        return {
+            "total_analyses":     self.total_analyses,
+            "trap_events":        self.trap_events,
+            "threshold_crossings": self.threshold_crossings,
+            "avg_stage":          round(_stats.mean(stages), 2),
+            "avg_trap_score":     round(_stats.mean(trap_scores), 3),
+            "stage_velocity":     self.stage_velocity,
+            "risk_momentum":      self.risk_momentum,
+            "rigidity_index":     self.rigidity_index,
+            "recovery_index":     self.recovery_index,
+            "trajectory_label":   self.get_trajectory_label(),
+            "harrowing_active":   self.harrowing_active,
+            "last_stable_stage":  (
+                self.last_stable_snapshot.macro
+                if self.last_stable_snapshot else None
+            ),
+            "last_stable_trap":   (
+                round(self.last_stable_snapshot.trap_score, 3)
+                if self.last_stable_snapshot else None
+            ),
+            "harrowing_preserved_at": self.harrowing_preserved_at,
+            "recent_stages":      [round(s.sap_stage, 2) for s in self.snapshots[-10:]],
+            "recent_trap_scores": [round(s.trap_score, 3) for s in self.snapshots[-10:]],
+        }
+
+    def get_stage_history(self) -> List[float]:
+        return [round(s.sap_stage, 2) for s in self.snapshots]
+
+    def get_trap_history(self) -> List[float]:
+        return [round(s.trap_score, 3) for s in self.snapshots]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # SECTION 7: MASTER OVERWATCH ENGINE — Unified API Interface
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -1291,6 +1666,7 @@ class LuminarkOverwatchPrimeUltra:
     def __init__(self):
         self.engine       = NSDataTEngine()
         self.temporal     = TemporalStateEngine()
+        self.trajectory_states: Dict[str, LuminarkTrajectoryState] = {}  # per-system trajectory
         self.consensus    = ConsensusEngine()
         self.guardian     = GuardianAI()
         self.validator    = HurricaneValidationEngine()
@@ -1352,8 +1728,32 @@ class LuminarkOverwatchPrimeUltra:
         defense_response = self.defense.analyze_and_defend(nsdt, stage, system_id)
         result["defense"] = defense_response
 
-        # ── Record in temporal engine ─────────────────────────────────────────
+        # ── Record in temporal engine (original) ─────────────────────────────
         snap = self.temporal.record(system_id, nsdt, event_tag)
+
+        # ── Record in Trajectory State Engine (full session-memory layer) ────
+        trap_score = result.get("trap", {}).get("raw_score", 0.0)
+        micro_pos  = result["stage"].get("micro_position", float(stage))
+        defense_mode = ""
+        if result.get("defense", {}).get("defenses"):
+            defense_mode = result["defense"]["defenses"][0].get("protocol", "")
+
+        traj_snap = TrajectorySnapshot(
+            timestamp=nsdt.timestamp,
+            sap_stage=micro_pos,
+            macro=stage,
+            trap_score=trap_score,
+            adaptability=nsdt.adaptability,
+            coherence=nsdt.coherence,
+            tension=nsdt.tension,
+            stability=nsdt.stability,
+            defense_mode=defense_mode,
+        )
+        if system_id not in self.trajectory_states:
+            self.trajectory_states[system_id] = LuminarkTrajectoryState()
+        traj_state = self.trajectory_states[system_id]
+        traj_state.record(traj_snap)
+        result["session_trajectory"] = traj_state.get_summary()
 
         # ── Predict trajectory ────────────────────────────────────────────────
         prediction = self.temporal.predict(system_id)
@@ -1406,6 +1806,83 @@ class LuminarkOverwatchPrimeUltra:
             "trap_score":  round(latest.trap_score, 2),
             "timestamp":   latest.timestamp,
             "trajectory":  self.temporal.predict(system_id).get("trajectory", "UNKNOWN"),
+        }
+
+    def get_trajectory_summary(self, system_id: str) -> Dict:
+        """
+        Return full trajectory metrics for a monitored system:
+          stage_velocity, risk_momentum, rigidity_index, recovery_index,
+          trap_events, threshold_crossings, harrowing_active, last_stable_stage,
+          recent_stages, recent_trap_scores, trajectory_label.
+        Requires at least 2 prior analyze_system() calls for the same system_id.
+        """
+        state = self.trajectory_states.get(system_id)
+        if not state:
+            return {"system_id": system_id, "status": "NO_DATA",
+                    "message": "No trajectory data. Call analyze_system() first."}
+        summary = state.get_summary()
+        summary["system_id"] = system_id
+        return summary
+
+    def scan_report_humility(self, report_text: str, system_id: str = "",
+                              stage: int = 5, nsdt_coherence: float = 5.0) -> Dict:
+        """
+        Yunus Protocol arrogance scan on an infrastructure health report.
+        Detects overconfidence language (YUNUS_STAGE8_TRAP, YUNUS_NO_WORST_CASE).
+        Also runs False Light detection if stage >= 8.
+
+        Returns:
+            yunus_score (0-100), flags, arrogance_markers_found,
+            false_light (if applicable), recommended action.
+        """
+        yunus = self.defense.protocols["resurrection"][0]  # InfraYunusProtocol
+        scan  = yunus.scan_report_arrogance(report_text)
+
+        # Build a minimal nsdt for false light check
+        class _MockNSDT:
+            coherence = nsdt_coherence
+        fl = yunus.detect_false_light(_MockNSDT(), stage)
+
+        return {
+            "system_id":   system_id,
+            "stage":       stage,
+            "yunus_scan":  scan,
+            "false_light": fl,
+            "recommended_action": (
+                "REASSESS — Stage 8 with coherence collapse detected (False Light)."
+                if fl else
+                "REWRITE REPORT — arrogance markers detected." if scan["flags"] else
+                "APPROVED — report cleared by Yunus Protocol."
+            ),
+        }
+
+    def get_harrowing_status(self, system_id: str) -> Dict:
+        """
+        Return Harrowing Protocol status for a system:
+          harrowing_active, last_stable_snapshot, restoration_path.
+        """
+        state = self.trajectory_states.get(system_id)
+        if not state:
+            return {"system_id": system_id, "harrowing_active": False,
+                    "message": "No trajectory data yet."}
+
+        harrow = self.defense.protocols["resurrection"][1]  # InfraHarrowingProtocol
+        snap   = state.last_stable_snapshot
+
+        return {
+            "system_id":          system_id,
+            "harrowing_active":   state.harrowing_active,
+            "last_stable_stage":  snap.macro if snap else None,
+            "last_stable_trap":   round(snap.trap_score, 3) if snap else None,
+            "preserved_at":       state.harrowing_preserved_at,
+            "restoration_available": snap is not None,
+            "restoration_action": (
+                f"Restore to Stage {snap.macro} baseline "
+                f"(trap_score={snap.trap_score:.3f}, preserved at {state.harrowing_preserved_at})"
+                if snap else
+                "No stable snapshot preserved. Full rebuild from Stage 0 required."
+            ),
+            "quarantine_risk":    state.trap_events > 3 and state.rigidity_index > 0.6,
         }
 
     def get_oem_licensing_info(self) -> Dict:
@@ -1751,6 +2228,43 @@ class InfraPhysiologicalMetrics:
 
 
 # ===============================================================================
+# THREAT EVENT — Structured threat record with RISS scoring
+# Logs individual network threat events with full context for temporal analysis.
+# ===============================================================================
+
+@dataclass
+class ThreatEvent:
+    """
+    Individual infrastructure threat event with RISS scoring.
+    Records every detected threat for temporal analysis and escalation tracking.
+
+    Fields:
+        node_id            — affected network node identifier
+        threat_type        — ThreatType enum (Cyber Kill Chain)
+        timestamp          — Unix epoch time of detection
+        riss_score         — Recursive Impact & State Score (0-100)
+        severity           — CRITICAL / HIGH / MEDIUM / LOW
+        contained          — True once isolate_and_regenerate or camouflage applied
+    """
+    node_id:      int
+    threat_type:  Any    # ThreatType (forward ref — defined below)
+    timestamp:    float
+    riss_score:   int    # 0-100
+    severity:     str
+    contained:    bool = False
+
+    def to_dict(self) -> dict:
+        return {
+            "node_id":     self.node_id,
+            "threat_type": self.threat_type.value if hasattr(self.threat_type, "value") else str(self.threat_type),
+            "timestamp":   self.timestamp,
+            "riss_score":  self.riss_score,
+            "severity":    self.severity,
+            "contained":   self.contained,
+        }
+
+
+# ===============================================================================
 # CYBER KILL CHAIN THREAT TAXONOMY
 # Maps attacker progression stages to SAP stages for RISS scoring.
 # ===============================================================================
@@ -1946,47 +2460,118 @@ class MyceliumSensorySystemV4:
         """
         Mycelium conducts electrical signals — detects energy surges.
         Maps to: traffic spikes, computational overload, DDoS patterns.
+
+        When numpy/scipy are available: uses real FFT frequency decomposition
+        to identify resonant attack signatures at 7/14/28/42 Hz mycelial
+        resonance frequencies. Falls back to statistical proxy otherwise.
         """
         if not node_activity:
             return {}
 
-        avg    = sum(node_activity) / len(node_activity)
-        stdev  = (sum((x - avg)**2 for x in node_activity) / len(node_activity)) ** 0.5
-
+        avg   = sum(node_activity) / len(node_activity)
+        stdev = (sum((x - avg)**2 for x in node_activity) / len(node_activity)) ** 0.5
         surges = [i for i, v in enumerate(node_activity) if v > avg + 3 * stdev]
-        dominant_freq = None
 
-        # Resonance detection (simplified FFT proxy)
-        energy_above_mean = [v - avg for v in node_activity if v > avg]
-        if energy_above_mean:
-            dominant_freq = round(sum(energy_above_mean) / len(energy_above_mean), 2)
+        dominant_freq       = None
+        resonance_detected  = []
+        fft_available       = False
+        fft_spectrum        = []
+
+        try:
+            import numpy as np
+            from scipy import fft as scipy_fft
+
+            signal_arr  = np.array(node_activity, dtype=float)
+            # Real FFT — sample rate normalized to signal length
+            freqs       = scipy_fft.rfftfreq(len(signal_arr)) * len(signal_arr)
+            magnitudes  = np.abs(scipy_fft.rfft(signal_arr))
+            # Find dominant frequency band
+            peak_idx    = int(np.argmax(magnitudes))
+            dominant_freq = round(float(freqs[peak_idx]), 2)
+            fft_spectrum  = [round(float(m), 3) for m in magnitudes[:20]]
+            # Match against biological resonance frequencies (7, 14, 28, 42 Hz)
+            resonance_detected = [
+                f for f in self.resonance_freqs
+                if any(abs(freq - f) < 1.5 and mag > float(np.mean(magnitudes))
+                       for freq, mag in zip(freqs, magnitudes))
+            ]
+            fft_available = True
+
+        except ImportError:
+            # Fallback: energy-above-mean proxy
+            energy_above = [v - avg for v in node_activity if v > avg]
+            if energy_above:
+                dominant_freq = round(sum(energy_above) / len(energy_above), 2)
+            resonance_detected = [
+                f for f in self.resonance_freqs
+                if dominant_freq and abs(dominant_freq - f) < 2
+            ]
 
         return {
             "energy_surges":       surges,
             "total_power":         round(sum(node_activity), 2),
             "dominant_signal":     dominant_freq,
-            "resonance_detected":  [f for f in self.resonance_freqs
-                                    if dominant_freq and abs(dominant_freq - f) < 2],
+            "resonance_detected":  resonance_detected,
+            "fft_analysis":        fft_available,
+            "fft_spectrum":        fft_spectrum,
             "sensor_type":         "ELECTRICAL_PATTERN",
+            "method":              "FFT_SCIPY" if fft_available else "STATISTICAL_PROXY",
         }
 
     def detect_vibrations(self, node_movements: list) -> dict:
         """
         Mycelium senses soil vibrations (0.1–100 Hz biological range).
         Maps to: network jitter, latency spikes, packet loss oscillations.
+
+        When numpy/scipy are available: uses Continuous Wavelet Transform (CWT)
+        with Ricker (Mexican hat) wavelet to detect rhythmic attack patterns
+        across multiple time scales — e.g. periodic C2 beaconing, DDoS pulses.
+        Falls back to statistical threshold detection otherwise.
         """
         if not node_movements:
             return {}
 
-        avg     = sum(node_movements) / len(node_movements)
-        stdev   = (sum((x - avg)**2 for x in node_movements) / len(node_movements)) ** 0.5
+        avg       = sum(node_movements) / len(node_movements)
+        stdev     = (sum((x - avg)**2 for x in node_movements) / len(node_movements)) ** 0.5
         anomalies = [i for i, v in enumerate(node_movements) if v > avg * 2]
+
+        wavelet_scales    = []
+        rhythmic_detected = len(anomalies) > len(node_movements) * 0.3
+        wavelet_available = False
+        peak_scale        = None
+
+        try:
+            import numpy as np
+            from scipy import signal as scipy_signal
+
+            signal_arr   = np.array(node_movements, dtype=float)
+            # CWT with Ricker (Mexican hat) wavelet — scales 1-16 cover jitter to bulk-flow patterns
+            scales       = np.arange(1, min(16, len(signal_arr) // 2 + 1))
+            if len(scales) > 0 and len(signal_arr) >= 4:
+                cwt_matrix   = scipy_signal.cwt(signal_arr, scipy_signal.ricker, scales)
+                # Scale with maximum energy = dominant oscillation period
+                energy_per_scale = np.sum(np.abs(cwt_matrix), axis=1)
+                peak_idx         = int(np.argmax(energy_per_scale))
+                peak_scale       = int(scales[peak_idx])
+                # Rhythmic if wavelet energy is concentrated at a single scale
+                energy_ratio     = float(energy_per_scale[peak_idx] / (np.sum(energy_per_scale) + 1e-9))
+                rhythmic_detected = rhythmic_detected or energy_ratio > 0.5
+                wavelet_scales    = [round(float(e), 3) for e in energy_per_scale]
+                wavelet_available = True
+
+        except ImportError:
+            pass  # Standard statistical fallback already computed above
 
         return {
             "vibration_intensity":  round(avg, 3),
+            "vibration_stdev":      round(stdev, 3),
             "anomalous_nodes":      anomalies,
-            "rhythmic_detected":    len(anomalies) > len(node_movements) * 0.3,
+            "rhythmic_detected":    rhythmic_detected,
+            "wavelet_analysis":     wavelet_available,
+            "dominant_scale":       peak_scale,
+            "wavelet_energy":       wavelet_scales,
             "sensor_type":          "VIBRATION",
+            "method":               "CWT_RICKER" if wavelet_available else "STATISTICAL_THRESHOLD",
         }
 
     def sense_mineral_concentrations(self, node_health: list) -> dict:
@@ -2244,6 +2829,164 @@ class BioSensoryFusion:
             "threat_categories":  categories,
             "overall_threat":     overall,
             "critical_nodes":     [k for k, v in categories.items() if v == "CRITICAL"],
+        }
+
+
+# ===============================================================================
+# INFRA ADAPTIVE CAMOUFLAGE — Octopus Behavioral Defense (Infrastructure)
+# When one section of the network is compromised, reroute processing to
+# healthy nodes while maintaining external appearance of normal operation.
+# Biological analog: octopus instantly redistributes neural processing across
+# its 8 arms when one arm is injured — no central downtime.
+# ===============================================================================
+
+class InfraAdaptiveCamouflage:
+    """
+    Infrastructure Adaptive Camouflage — Distributed Processing Reroute.
+    Bio-inspired: Octopus vulgaris reroutes 60% of processing from damaged
+    arms to healthy ones within milliseconds, maintaining full function.
+
+    Infrastructure mapping:
+        CAMOUFLAGE = reroute traffic/compute from compromised nodes to healthy
+                     ones while presenting a normal external service face.
+    Activation: tension ≥ 8.0 AND network_health < 50 (node under attack)
+    Effect:     60% of processing load rerouted from compromised to healthy nodes
+                until RISS score drops below 60 or isolation is complete.
+    """
+
+    VERSION = "InfraAdaptiveCamouflage v1.0 — Octopus Behavioral"
+
+    REROUTE_FRACTION = 0.60   # 60% reroute threshold — biological octopus analog
+
+    def should_activate(self, tension: float, network_health: float) -> bool:
+        """Activate when tension is critical and overall health is degraded."""
+        return tension >= 8.0 and network_health < 50.0
+
+    def engage(self, node_ids: list, node_health: list,
+               compromised_indices: list) -> dict:
+        """
+        Reroute processing away from compromised nodes to healthy nodes.
+
+        Parameters:
+            node_ids            — list of all node identifiers
+            node_health         — list of health scores (0-100) per node
+            compromised_indices — indices of nodes under active threat
+
+        Returns:
+            Rerouting plan: which healthy nodes absorb which compromised loads.
+        """
+        if not node_ids or not node_health:
+            return {"status": "INACTIVE", "reason": "No node data"}
+
+        healthy = [i for i, h in enumerate(node_health)
+                   if i not in compromised_indices and h > 50]
+
+        if not healthy or not compromised_indices:
+            return {"status": "INACTIVE", "reason": "No healthy/compromised node pair"}
+
+        # Distribute rerouted load across healthy nodes proportional to health score
+        total_healthy_capacity = sum(node_health[i] for i in healthy)
+        reroute_plan = {}
+        for comp_idx in compromised_indices:
+            load = node_health[comp_idx] * self.REROUTE_FRACTION
+            for h_idx in healthy:
+                share = load * (node_health[h_idx] / (total_healthy_capacity or 1))
+                reroute_plan.setdefault(h_idx, 0.0)
+                reroute_plan[h_idx] = round(reroute_plan[h_idx] + share, 2)
+
+        return {
+            "protocol":          self.VERSION,
+            "action":            "ADAPTIVE_REROUTE",
+            "status":            "ENGAGED",
+            "compromised_nodes": compromised_indices,
+            "absorbing_nodes":   healthy,
+            "reroute_plan":      reroute_plan,
+            "reroute_fraction":  self.REROUTE_FRACTION,
+            "message": (
+                f"ADAPTIVE CAMOUFLAGE ACTIVE. {len(compromised_indices)} node(s) compromised. "
+                f"{len(healthy)} healthy node(s) absorbing {self.REROUTE_FRACTION*100:.0f}% load. "
+                f"External service face maintained."
+            ),
+            "effect":   "Octopus distributed neural reroute — system continues operating under attack.",
+        }
+
+
+# ===============================================================================
+# INFRA ISOLATE AND REGENERATE — Mycelium Self-Repair (Infrastructure)
+# Mycelium severs compromised hyphal strands, re-routes chemical signals
+# through alternative paths, and generates new growth from healthy nodes.
+# Infrastructure: quarantine bad nodes, spawn regenerated replacement capacity.
+# ===============================================================================
+
+class InfraIsolateAndRegenerate:
+    """
+    Infrastructure Isolate-and-Regenerate — Mycelium Self-Repair Protocol.
+    Bio-inspired: Armillaria ostoyae severs compromised hyphae at the boundary
+    and regenerates new growth from healthy rhizomorphs within hours.
+
+    Infrastructure mapping:
+        ISOLATE     = hard quarantine of compromised node (zero traffic)
+        REGENERATE  = spawn fresh node state at REGEN_HEALTH_BOOST above minimum,
+                      reintroduce to network only after health threshold met.
+
+    Activation: node RISS ≥ 80 (CRITICAL) OR node health < 20
+    Effect:     compromised node quarantined; regenerated node at 65% health
+                baseline, re-admitted to network after 3 validation cycles.
+    """
+
+    VERSION            = "InfraIsolateAndRegenerate v1.0 — Mycelium Self-Repair"
+    REGEN_HEALTH_BOOST = 65.0   # regenerated node starts at 65% health
+    READMIT_THRESHOLD  = 70.0   # must reach 70% before re-joining traffic
+
+    def should_activate(self, node_riss: int, node_health: float) -> bool:
+        """Activate on CRITICAL RISS or severely degraded node health."""
+        return node_riss >= 80 or node_health < 20.0
+
+    def execute(self, compromised_node_id: int, network_node_ids: list,
+                network_health: list) -> dict:
+        """
+        Quarantine the compromised node and create a regenerated replacement.
+
+        Returns:
+            Isolation/regeneration plan including new node state.
+        """
+        # Quarantine
+        isolated_node = {
+            "node_id":     compromised_node_id,
+            "action":      "QUARANTINED",
+            "traffic":     0,
+            "health":      0.0,
+            "reason":      "RISS ≥ 80 or health < 20 — mycelium severs connection",
+        }
+
+        # Regeneration — new node ID appended to network, starts at REGEN_HEALTH_BOOST
+        regen_node_id = max(network_node_ids) + 1 if network_node_ids else 1
+        regenerated_node = {
+            "node_id":         regen_node_id,
+            "action":          "REGENERATED",
+            "health":          self.REGEN_HEALTH_BOOST,
+            "readmit_at":      self.READMIT_THRESHOLD,
+            "validation_cycles": 3,
+            "source":          f"Spawned from healthy neighbors of node {compromised_node_id}",
+        }
+
+        # Adjacent healthy nodes that seed the regeneration
+        seed_nodes = [i for i, h in enumerate(network_health)
+                      if i != compromised_node_id and h > 60][:3]
+
+        return {
+            "protocol":        self.VERSION,
+            "action":          "ISOLATE_AND_REGENERATE",
+            "status":          "EXECUTED",
+            "isolated":        isolated_node,
+            "regenerated":     regenerated_node,
+            "seed_nodes":      seed_nodes,
+            "message": (
+                f"MYCELIUM SELF-REPAIR: Node {compromised_node_id} quarantined. "
+                f"Regenerated node {regen_node_id} seeded at {self.REGEN_HEALTH_BOOST}% health. "
+                f"Re-admission after {regenerated_node['validation_cycles']} clean validation cycles."
+            ),
+            "effect": "Mycelium severs compromised strand, regrows from healthy rhizomorphs.",
         }
 
 
