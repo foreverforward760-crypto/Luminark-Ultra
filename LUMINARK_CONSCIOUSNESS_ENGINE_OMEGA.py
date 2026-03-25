@@ -815,20 +815,28 @@ class HarrowingProtocol:
 
 class SevenLayerDefenseSystem:
     """
-    Full 7-Layer Integrated Defense System.
+    Full 9-Layer Integrated Defense System (expanded from original 7 layers).
     Spirit Layer (Iblis, Sophia, Light) →
     Bio Layer (OctoCamouflage, Mycelial) →
-    Resurrection Layer (Yunus, Harrowing)
+    Resurrection Layer (Yunus, Harrowing) →
+    Bio-Enhanced Layer (OctoAdaptiveReroute, MycelialCompartmentalization)
+
+    The Bio-Enhanced layer provides the next-level response when standard Bio
+    protocols have already engaged but the entity remains in Stage 8 Trap or
+    structural collapse. These are the most operationally specific interventions
+    with explicit directives across corporate, financial, AI, and consciousness domains.
     """
     def __init__(self):
         self.layers = {
-            "spirit":      [IblisProtocol(), SophianicWisdomProtocol(), LightIntegrationProtocol()],
-            "bio":         [OctoCamouflage(), MycelialContainment()],
-            "resurrection":[YunusProtocol(), HarrowingProtocol()],
+            "spirit":       [IblisProtocol(), SophianicWisdomProtocol(), LightIntegrationProtocol()],
+            "bio":          [OctoCamouflage(), MycelialContainment()],
+            "resurrection": [YunusProtocol(), HarrowingProtocol()],
+            "bio_enhanced": [OctoAdaptiveReroute(), MycelialCompartmentalization()],
         }
 
-    def analyze_and_defend(self, spat: SPATVector, stage: int) -> Dict:
-        """Run all 7 defense layers and return active protocols."""
+    def analyze_and_defend(self, spat: SPATVector, stage: int,
+                           unit_name: str = "") -> Dict:
+        """Run all defense layers and return active protocols."""
         active = []
         # Spirit Layer
         iblis, sophia, light = self.layers["spirit"]
@@ -843,12 +851,183 @@ class SevenLayerDefenseSystem:
         yunus, harrow = self.layers["resurrection"]
         if yunus.should_activate(spat, stage):   active.append(yunus.engage(spat))
         if harrow.should_activate(spat, stage):  active.append(harrow.engage(spat, stage))
+        # Bio-Enhanced Layer (advanced distributed-biology defenses from v4.0)
+        octo_reroute, mycel_compartment = self.layers["bio_enhanced"]
+        if octo_reroute.should_activate(spat, stage):
+            active.append(octo_reroute.engage(spat, stage, unit_name or "entity"))
+        if mycel_compartment.should_activate(spat, stage):
+            active.append(mycel_compartment.engage(spat, stage, unit_name or "entity"))
+
+        layers_active = set(p.get("layer", "") for p in active)
+        if "BIO_ENHANCED" in layers_active:
+            status = "BIO_ENHANCED_PROTOCOLS_ACTIVE"
+        elif any(p.get("protocol", "").startswith("HARROWING") or
+                 p.get("protocol", "").startswith("YUNUS") for p in active):
+            status = "RESURRECTION_PROTOCOLS_ACTIVE"
+        elif any(p.get("protocol", "").startswith("OCTO") or
+                 p.get("protocol", "").startswith("MYCEL") for p in active):
+            status = "BIO_CONTAINMENT_ACTIVE"
+        elif active:
+            status = "SPIRIT_LAYER_WARNING"
+        else:
+            status = "STABLE"
 
         return {
             "stage":            stage,
             "active_protocols": len(active),
             "defenses":         active,
-            "system_status":    "STABLE" if not active else "DEFENSES_ACTIVE",
+            "system_status":    status,
+        }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 6B: ADVANCED BIO-DEFENSE BEHAVIORS
+# Organizational analogs of Octopus Adaptive Camouflage and Mycelium
+# Compartmentalization — the two core distributed-biology defense strategies
+# from the Octo-Mycelial v4.0 scientific framework.
+# ─────────────────────────────────────────────────────────────────────────────
+
+class OctoAdaptiveReroute:
+    """
+    Organizational Adaptive Camouflage — Distributed Decision Reroute.
+
+    Biological basis: Octopus vulgaris has 500M neurons distributed across 8 arms.
+    When one arm is compromised, it instantly redistributes 60% of that arm's
+    processing to healthy arms — full function maintained, no central downtime.
+
+    Organizational mapping:
+        CAMOUFLAGE = when a business unit, team, or individual is in Stage 8 Trap
+                     (high TrapScore, low Adaptability), route critical decisions and
+                     workflows AWAY from that unit to healthy adjacent units while
+                     maintaining external-facing appearance of normal operation.
+
+    Application domains:
+        - Corporate: reroute strategic decisions away from Stage 8 leaders
+        - Finance: exclude TrapScore-high portfolios from new capital allocation
+        - AI Safety: deprioritize outputs from high-tension AI behavioral states
+        - Consciousness: externalize decision-making when self-assessment is impaired
+
+    Activation: TrapScore ≥ 8.0 OR (coherence ≤ 2.5 AND stage ≥ 7)
+    """
+
+    VERSION         = "OctoAdaptiveReroute v1.0 — Distributed Decision Defense"
+    REROUTE_FRACTION = 0.60   # 60% of processing rerouted — octopus biological constant
+
+    def should_activate(self, spat: 'SPATVector', stage: int) -> bool:
+        """Activate on Stage 8 Trap or severe coherence collapse at high stage."""
+        trap_score = getattr(spat, 'trap_score', 0.0)
+        return trap_score >= 8.0 or (spat.coherence <= 2.5 and stage >= 7)
+
+    def engage(self, spat: 'SPATVector', stage: int,
+               unit_name: str = "primary unit") -> Dict:
+        """
+        Reroute decision authority from compromised unit to healthy alternatives.
+
+        Returns:
+            Rerouting directive with context-specific recommendations.
+        """
+        trap_score = getattr(spat, 'trap_score', 0.0)
+        trigger    = (
+            f"TrapScore={trap_score:.1f} ≥ 8.0" if trap_score >= 8.0
+            else f"Coherence={spat.coherence:.1f} collapsed at Stage {stage}"
+        )
+
+        return {
+            "protocol":       self.VERSION,
+            "action":         "ADAPTIVE_DECISION_REROUTE",
+            "status":         "ENGAGED",
+            "layer":          "BIO_ENHANCED",
+            "trigger":        trigger,
+            "unit_affected":  unit_name,
+            "reroute_fraction": f"{self.REROUTE_FRACTION*100:.0f}%",
+            "directives": {
+                "corporate":   f"Route {self.REROUTE_FRACTION*100:.0f}% of strategic decisions through adjacent healthy leadership. {unit_name} enters advisory-only mode.",
+                "financial":   f"Exclude {unit_name} portfolio from new capital allocation. Rebalance to high-Coherence, low-TrapScore instruments.",
+                "ai_safety":   f"Deprioritize outputs from this behavioral state. Route to secondary validation before deployment.",
+                "consciousness": f"External accountability required. Decision-making temporarily externalized to trusted third party.",
+            },
+            "message": (
+                f"OCTO ADAPTIVE REROUTE ACTIVE. {unit_name} compromised ({trigger}). "
+                f"{self.REROUTE_FRACTION*100:.0f}% of decision authority rerouted to healthy units. "
+                f"External service continuity maintained."
+            ),
+            "effect":   "Octopus distributed processing — full capability maintained despite local compromise.",
+            "resolve":  "Deactivates when TrapScore < 6.0 AND Coherence > 4.0 for 2+ consecutive assessments.",
+        }
+
+
+class MycelialCompartmentalization:
+    """
+    Organizational Mycelial Compartmentalization — Isolation + Regeneration.
+
+    Biological basis: Armillaria ostoyae (world's largest organism, 2,400 acres,
+    2,500 years) survives by compartmentalizing infected zones with enzymatic
+    barriers (lignin breakdown), severing hyphal connections to diseased tissue,
+    and regenerating from healthy rhizomorphs. It does not attempt to heal the
+    compromised zone — it contains it and grows around it.
+
+    Organizational mapping:
+        COMPARTMENTALIZE = create hard isolation boundaries around Stage 8 / Trap
+                           entities. Prevent cascade spread to adjacent healthy units.
+                           Regenerate capacity from the boundary — not from the compromised core.
+
+    Application domains:
+        - Corporate: firewall between Stage 8 Trap department and rest of org
+        - Finance: hard stop on cascade contagion from brittle portfolio components
+        - AI Safety: contain alignment failures within sandbox before broader deployment
+        - Consciousness: do not attempt to 'fix' Stage 8 Trap state from inside —
+                         create boundary, allow external regeneration
+
+    Activation: stability ≤ 2.5 AND TrapScore ≥ 7.0 (structural collapse + trap)
+    Effect:     compartmentalization boundary deployed; regeneration seeded from
+                healthy adjacent Stage 3-5 units
+    """
+
+    VERSION = "MycelialCompartmentalization v1.0 — Armillaria Defense"
+
+    def should_activate(self, spat: 'SPATVector', stage: int) -> bool:
+        """Activate on structural collapse combined with high TrapScore."""
+        trap_score = getattr(spat, 'trap_score', 0.0)
+        return spat.stability <= 2.5 and trap_score >= 7.0
+
+    def engage(self, spat: 'SPATVector', stage: int,
+               unit_name: str = "compromised unit") -> Dict:
+        """
+        Deploy compartmentalization boundary and initiate regeneration protocol.
+        """
+        trap_score = getattr(spat, 'trap_score', 0.0)
+
+        return {
+            "protocol":     self.VERSION,
+            "action":       "MYCELIAL_COMPARTMENTALIZATION",
+            "status":       "ENGAGED",
+            "layer":        "BIO_ENHANCED",
+            "unit_affected": unit_name,
+            "containment_boundary": {
+                "trigger":       f"Stability={spat.stability:.1f} ≤ 2.5 + TrapScore={trap_score:.1f} ≥ 7.0",
+                "barrier_type":  "HARD_ISOLATION",
+                "permeability":  "READ_ONLY",
+                "description":   "Information can be read from the compartment but no decisions, resources, or influence flow outward.",
+            },
+            "regeneration_protocol": {
+                "source":        "Healthy adjacent units (Stage 3-5, TrapScore < 4.0)",
+                "seed_health":   "65% capacity baseline",
+                "readmit_at":    "Stability ≥ 5.0 AND TrapScore < 4.0 for 3+ cycles",
+                "do_not_attempt": "Internal self-repair — mycelium grows AROUND the dead zone, not through it.",
+            },
+            "directives": {
+                "corporate":   f"Hard firewall between {unit_name} and operating units. No budget, headcount, or strategic authority flows through until readmit conditions met.",
+                "financial":   f"Mark {unit_name} positions as non-tradeable. Regenerate exposure from Stage 3-5 instruments only.",
+                "ai_safety":   f"Sandbox {unit_name} outputs. No production deployment until 3 clean validation cycles.",
+                "consciousness": f"You cannot heal Stage 8 Trap from inside it. Create boundary. Seek external Stage 3-5 anchor.",
+            },
+            "message": (
+                f"MYCELIAL COMPARTMENTALIZATION ACTIVE. {unit_name} in structural collapse "
+                f"(Stability={spat.stability:.1f}, TrapScore={trap_score:.1f}). "
+                f"Hard isolation deployed. Regeneration seeded from healthy boundary units."
+            ),
+            "effect":   "Armillaria enzymatic barrier — compromised zone contained, regeneration grows from healthy rhizomorphs.",
+            "resolve":  "Boundary lifts when Stability ≥ 5.0 AND TrapScore < 4.0 sustained across 3 consecutive assessments.",
         }
 
 
