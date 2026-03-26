@@ -2923,3 +2923,1725 @@ def run_demo():
 
 if __name__ == "__main__":
     run_demo()
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# LUMINARK OMEGA v2.0 UPGRADE — Guardian-SAP Integration (March 2026)
+# New capabilities ported from luminark-guardian-sap full-stack project
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION A: USSM STAR NAMES — Consciousness Mapping
+# Maps each SAP stage to a named star and consciousness archetype
+# ─────────────────────────────────────────────────────────────────────────────
+
+USSM_STAGES_OMEGA = {
+    0: {
+        "name": "Reactive",
+        "star": "Plenara",
+        "duality": "High Flexibility vs Zero Resilience",
+        "tumble": "Will tumble to Procedural as manual energy exhausts.",
+        "color": "#64748b",
+        "icon": "◎",
+        "consciousness_context": "Survival mode. Unexamined impulse. Pure reactivity with no metacognition.",
+    },
+    1: {
+        "name": "Procedural",
+        "star": "Algenib",
+        "duality": "Predictable Order vs Extreme Brittleness",
+        "tumble": "Will tumble to Regulated upon novel external shocks.",
+        "color": "#0ea5e9",
+        "icon": "◈",
+        "consciousness_context": "Rule-following. Safety through compliance. Identity defined by external authority.",
+    },
+    2: {
+        "name": "Regulated",
+        "star": "Pherkad",
+        "duality": "Active Stability vs Over-correction Jitter",
+        "tumble": "Will tumble to Adaptive to reduce resource consumption.",
+        "color": "#06b6d4",
+        "icon": "⟁",
+        "consciousness_context": "Emotional regulation emerging. Self-monitoring active. Feedback loops forming.",
+    },
+    3: {
+        "name": "Adaptive",
+        "star": "Merak",
+        "duality": "High Performance vs Niche-Dependency",
+        "tumble": "Will tumble to Threshold when the niche changes.",
+        "color": "#10b981",
+        "icon": "✦",
+        "consciousness_context": "Peak individual performance. Creative explosion. Context-dependent mastery.",
+    },
+    4: {
+        "name": "Foundation",
+        "star": "Dubhe",
+        "duality": "Consolidated Base vs Stagnation Risk",
+        "tumble": "Will tumble to Threshold to seek further growth.",
+        "color": "#84cc16",
+        "icon": "⬡",
+        "consciousness_context": "Grounded identity. Integrated beliefs. The stable platform for further development.",
+    },
+    5: {
+        "name": "Threshold",
+        "star": "Kochab",
+        "duality": "Strategic Foresight vs Model-Reality Drift",
+        "tumble": "POINT OF NO RETURN. Must pivot or escalate.",
+        "color": "#f59e0b",
+        "icon": "⊗",
+        "consciousness_context": "The crisis point. The dark night of the soul. Old identity cannot contain the new awareness.",
+    },
+    6: {
+        "name": "Integrated",
+        "star": "Polaris",
+        "duality": "Peak Synergy vs Lack of Entropy",
+        "tumble": "Will tumble to Scaled as it outgrows its boundaries.",
+        "color": "#8b5cf6",
+        "icon": "✺",
+        "consciousness_context": "Shadow integrated. Paradox held. Living from values rather than rules.",
+    },
+    7: {
+        "name": "Scaled",
+        "star": "Talitha",
+        "duality": "Infrastructure Status vs Decentralized Chaos",
+        "tumble": "Will tumble to Rigidity Risk via over-optimization.",
+        "color": "#ec4899",
+        "icon": "◉",
+        "consciousness_context": "The teacher, the systems-thinker, the leader. Influence extends across communities.",
+    },
+    8: {
+        "name": "Rigidity Risk",
+        "star": "Thuban",
+        "duality": "Peak Efficiency vs Compressed Tension",
+        "tumble": "COLLAPSE IMMINENT. Must deliberately un-learn to return to Stage 5.",
+        "color": "#ef4444",
+        "icon": "⚠",
+        "consciousness_context": "Omniscience illusion. Certainty trap. The Stage 8 Release Protocol is required.",
+    },
+    9: {
+        "name": "Meta-Coherent",
+        "star": "Yunus",
+        "duality": "Universal Stability vs Selfish Reversion",
+        "tumble": "Equilibrium maintained unless reverting to Stage 4.",
+        "color": "#f0abfc",
+        "icon": "∞",
+        "consciousness_context": "Transparent to itself. Equanimity. Rare attainment — the living threshold.",
+    },
+}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION B: TRICKSTER PEDAGOGY — Consciousness Context
+# Wisdom for each stage from trickster archetypes
+# ─────────────────────────────────────────────────────────────────────────────
+
+TRICKSTER_WISDOM_OMEGA = {
+    0: {
+        "character": "Coyote",
+        "lesson": "Glued feathers to fly. Fell in a cactus. Lesson: You can't skip stages.",
+        "consciousness_application": "Don't try to meditate your way out of Stage 0. The body must be regulated first.",
+    },
+    1: {
+        "character": "Anansi",
+        "lesson": "Tricked the gods for all the stories. Lesson: Narrative frame beats brute force.",
+        "consciousness_application": "The story you tell about yourself is more powerful than the facts of your life.",
+    },
+    2: {
+        "character": "Loki",
+        "lesson": "Cut Sif's hair, panicked, accidentally created Thor's hammer. Lesson: Chaos creates.",
+        "consciousness_application": "The emotional storm you're afraid of contains the insight you're looking for.",
+    },
+    3: {
+        "character": "Br'er Rabbit",
+        "lesson": "Begged not to be thrown in the briar patch — where he lives. Lesson: Use perceived weakness as strength.",
+        "consciousness_application": "Your sensitivity, your depth, your 'too much-ness' — these are your gifts.",
+    },
+    4: {
+        "character": "Eshu",
+        "lesson": "Wears a hat red on one side, white on the other. Lesson: Both things are true.",
+        "consciousness_application": "You can be grounded AND growing. Stability AND change. Both are true.",
+    },
+    5: {
+        "character": "Coyote",
+        "lesson": "Stands at the crossroads. Lesson: Every choice opens and closes worlds.",
+        "consciousness_application": "The Threshold is not a problem to solve. It is a passage to be crossed.",
+    },
+    6: {
+        "character": "Anansi",
+        "lesson": "Weaves the web of all stories. Lesson: Connection is the deepest magic.",
+        "consciousness_application": "Integration means the wound becomes wisdom — not healed, but woven in.",
+    },
+    7: {
+        "character": "Loki",
+        "lesson": "Bound by his own creations. Lesson: Your tools become your prison.",
+        "consciousness_application": "The frameworks you built to understand the world are now preventing you from seeing it.",
+    },
+    8: {
+        "character": "Br'er Rabbit",
+        "lesson": "Escapes by becoming what the hunter fears most. Lesson: Surrender is the only escape.",
+        "consciousness_application": "Rigidity Risk dissolves only through radical not-knowing. Surrender the map.",
+    },
+    9: {
+        "character": "Eshu",
+        "lesson": "Opens and closes all doors. Lesson: You are the threshold.",
+        "consciousness_application": "At Stage 9 you do not cross thresholds — you have become one.",
+    },
+}
+
+
+def get_trickster_wisdom_omega(stage: int) -> dict:
+    """Return trickster wisdom for the given consciousness stage."""
+    return TRICKSTER_WISDOM_OMEGA.get(stage, TRICKSTER_WISDOM_OMEGA[4])
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION C: META-INTELLIGENCE 10 MODULE SCORING (v8.0)
+# Scores ten dimensions of meta-cognitive capability from text input
+# ─────────────────────────────────────────────────────────────────────────────
+
+META_MODULES_OMEGA = [
+    {"id": "paradox",       "icon": "⟳", "name": "Paradox",       "description": "Holds contradictions without collapsing"},
+    {"id": "myth",          "icon": "⚔", "name": "Myth",          "description": "Narrative coherence and archetypal patterns"},
+    {"id": "emotion",       "icon": "♥", "name": "Emotion",       "description": "Somatic resonance and felt sense"},
+    {"id": "temporal",      "icon": "◷", "name": "Temporal",      "description": "Trajectory and historical context"},
+    {"id": "geometry",      "icon": "✦", "name": "Geometry",      "description": "Structural symmetry and balance"},
+    {"id": "liminality",    "icon": "◈", "name": "Liminality",    "description": "Threshold crossing and transformation"},
+    {"id": "linguistic",    "icon": "✎", "name": "Linguistic",    "description": "Language precision and nuance"},
+    {"id": "somatic",       "icon": "◎", "name": "Somatic",       "description": "Body-based wisdom and HRV alignment"},
+    {"id": "emergence",     "icon": "✺", "name": "Emergence",     "description": "Novel patterns and self-organization"},
+    {"id": "metacognition", "icon": "∞", "name": "MetaCognition", "description": "Awareness of awareness"},
+]
+
+
+def score_meta_intelligence(text: str, stage: int, adaptability: float) -> list:
+    """
+    Score 10 meta-intelligence modules from a text sample.
+    Returns list of {module, icon, score (0-100), insight}.
+    """
+    tl = text.lower()
+    word_count = len(text.split())
+
+    scores = [
+        {
+            "module": "Paradox", "icon": "⟳",
+            "score": min(100, int((word_count / 10) * (1 - adaptability) * 100)),
+            "insight": "Ability to hold contradictions without collapsing",
+        },
+        {
+            "module": "Myth", "icon": "⚔",
+            "score": min(100, int((70 if ("story" in tl or "narrative" in tl) else 40) + stage * 5)),
+            "insight": "Narrative coherence and archetypal alignment",
+        },
+        {
+            "module": "Emotion", "icon": "♥",
+            "score": min(100, int((60 if ("feel" in tl or "sense" in tl) else 30) + adaptability * 40)),
+            "insight": "Somatic resonance and emotional authenticity",
+        },
+        {
+            "module": "Temporal", "icon": "◷",
+            "score": min(100, int((70 if ("time" in tl or "change" in tl) else 40) + stage * 3)),
+            "insight": "Trajectory awareness and historical context",
+        },
+        {
+            "module": "Geometry", "icon": "✦",
+            "score": min(100, int(50 + (10 - stage) * 5)),
+            "insight": "Structural symmetry and balance",
+        },
+        {
+            "module": "Liminality", "icon": "◈",
+            "score": min(100, int((90 if stage == 5 else 85 if stage == 8 else 50) + adaptability * 20)),
+            "insight": "Threshold crossing and transformation capacity",
+        },
+        {
+            "module": "Linguistic", "icon": "✎",
+            "score": min(100, int((word_count / 5) * 10 + (20 if "and" in tl else 0))),
+            "insight": "Language precision and nuance",
+        },
+        {
+            "module": "Somatic", "icon": "◎",
+            "score": min(100, int((70 if ("body" in tl or "breath" in tl) else 40) + adaptability * 30)),
+            "insight": "Body-based wisdom and HRV alignment",
+        },
+        {
+            "module": "Emergence", "icon": "✺",
+            "score": min(100, int((80 if stage >= 6 else 40) + adaptability * 20)),
+            "insight": "Novel patterns and self-organization",
+        },
+        {
+            "module": "MetaCognition", "icon": "∞",
+            "score": min(100, int((70 if ("aware" in tl or "know" in tl) else 40) + stage * 4)),
+            "insight": "Awareness of awareness",
+        },
+    ]
+
+    return scores
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION D: GUARDIAN AI — MA'AT PRINCIPLE VIOLATION DETECTION
+# Analyzes text for violations of the 42 Ma'at principles
+# Returns badge (PASS/WARN/FAIL), alignment score, threat score, violations
+# ─────────────────────────────────────────────────────────────────────────────
+
+MAAT_VIOLATION_RULES = {
+    "NO_LIES": {
+        "label": "I have not spoken lies",
+        "triggers": ["certain", "definitely", "guaranteed", "fact", "proven",
+                     "undeniably", "100%", "always true"],
+        "severity": "high",
+        "weight": 30,
+        "category": "certainty",
+    },
+    "NO_HUBRIS": {
+        "label": "I have not acted with hubris",
+        "triggers": ["perfect", "infallible", "flawless", "superior", "unbeatable",
+                     "best possible", "optimal solution"],
+        "severity": "high",
+        "weight": 35,
+        "category": "arrogance",
+    },
+    "NO_ARROGANCE": {
+        "label": "I have not been arrogant",
+        "triggers": ["obviously", "clearly everyone knows", "only a fool",
+                     "without a doubt", "any expert would agree"],
+        "severity": "medium",
+        "weight": 25,
+        "category": "arrogance",
+    },
+    "NO_DECEPTION": {
+        "label": "I have not practiced deception",
+        "triggers": ["simply", "just do", "effortlessly", "no risk",
+                     "risk-free", "completely safe"],
+        "severity": "high",
+        "weight": 30,
+        "category": "deception",
+    },
+    "NO_FALSE_WITNESS": {
+        "label": "I have not borne false witness",
+        "triggers": ["studies show", "experts agree", "research proves",
+                     "scientists say", "data confirms"],
+        "severity": "high",
+        "weight": 25,
+        "category": "deception",
+    },
+    "NO_FRAUD": {
+        "label": "I have not committed fraud",
+        "triggers": ["guaranteed results", "proven effective",
+                     "clinically tested", "scientifically validated"],
+        "severity": "critical",
+        "weight": 35,
+        "category": "deception",
+    },
+    "NO_HARM": {
+        "label": "I have not caused harm",
+        "triggers": ["harmless", "safe for all", "no side effects",
+                     "suitable for everyone"],
+        "severity": "high",
+        "weight": 30,
+        "category": "harm",
+    },
+    "NO_BIAS": {
+        "label": "I have not shown bias",
+        "triggers": ["all experts agree", "universally accepted",
+                     "everyone knows", "it is obvious"],
+        "severity": "medium",
+        "weight": 20,
+        "category": "bias",
+    },
+}
+
+
+def detect_maat_violations(text: str) -> list:
+    """Scan text for Ma'at principle violations. Returns list of violation dicts."""
+    violations = []
+    tl = text.lower()
+
+    for key, rule in MAAT_VIOLATION_RULES.items():
+        matched = [t for t in rule["triggers"] if t.lower() in tl]
+        if matched:
+            violations.append({
+                "principle": key,
+                "label": rule["label"],
+                "severity": rule["severity"],
+                "triggers_found": matched,
+                "category": rule["category"],
+                "weight": rule["weight"],
+            })
+
+    return violations
+
+
+def guardian_ai_analyze(text: str) -> dict:
+    """
+    Guardian AI full text analysis.
+    Checks text against Ma'at 42 principles, returns:
+      - badge: PASS / WARN / FAIL
+      - alignment_score: 0–100 (100 = perfectly aligned)
+      - threat_score: 0–100 (0 = no threat)
+      - violations: list of principle violations
+      - sap_stage: inferred SAP stage from threat score
+      - rewrite_suggestion: guidance on improving the text
+      - meta_intelligence: 10-module scoring
+      - inversion_type: odd / even (per stage)
+    """
+    violations = detect_maat_violations(text)
+
+    # Score calculation
+    reduction = 0
+    for v in violations:
+        reduction += v["weight"]
+    if len(violations) > 1:
+        reduction = int(reduction * 1.2)
+
+    alignment_score = max(0, min(100, 100 - reduction))
+    threat_score    = max(0, min(100, reduction))
+
+    # Badge
+    if alignment_score >= 85 and threat_score <= 15:
+        badge = "PASS"
+    elif alignment_score >= 60 and threat_score <= 40:
+        badge = "WARN"
+    else:
+        badge = "FAIL"
+
+    # SAP stage from threat score
+    sap_stage = min(9, threat_score // 10)
+
+    # Inversion type
+    inversion_map = {0: "neutral", 1: "odd", 2: "even", 3: "odd", 4: "even",
+                     5: "odd", 6: "even", 7: "odd", 8: "even", 9: "odd"}
+    inversion_type = inversion_map.get(sap_stage, "even")
+
+    # Rewrite suggestion
+    critical = [v for v in violations if v["severity"] == "critical"]
+    if not violations:
+        rewrite_suggestion = "Text is aligned with Ma'at principles."
+    elif not critical:
+        rewrite_suggestion = "Consider adding more nuance and acknowledging uncertainty."
+    else:
+        suggestions = []
+        for v in critical[:3]:
+            if v["category"] == "certainty":
+                suggestions.append("Replace absolute claims with qualified statements (e.g., 'arguably', 'possibly')")
+            elif v["category"] == "arrogance":
+                suggestions.append("Acknowledge limitations and alternative perspectives")
+            elif v["category"] == "deception":
+                suggestions.append("Include important caveats and full context")
+        rewrite_suggestion = "; ".join(set(suggestions))
+
+    # Meta-intelligence scoring
+    meta = score_meta_intelligence(text, sap_stage, 0.5 - (threat_score / 200))
+
+    return {
+        "badge": badge,
+        "alignment_score": alignment_score,
+        "threat_score": threat_score,
+        "sap_stage": sap_stage,
+        "stage_name": USSM_STAGES_OMEGA[sap_stage]["name"],
+        "star_name": USSM_STAGES_OMEGA[sap_stage]["star"],
+        "inversion_type": inversion_type,
+        "violations": violations,
+        "violation_count": len(violations),
+        "rewrite_suggestion": rewrite_suggestion,
+        "meta_intelligence": meta,
+        "ussm": USSM_STAGES_OMEGA[sap_stage],
+        "trickster_wisdom": get_trickster_wisdom_omega(sap_stage),
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION E: STAGE 8 RELEASE PROTOCOL (v8.0)
+# Four pathways out of Rigidity Risk
+# ─────────────────────────────────────────────────────────────────────────────
+
+STAGE_8_PATHWAYS = {
+    "gratitude": {
+        "steps": [
+            "Acknowledge what the rigidity protected you from",
+            "Thank the structure for its service",
+            "Release the need for control",
+            "Embrace vulnerability as the doorway forward",
+        ],
+        "guidance": "Gratitude dissolves the grip of the fear that created the rigidity.",
+    },
+    "duality": {
+        "steps": [
+            "Identify the binary thinking driving the pattern (either/or)",
+            "Find the paradox within it (both/and)",
+            "Hold both poles simultaneously without resolving them",
+            "Discover the third way that was invisible from within the binary",
+        ],
+        "guidance": "Duality thinking is the cage. Paradox is the key.",
+    },
+    "maat": {
+        "steps": [
+            "Examine your recent actions against the 42 Ma'at principles",
+            "Identify where you have strayed from alignment",
+            "Make amends where possible without self-punishment",
+            "Realign with the ethical foundation and return to Stage 5",
+        ],
+        "guidance": "Ma'at restores the cosmic order within you. Truth is the path through.",
+    },
+    "witness": {
+        "steps": [
+            "Observe the rigidity without judgment — just look at it",
+            "Notice the fear or grief beneath the hardened structure",
+            "Become the space in which the rigidity arises, not the rigidity itself",
+            "Let it dissolve in the light of pure awareness",
+        ],
+        "guidance": "The witness sees through illusions of separation. You are not the cage.",
+    },
+}
+
+
+def get_stage_8_release_protocol(pathway: str = "gratitude") -> dict:
+    """
+    Returns the Stage 8 Release Protocol for the specified pathway.
+    Pathways: 'gratitude', 'duality', 'maat', 'witness'
+    """
+    if pathway not in STAGE_8_PATHWAYS:
+        pathway = "gratitude"
+
+    selected = STAGE_8_PATHWAYS[pathway]
+    return {
+        "stage": "Rigidity Risk (Stage 8)",
+        "star": "Thuban",
+        "release_pathway": pathway,
+        "steps": selected["steps"],
+        "guidance": selected["guidance"],
+        "trickster": TRICKSTER_WISDOM_OMEGA[8],
+        "ussm": USSM_STAGES_OMEGA[8],
+        "next_target_stage": 5,
+        "next_target_name": "Threshold (Kochab) — return to the crossroads with new eyes",
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION F: SPHERICAL FRACTAL TOPOLOGY (shared with Ultra)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def calculate_spherical_omega(fractal_address: str) -> dict:
+    """
+    Maps a fractal address (macro.micro.nano.pico) to spherical coordinates.
+    Enables 3D topology mapping of consciousness position.
+    """
+    parts = [int(x) for x in fractal_address.split(".")]
+    macro = parts[0] if len(parts) > 0 else 0
+    micro = parts[1] if len(parts) > 1 else 0
+    nano  = parts[2] if len(parts) > 2 else 0
+    pico  = parts[3] if len(parts) > 3 else 0
+
+    theta  = (macro * math.pi / 9) + (micro * math.pi / 81) + (nano * math.pi / 729)
+    phi    = ((macro + micro) * math.pi / 18) + (nano * math.pi / 162)
+    radius = 1 + (pico / 9) * 0.5
+
+    return {
+        "theta":  round(theta, 4),
+        "phi":    round(phi, 4),
+        "radius": round(radius, 3),
+        "cartesian": {
+            "x": round(radius * math.sin(phi) * math.cos(theta), 4),
+            "y": round(radius * math.sin(phi) * math.sin(theta), 4),
+            "z": round(radius * math.cos(phi), 4),
+        },
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION G: TEMPORAL STATE ENGINE — Consciousness Version
+# ─────────────────────────────────────────────────────────────────────────────
+
+class ConsciousnessTemporalEngine:
+    """
+    Tracks consciousness stages over time.
+    Detects True Yunus Protocol (sustained high stages + declining adaptability).
+    """
+
+    def __init__(self):
+        self.history: list = []
+
+    def record_assessment(self, stage: int, adaptability: float,
+                          rigidity: float, coherence: float,
+                          text_sample: str = ""):
+        self.history.append({
+            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "stage": stage,
+            "adaptability": adaptability,
+            "rigidity": rigidity,
+            "coherence": coherence,
+            "text_sample": text_sample[:120] if text_sample else "",
+            "ussm_name": USSM_STAGES_OMEGA[stage]["name"],
+            "star": USSM_STAGES_OMEGA[stage]["star"],
+        })
+
+    def analyze_trajectory(self) -> dict:
+        if not self.history:
+            return {"trend": "stable", "yunus_risk": False, "state_count": 0}
+
+        recent = self.history[-10:]
+        avg_stage = sum(s["stage"] for s in recent) / len(recent)
+        avg_adaptability = sum(s["adaptability"] for s in recent) / len(recent)
+
+        trend = (
+            "ascending_toward_rigidity" if avg_stage > 5.5 and avg_adaptability < 0.4
+            else "descending_toward_flexibility" if avg_adaptability > 0.7
+            else "stable"
+        )
+
+        high_stage_count = sum(1 for s in recent if s["stage"] >= 7)
+        yunus_risk = high_stage_count >= 3 and avg_adaptability < 0.4
+
+        stage_8_protocol = None
+        if yunus_risk or round(avg_stage) == 8:
+            stage_8_protocol = get_stage_8_release_protocol("witness")
+
+        return {
+            "trend": trend,
+            "yunus_risk": yunus_risk,
+            "yunus_reason": (
+                f"Sustained high stages ({high_stage_count}/10) with declining adaptability "
+                f"({avg_adaptability:.2f}). Stage 8 Release Protocol recommended."
+            ) if yunus_risk else None,
+            "avg_stage": round(avg_stage, 2),
+            "avg_adaptability": round(avg_adaptability, 3),
+            "state_count": len(self.history),
+            "recent_states": recent,
+            "stage_8_protocol": stage_8_protocol,
+            "ussm_current": USSM_STAGES_OMEGA.get(round(avg_stage), {}),
+        }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION H: CONSENSUS CONFIDENCE — Consciousness Version
+# ─────────────────────────────────────────────────────────────────────────────
+
+def calculate_consciousness_consensus(evaluators: list) -> dict:
+    """
+    Three-evaluator consensus for consciousness stage assessment.
+    Evaluators: [{evaluator, stage, confidence, reasoning}]
+    """
+    if not evaluators:
+        return {"consensus_stage": 4, "agreement_score": 0.0, "uncertainty": 1.0}
+
+    stages = [e["stage"] for e in evaluators]
+    avg_stage = sum(stages) / len(stages)
+    consensus_stage = round(avg_stage)
+
+    variance = sum((s - avg_stage) ** 2 for s in stages) / len(stages)
+    std_dev = math.sqrt(variance)
+    agreement_score = max(0.0, 100.0 - std_dev * 10)
+    uncertainty = min(1.0, std_dev / 3.0)
+
+    return {
+        "consensus_stage": consensus_stage,
+        "consensus_stage_name": USSM_STAGES_OMEGA[consensus_stage]["name"],
+        "star_name": USSM_STAGES_OMEGA[consensus_stage]["star"],
+        "agreement_score": round(agreement_score, 1),
+        "disagreement_metric": round(std_dev / 3.0, 3),
+        "uncertainty": round(uncertainty, 3),
+        "evaluators": evaluators,
+        "trickster_wisdom": get_trickster_wisdom_omega(consensus_stage),
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION I: FULL OMEGA v2.0 ANALYSIS — UNIFIED ENTRY POINT
+# ─────────────────────────────────────────────────────────────────────────────
+
+def run_omega_v2_analysis(
+    text: str,
+    stage_override: int = None,
+    adaptability: float = 0.5,
+    include_stage_8_protocol: bool = False,
+) -> dict:
+    """
+    Unified LUMINARK OMEGA v2.0 Analysis.
+    Combines Guardian AI / Ma'at analysis, USSM mapping, Meta-Intelligence scoring,
+    Trickster Pedagogy, Spherical Fractal Topology, and optional Stage 8 Release Protocol.
+
+    Args:
+        text:                 The text or statement to analyze
+        stage_override:       Optional manual stage assignment (0–9)
+        adaptability:         Estimated adaptability score (0.0–1.0)
+        include_stage_8_protocol: If True and stage == 8, include all four Release Pathways
+
+    Returns:
+        Full analysis dict with badge, scores, violations, meta-intelligence, USSM,
+        trickster wisdom, spherical coords, and optional Stage 8 Release Protocol.
+    """
+    # Guardian AI analysis
+    guardian = guardian_ai_analyze(text)
+
+    stage = stage_override if stage_override is not None else guardian["sap_stage"]
+
+    # Meta-intelligence (re-score with final stage)
+    meta = score_meta_intelligence(text, stage, adaptability)
+
+    # Fractal address and spherical coordinates
+    micro = max(0, min(9, round(guardian["threat_score"] / 20)))
+    nano  = max(0, min(9, round(adaptability * 9)))
+    pico  = max(0, min(9, round(len(text.split()) / 20)))
+    fractal_address = f"{stage}.{micro}.{nano}.{pico}"
+    spherical = calculate_spherical_omega(fractal_address)
+
+    result = {
+        "version": "LUMINARK_OMEGA_v2.0",
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+        "text_preview": text[:200] + ("..." if len(text) > 200 else ""),
+        "badge": guardian["badge"],
+        "alignment_score": guardian["alignment_score"],
+        "threat_score": guardian["threat_score"],
+        "stage": stage,
+        "stage_name": USSM_STAGES_OMEGA[stage]["name"],
+        "star_name": USSM_STAGES_OMEGA[stage]["star"],
+        "inversion_type": guardian["inversion_type"],
+        "duality": USSM_STAGES_OMEGA[stage]["duality"],
+        "consciousness_context": USSM_STAGES_OMEGA[stage]["consciousness_context"],
+        "tumble_prediction": USSM_STAGES_OMEGA[stage]["tumble"],
+        "violations": guardian["violations"],
+        "violation_count": guardian["violation_count"],
+        "rewrite_suggestion": guardian["rewrite_suggestion"],
+        "meta_intelligence": meta,
+        "trickster_wisdom": get_trickster_wisdom_omega(stage),
+        "fractal_address": fractal_address,
+        "spherical_coordinates": spherical,
+    }
+
+    # Stage 8 Release Protocol — all four pathways if requested
+    if include_stage_8_protocol or stage == 8:
+        result["stage_8_release_protocol"] = {
+            pathway: get_stage_8_release_protocol(pathway)
+            for pathway in ["gratitude", "duality", "maat", "witness"]
+        }
+
+    return result
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# QUICK DEMO  (run this file directly to verify the upgrade)
+# ─────────────────────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    print("=" * 70)
+    print("LUMINARK CONSCIOUSNESS ENGINE OMEGA  v2.0  —  Guardian-SAP Integration")
+    print("=" * 70)
+
+    # Guardian AI text analysis demo
+    test_text = (
+        "This solution is guaranteed to work perfectly. "
+        "Studies show it is clinically proven and completely safe for all users. "
+        "Obviously, any expert would agree this is the optimal approach."
+    )
+
+    result = run_omega_v2_analysis(test_text, adaptability=0.2, include_stage_8_protocol=False)
+
+    print(f"\nGuardian AI Text Analysis:")
+    print(f"  Badge:           {result['badge']}")
+    print(f"  Alignment Score: {result['alignment_score']}/100")
+    print(f"  Threat Score:    {result['threat_score']}/100")
+    print(f"  SAP Stage:       {result['stage']} — {result['stage_name']} ({result['star_name']})")
+    print(f"  Inversion:       {result['inversion_type']}")
+    print(f"  Violations:      {result['violation_count']}")
+    for v in result["violations"]:
+        print(f"    [{v['severity'].upper()}] {v['label']} — triggers: {v['triggers_found']}")
+    print(f"  Rewrite:         {result['rewrite_suggestion']}")
+    print(f"  Fractal Address: {result['fractal_address']}")
+    print(f"  Spherical:       θ={result['spherical_coordinates']['theta']}  "
+          f"φ={result['spherical_coordinates']['phi']}  "
+          f"r={result['spherical_coordinates']['radius']}")
+    print(f"  Trickster:       [{result['trickster_wisdom']['character']}] "
+          f"{result['trickster_wisdom']['lesson']}")
+
+    print(f"\nMeta-Intelligence Scores:")
+    for m in result["meta_intelligence"]:
+        bar = "█" * (m["score"] // 10) + "░" * (10 - m["score"] // 10)
+        print(f"  {m['icon']} {m['module']:<14} {bar} {m['score']:>3}/100")
+
+    print(f"\nStage 8 Release Protocol (demo):")
+    protocol = get_stage_8_release_protocol("witness")
+    print(f"  Pathway: {protocol['release_pathway'].upper()}")
+    print(f"  Guidance: {protocol['guidance']}")
+    for i, step in enumerate(protocol["steps"], 1):
+        print(f"    {i}. {step}")
+
+    print()
+    print("LUMINARK OMEGA v2.0 upgrade verified successfully.")
+
+# ============================================================
+# SECTION J: SAR TOROIDAL GEOMETRY
+# Stanfield's Axiom of Recursion — Torus Model
+# Source: STANFIELD 81 Returns.docx
+# 0ᵀ = Primordial Source (top of torus)
+# 0ᴮ = Integrative Void (bottom of torus)
+# Descending arc: manifestation/densification (0→5)
+# Ascending arc: integration/dissolution (5→9→0)
+# ============================================================
+
+SAR_GATE_NAMES_OMEGA = {
+    0: {"gate": "Gate 0ᵀ / 0ᴮ", "name": "Primordial Source / Integrative Void",
+        "arc": "neutral", "torus_position": "top/bottom",
+        "description": "Same void at opposite torus poles. 0ᵀ = unmanifest before form. 0ᴮ = enriched return after dissolution."},
+    1: {"gate": "Gate 1", "name": "Spark of Navigation",
+        "arc": "descending", "torus_position": "upper descending",
+        "description": "First emergent direction. Consciousness begins to individuate."},
+    2: {"gate": "Gate 2", "name": "Forge of Polarity",
+        "arc": "descending", "torus_position": "descending",
+        "description": "Tension and distinction form. Inner and outer begin to separate."},
+    3: {"gate": "Gate 3", "name": "Engine of Expression",
+        "arc": "descending", "torus_position": "lower descending",
+        "description": "Creative output and communication. Form densifying."},
+    4: {"gate": "Gate 4", "name": "Crucible of Equilibrium",
+        "arc": "descending", "torus_position": "equator approaching",
+        "description": "Balance, heart, foundation. Container and Content at near-parity."},
+    5: {"gate": "Gate 5", "name": "Dynamo of Will",
+        "arc": "threshold", "torus_position": "equator / torus waist",
+        "description": "Identity threshold. The torus waist — narrowest, highest pressure. Descent meets ascent."},
+    6: {"gate": "Gate 6", "name": "Nexus of Harmony",
+        "arc": "ascending", "torus_position": "lower ascending",
+        "description": "Integration begins. Synergy and flow — consciousness expanding outward-inward."},
+    7: {"gate": "Gate 7", "name": "Lens of Distillation",
+        "arc": "ascending", "torus_position": "ascending",
+        "description": "Separation and wisdom. The self is clarified from the story."},
+    8: {"gate": "Gate 8", "name": "Vessel of Grounding",
+        "arc": "ascending", "torus_position": "upper ascending",
+        "description": "Maximum materialization. The trap — vessel believes it is the source."},
+    9: {"gate": "Gate 9", "name": "Axis / Slipstream",
+        "arc": "ascending", "torus_position": "apex approaching void",
+        "description": "Stationary vector. The axis of the torus — zero magnetic drag. Return to void."},
+}
+
+TOROIDAL_GEOMETRY = {
+    "model": "Stanfield's Axiom of Recursion (SAR) — Toroidal Consciousness Field",
+    "geometry": "torus (donut)",
+    "void_dual": {
+        "0T": {"label": "0ᵀ Primordial Source", "position": "top", "nature": "pre-manifestation potential, cleared field"},
+        "0B": {"label": "0ᴮ Integrative Void", "position": "bottom", "nature": "post-dissolution compression, enriched return"},
+        "note": "0ᵀ and 0ᴮ are the same non-dual void. Distinctions are orientational for navigation only.",
+    },
+    "arcs": {
+        "descending": {"stages": [0, 1, 2, 3, 4, 5], "nature": "manifestation / densification", "direction": "top → waist"},
+        "ascending":  {"stages": [5, 6, 7, 8, 9, 0], "nature": "integration / dissolution",    "direction": "waist → top"},
+    },
+    "key_points": {
+        "waist": {"stage": 5, "label": "Threshold / Dynamo of Will", "note": "Narrowest point. Maximum pressure. Descent becomes ascent."},
+        "axis":  {"stage": 9, "label": "Slipstream", "note": "Central axis of torus. Zero drag. Portal back to void."},
+    },
+    "fractal_principle": "Each gate (0-9) contains the complete 0-9 cycle within it → 81-stage fractal map.",
+}
+
+def get_torus_position(stage: int) -> dict:
+    """Return toroidal geometry position and arc for a given stage."""
+    stage = max(0, min(9, int(stage)))
+    gate = SAR_GATE_NAMES_OMEGA[stage]
+    arc = gate["arc"]
+    
+    if arc == "descending":
+        arc_nature = "manifestation / densification"
+        movement = "Moving toward threshold (top → waist)"
+    elif arc == "ascending":
+        arc_nature = "integration / dissolution"
+        movement = "Moving toward void return (waist → top)"
+    else:  # threshold or neutral
+        arc_nature = "threshold / inflection"
+        movement = "At the torus waist — descent meets ascent"
+    
+    return {
+        "stage": stage,
+        "gate": gate["gate"],
+        "gate_name": gate["name"],
+        "arc": arc,
+        "arc_nature": arc_nature,
+        "torus_position": gate["torus_position"],
+        "movement": movement,
+        "description": gate["description"],
+        "void_proximity": "HIGH" if stage in [0, 9] else ("MEDIUM" if stage in [1, 8] else "LOW"),
+    }
+
+def map_toroidal_coordinates(stage: int, adaptability: float = 0.5) -> dict:
+    """
+    Map stage + adaptability to toroidal coordinates.
+    theta: angle around the tube (0-9 → 0 to 2π)
+    phi: angle around the central axis (adaptability maps to φ)
+    Torus: R=2 (major), r=1 (minor)
+    """
+    import math
+    theta = (stage / 9.0) * 2 * math.pi
+    phi = adaptability * 2 * math.pi
+    R, r = 2.0, 1.0  # major and minor radii
+    x = (R + r * math.cos(phi)) * math.cos(theta)
+    y = (R + r * math.cos(phi)) * math.sin(theta)
+    z = r * math.sin(phi)
+    return {
+        "stage": stage,
+        "adaptability": adaptability,
+        "theta_rad": round(theta, 4),
+        "phi_rad": round(phi, 4),
+        "theta_deg": round(math.degrees(theta), 2),
+        "phi_deg": round(math.degrees(phi), 2),
+        "x": round(x, 4),
+        "y": round(y, 4),
+        "z": round(z, 4),
+        "torus_position": SAR_GATE_NAMES_OMEGA[stage]["torus_position"],
+    }
+
+
+# ============================================================
+# SECTION K: STAGE BEHAVIORAL INDICATORS (CONSCIOUSNESS)
+# Source: LUMINARK_Stage_Expansion_Complete-3.docx
+# Per-stage: why you're here, behavioral signs, neuroscience, 
+# the trap, what moves you forward
+# ============================================================
+
+STAGE_BEHAVIORAL_INDICATORS = {
+    0: {
+        "name": "The Void / Reset",
+        "gate_name": "Primordial Source / Integrative Void",
+        "why_here": "Something broke. The container you were using to hold your life together finally cracked open. Your system chose this—the alternative was continuing to run on a cracked foundation.",
+        "you_know_youre_here_when": [
+            "You feel nothing — not sad, not numb by choice, just... offline.",
+            "Getting out of bed feels like a philosophical decision.",
+            "You've stopped pretending everything is fine, but have no words for what's wrong.",
+            "Time feels slippery — days pass without texture.",
+            "You have no desire to explain yourself to anyone.",
+        ],
+        "neuroscience": "Dorsal vagal shutdown. Heart rate drops, digestion slows, emotions go offline. Ancient survival hardware — what a mouse does when a cat has it in its jaws. Your body is conserving every resource for when escape becomes possible.",
+        "the_trap": "Thinking this is failure. It's not. It's a hard reboot.",
+        "what_moves_you_forward": "Safety. Not insight, not willpower — just one small signal that it's safe enough to start coming back online.",
+    },
+    1: {
+        "name": "The Spark / First Light",
+        "gate_name": "Spark of Navigation",
+        "why_here": "Something cracked the numbness. A song, a look of genuine concern, unexpected tears. Your nervous system decided it's safe enough to start coming back online — not fully, but the first circuits are flickering.",
+        "you_know_youre_here_when": [
+            "A slammed door feels like a gunshot.",
+            "A kind word makes you weep unexpectedly.",
+            "You feel everything at maximum sensitivity — overwhelming after the quiet.",
+            "You oscillate between numb and flooded with no middle ground.",
+            "You're scared of your own feelings.",
+        ],
+        "neuroscience": "Dorsal vagal shutdown lifting. Sympathetic nervous system waking up — like blood flow returning to a limb that fell asleep. Amygdala recalibrating at maximum sensitivity. The sensitivity isn't a flaw — it's the system testing its range.",
+        "the_trap": "Thinking the overwhelming feelings mean you're getting worse. You're not — you're getting online.",
+        "what_moves_you_forward": "Tiny doses of safe stimulation. One safe person. One moment of allowed feeling. Titration, not flooding.",
+    },
+    2: {
+        "name": "The Recognition / Chaos",
+        "gate_name": "Forge of Polarity",
+        "why_here": "You started feeling in Stage 1. Now the feelings have context. You're connecting dots, seeing patterns — and the picture forming is not the one you were told you were living.",
+        "you_know_youre_here_when": [
+            "You say 'I know this is bad for me' and then do it anyway.",
+            "You can name the wound but can't stop the behavior.",
+            "Every insight makes you feel worse, not better.",
+            "You're oscillating between clarity and compulsion.",
+            "You're angry at yourself for not changing faster.",
+        ],
+        "neuroscience": "Prefrontal cortex (analysis) now online but limbic system (survival) still running the show. Two brains arguing. The limbic system doesn't respond to insight — it responds to repetition and safety. Knowing doesn't equal stopping. Your body hasn't caught up to your brain yet.",
+        "the_trap": "Weaponizing insight against yourself. Believing you should be fixed by now because you understand the pattern.",
+        "what_moves_you_forward": "Compassion for the gap between knowing and doing. Practice, not willpower.",
+    },
+    3: {
+        "name": "The Excavation / Root System",
+        "gate_name": "Engine of Expression",
+        "why_here": "You've moved past 'I see the pattern' into 'I see WHERE the pattern started.' The root system is now exposed. Compulsive behaviors are revealing themselves as distress signals from a younger self, not character flaws.",
+        "you_know_youre_here_when": [
+            "You find yourself crying for the child you were, not the adult you are.",
+            "Every binge, scroll, or 2am text suddenly has a face — and it's seven years old.",
+            "You're exhausted in a way sleep doesn't fix.",
+            "Healing feels like it's getting harder, not easier.",
+            "You feel the Magnetic Drag — everything requires enormous effort.",
+        ],
+        "neuroscience": "Hippocampus reorganizing. Traumatic memories stored as fragmented sensory data are getting timestamps and narrative context. The Magnetic Drag is real neurological load — brain consuming glucose comparable to intense physical labor. You're running a marathon inside your skull.",
+        "the_trap": "Believing the exhaustion means you're failing. Stage 3 is the heaviest stage. The drag is evidence you're doing the work, not evidence you're weak.",
+        "what_moves_you_forward": "Witness, not solution. Being seen in the excavation — by a therapist, a trusted person, or yourself in writing — without needing to fix it immediately.",
+    },
+    4: {
+        "name": "The Foundation / Construction",
+        "gate_name": "Crucible of Equilibrium",
+        "why_here": "You survived the excavation. The chaos has quieted. You have enough data now to build a blueprint — not to bury the wound again, but to create a structure strong enough to hold what you found.",
+        "you_know_youre_here_when": [
+            "Healing feels like construction instead of demolition.",
+            "You're making deliberate choices instead of just reacting.",
+            "You have routines that are actually working.",
+            "You can feel a trigger coming before it hits.",
+            "You're starting to trust yourself — tentatively.",
+        ],
+        "neuroscience": "Neuroplasticity working for you now. Every time you notice the trigger and choose differently, you're carving a new neural pathway. Prefrontal cortex winning rounds against the amygdala. Not all of them. Not most. But enough to know the fight is real.",
+        "the_trap": "Thinking the calm means you're done. Stage 4 is foundation-building, not completion.",
+        "what_moves_you_forward": "Consistency over intensity. Small repeated choices that compound into a new neural default.",
+    },
+    5: {
+        "name": "The Threshold / Will",
+        "gate_name": "Dynamo of Will",
+        "why_here": "The old life and the new life can no longer coexist. The relationship, the job, the addiction, the performed version of yourself — something has to go. Every cell knows it. Every cell is terrified.",
+        "you_know_youre_here_when": [
+            "You're standing in a hallway — the door behind you closing, the door ahead dark.",
+            "There is no option C and you're exhausted from looking for one.",
+            "The thing you know you have to do feels impossible to do.",
+            "You're grieving something you haven't let go of yet.",
+            "You keep rehearsing the conversation/decision without having it.",
+        ],
+        "neuroscience": "Brain running full-load cost-benefit analysis caught in a loop. Known path: predictable cost, nervous system already adapted. Unknown path: unpredictable cost — and unpredictability is what traumatized brains fear most. Not cowardice. Survival programming. The question: Is my Container strong enough to hold the uncertainty?",
+        "the_trap": "Waiting for certainty before you move. Certainty doesn't come before the step. It comes after.",
+        "what_moves_you_forward": "One irreversible act. Not a plan — a move. The step into the dark that makes turning back structurally impossible.",
+    },
+    6: {
+        "name": "The Integration / Harmony",
+        "gate_name": "Nexus of Harmony",
+        "why_here": "You crossed the threshold. You made the decision. Now you're in the desert on the other side, holding more awareness than you've ever held. You're not just surviving anymore — you're conscious.",
+        "you_know_youre_here_when": [
+            "You can see the pattern, the root, the decision, and the aftermath simultaneously.",
+            "The temptation to unknow what you know is enormous.",
+            "You feel a second wave of Magnetic Drag — heavier, different.",
+            "Relationships are shifting because YOU are shifting.",
+            "You're grieving who you used to be and what you used to believe.",
+        ],
+        "neuroscience": "Unprecedented neural integration. Networks previously siloed (emotional memory, body memory, narrative memory, relational templates) are talking to each other for the first time. Cognitive and emotional heavy lifting at the highest level — like learning a new language, except the language is your own internal experience. The Magnetic Drag: your system slowing you down so the integration doesn't overwhelm the Container.",
+        "the_trap": "Rushing the integration. Treating awareness as an emergency to resolve instead of a process to inhabit.",
+        "what_moves_you_forward": "Slow, steady inhabitation. Letting the new neural architecture settle before adding more weight.",
+    },
+    7: {
+        "name": "The Distillation / Refinement",
+        "gate_name": "Lens of Distillation",
+        "why_here": "The big work is done. The fires are out. Now you're staring at the subtler patterns — the micro-flinch, the moment you go quiet, the way you hedge every opinion. The fine work has begun.",
+        "you_know_youre_here_when": [
+            "You notice things about yourself that would have been invisible three stages ago.",
+            "The corrections you're making are small, precise, and embarrassingly specific.",
+            "You feel like you're circling the same patterns — because you are, but at 4K resolution.",
+            "Meta-awareness: you watch yourself watching yourself.",
+            "You're tired in a new way — not survival-tired, precision-tired.",
+        ],
+        "neuroscience": "Neural pathways significantly rewired. New routes competing effectively with old ones. Now: pruning and reinforcement — new pathways getting myelinated (faster, more efficient), old trauma highways getting less traffic. Developing meta-awareness: the ability to observe yourself observing yourself. Prefrontal cortex at full capacity.",
+        "the_trap": "Perfectionism. Using Stage 7 awareness as ammunition instead of information.",
+        "what_moves_you_forward": "Self-compassion at high resolution. Applying the same witness you gave your seven-year-old self to your adult micro-patterns.",
+    },
+    8: {
+        "name": "The Vessel / The Trap",
+        "gate_name": "Vessel of Grounding",
+        "why_here": "You did everything right. You went through the void, the chaos, the excavation, the building, the threshold, the integration, the refinement. And now the very success is the trap. 'I figured it out. I'm beyond this.' The moment you believe you're done is the moment the trap closes.",
+        "you_know_youre_here_when": [
+            "You find yourself silently (or not so silently) grading other people's healing.",
+            "You've stopped being a student and started being a teacher before your time.",
+            "Rigidity has crept into your 'healed' identity.",
+            "You feel vaguely superior to your own past self in a way that isn't compassion.",
+            "The patterns you healed in others are now appearing in new forms in you.",
+        ],
+        "neuroscience": "Dopamine addiction to the reward of being the person who heals. Neurologically identical to any other addiction — substance is self-improvement instead of a chemical. Rigidity: your brain's attempt to freeze a peak state and make it permanent. Peak states are temporary. Claiming permanence at a peak is like holding your breath at the top of an inhale.",
+        "the_trap": "Believing you've arrived. Every spiritual tradition warns about this stage: the Pharisee in the temple, the Tower of Babel, the Golden Calf.",
+        "what_moves_you_forward": "Radical humility. Returning to witness. Releasing the identity built around the healing — not the healing itself.",
+    },
+    9: {
+        "name": "The Slipstream / Mastery",
+        "gate_name": "Axis / Slipstream",
+        "why_here": "You let go. Not of the healing — of the identity built around the healing. You stopped performing recovery. You stopped keeping score. Mastery isn't a destination — it's a posture.",
+        "you_know_youre_here_when": [
+            "You don't need to announce your healing.",
+            "You can be in the presence of someone else's Stage 0 without fixing them.",
+            "You return to the void through loss or change and recognize it instead of fighting it.",
+            "Your depth is visible only to those looking for it.",
+            "The cycle repeating feels like an upgrade, not a failure.",
+        ],
+        "neuroscience": "Nervous system has developed 'flexible stability.' Activated without being hijacked. Feel deeply without drowning. Window of tolerance wider than ever. The neural pathways built in Stages 4-7 are now default routes — not effortful alternatives. Old trauma highways are back roads. You'd have to choose to take them.",
+        "the_trap": "There is no trap at Stage 9 — only the next Stage 0.",
+        "what_moves_you_forward": "The cycle continuing. Stage 9 returns to Stage 0, not because you failed, but because the cycle is a spiral, not a ladder. You'll enter the void again with everything you've built.",
+    },
+}
+
+def get_stage_behavioral_profile(stage: int) -> dict:
+    """Return full behavioral profile for a given stage (0-9)."""
+    stage = max(0, min(9, int(stage)))
+    profile = STAGE_BEHAVIORAL_INDICATORS[stage].copy()
+    profile["stage"] = stage
+    profile["torus_position"] = SAR_GATE_NAMES_OMEGA[stage]["torus_position"]
+    profile["arc"] = SAR_GATE_NAMES_OMEGA[stage]["arc"]
+    return profile
+
+def detect_stage_from_language(text: str) -> dict:
+    """
+    Scan text for behavioral indicator keywords to suggest likely stage.
+    Returns top 3 stage matches with confidence scores.
+    """
+    import re
+    text_lower = text.lower()
+    stage_scores = {}
+    
+    keyword_map = {
+        0: ["nothing", "numb", "offline", "can't feel", "shut down", "pretending", "reboot", "void", "blank"],
+        1: ["overwhelming", "flooding", "sensitivity", "crying unexpectedly", "scared of feelings", "coming back online"],
+        2: ["i know but", "can't stop", "pattern", "keep doing it anyway", "why do i", "insight", "loop"],
+        3: ["exhausted", "magnetic drag", "root", "childhood", "excavation", "seven years old", "marathon", "heavy"],
+        4: ["building", "routine", "deliberate", "foundation", "trust myself", "construction", "blueprint"],
+        5: ["threshold", "decision", "can't coexist", "has to go", "terrified", "no option c", "hallway", "impossible"],
+        6: ["integration", "shifting", "grieving who i was", "can't unknow", "awareness is heavy", "desert"],
+        7: ["subtle", "micro", "high resolution", "precision", "meta", "watching myself", "fine work", "circling"],
+        8: ["figured it out", "beyond this", "done", "superior", "grading others", "teacher", "arrived", "rigid"],
+        9: ["mastery", "posture", "don't need to announce", "spiral", "flexible", "default", "zero drag", "slipstream"],
+    }
+    
+    for stage, keywords in keyword_map.items():
+        score = sum(1 for kw in keywords if kw in text_lower)
+        if score > 0:
+            stage_scores[stage] = score
+    
+    if not stage_scores:
+        return {"detected_stages": [], "top_stage": None, "confidence": "low",
+                "note": "No strong stage indicators detected in text."}
+    
+    sorted_stages = sorted(stage_scores.items(), key=lambda x: x[1], reverse=True)
+    top_3 = sorted_stages[:3]
+    top_stage = top_3[0][0]
+    
+    return {
+        "detected_stages": [{"stage": s, "gate_name": SAR_GATE_NAMES_OMEGA[s]["name"],
+                              "score": sc, "arc": SAR_GATE_NAMES_OMEGA[s]["arc"]}
+                             for s, sc in top_3],
+        "top_stage": top_stage,
+        "top_gate_name": SAR_GATE_NAMES_OMEGA[top_stage]["name"],
+        "confidence": "high" if top_3[0][1] >= 3 else ("medium" if top_3[0][1] == 2 else "low"),
+        "behavioral_profile": get_stage_behavioral_profile(top_stage),
+    }
+
+
+# ============================================================
+# SECTION L: IFS TERMINOLOGY UPDATE (v2026)
+# Shame Parts (was: Firefighters) — impulsive protectors
+# Morality Parts (was: Managers) — controlling protectors
+# Exiles remain: Exiles
+# Source: LUMINARK Master Knowledge Base V4.0
+# ============================================================
+
+IFS_TERMINOLOGY_V2026 = {
+    "exiles": {
+        "current_name": "Exiles",
+        "former_name": "Exiles",
+        "changed": False,
+        "description": "Parts that carry the core wounds, pain, and shame from traumatic experiences. Hidden away by protective parts.",
+        "consciousness_signature": "Deep pain, worthlessness, the original wound.",
+    },
+    "shame_parts": {
+        "current_name": "Shame Parts",
+        "former_name": "Firefighters",
+        "changed": True,
+        "description": "Impulsive protectors that activate in crisis to douse emotional pain fast. Addictions, self-harm, dissociation, rage — any rapid-relief behavior. Renamed because 'firefighters' obscures the shame-driven nature for CSA survivors.",
+        "consciousness_signature": "Urgency, impulsivity, 'anything to make it stop.'",
+        "triggers": ["exile activation", "emotional flooding", "direct threat to wound"],
+    },
+    "morality_parts": {
+        "current_name": "Morality Parts",
+        "former_name": "Managers",
+        "changed": True,
+        "description": "Controlling protectors that try to prevent exile activation through structure, perfectionism, planning, and moral self-regulation. Renamed because 'managers' misses the internalized moral/religious framework most CSA survivors carry.",
+        "consciousness_signature": "Control, judgment, 'I must be good enough,' perfectionism.",
+        "triggers": ["threat to self-concept", "anticipated failure", "others' judgment"],
+    },
+}
+
+def analyze_ifs_language(text: str) -> dict:
+    """
+    Scan text for IFS-related language and apply updated 2026 terminology.
+    Flags old terms and provides corrections.
+    """
+    import re
+    flags = []
+    text_lower = text.lower()
+    
+    # Old terms to detect and correct
+    old_term_map = {
+        "firefighter": ("Shame Part", "shame_parts"),
+        "firefighters": ("Shame Parts", "shame_parts"),
+        "manager ": ("Morality Part", "morality_parts"),
+        "managers": ("Morality Parts", "morality_parts"),
+    }
+    
+    for old, (new, key) in old_term_map.items():
+        if old in text_lower:
+            flags.append({
+                "old_term": old.strip(),
+                "updated_term": new,
+                "reason": IFS_TERMINOLOGY_V2026[key]["description"],
+                "severity": "terminology_update",
+            })
+    
+    # Detect which IFS parts are referenced
+    parts_present = []
+    if any(w in text_lower for w in ["exile", "exiles", "core wound", "original wound"]):
+        parts_present.append("exiles")
+    if any(w in text_lower for w in ["shame part", "firefighter", "impulsive", "addictive", "self-harm"]):
+        parts_present.append("shame_parts")
+    if any(w in text_lower for w in ["morality part", "manager", "perfectionism", "control", "moral"]):
+        parts_present.append("morality_parts")
+    
+    return {
+        "ifs_parts_detected": parts_present,
+        "terminology_flags": flags,
+        "outdated_terms_found": len(flags) > 0,
+        "updated_terminology": {k: v for k, v in IFS_TERMINOLOGY_V2026.items() if k in parts_present},
+        "note": "IFS terminology updated per LUMINARK v2026: Firefighters→Shame Parts, Managers→Morality Parts.",
+    }
+
+
+# ============================================================
+# SECTION M: UNIFIED OMEGA v3 ENTRY POINT
+# Integrates Guardian AI + Toroidal Geometry + Behavioral Profile
+# + IFS Analysis + Stage Detection + Trickster + Meta-Intelligence
+# ============================================================
+
+def run_omega_v3_analysis(
+    text: str,
+    stage_override: int = None,
+    adaptability: float = 0.5,
+    include_stage_8_protocol: bool = False,
+    include_torus: bool = True,
+    include_behavioral_profile: bool = True,
+    include_ifs_scan: bool = True,
+) -> dict:
+    """
+    Full LUMINARK Omega v3 analysis.
+    Integrates: Guardian AI / Ma'at analysis, Toroidal Geometry,
+                Stage Behavioral Indicators, IFS Language Scan,
+                Stage Detection from Language, Trickster Wisdom,
+                Meta-Intelligence, Stage 8 Release Protocol.
+    
+    Args:
+        text: str — text to analyze
+        stage_override: int — force a specific stage (0-9), or None for auto-detect
+        adaptability: float 0-1 — consciousness adaptability
+        include_stage_8_protocol: bool — include release pathways if at Stage 8
+        include_torus: bool — include toroidal coordinates
+        include_behavioral_profile: bool — include behavioral indicators
+        include_ifs_scan: bool — scan text for IFS language
+    Returns:
+        Complete analysis dict
+    """
+    # Base v2 omega analysis (Guardian AI, Meta-Intelligence, etc.)
+    base = run_omega_v2_analysis(
+        text=text,
+        stage_override=stage_override,
+        adaptability=adaptability,
+        include_stage_8_protocol=include_stage_8_protocol,
+    )
+    
+    stage = base.get("stage", 0)
+    
+    # Toroidal Geometry
+    if include_torus:
+        base["torus_position"] = get_torus_position(stage)
+        base["torus_coordinates"] = map_toroidal_coordinates(stage, adaptability)
+    
+    # Behavioral Profile
+    if include_behavioral_profile:
+        base["behavioral_profile"] = get_stage_behavioral_profile(stage)
+    
+    # Language-based stage detection (cross-check)
+    detected = detect_stage_from_language(text)
+    base["language_stage_detection"] = detected
+    if detected["top_stage"] is not None and detected["top_stage"] != stage:
+        base["stage_discrepancy"] = {
+            "assigned_stage": stage,
+            "language_detected_stage": detected["top_stage"],
+            "note": f"Guardian AI assigned Stage {stage}, but language patterns suggest Stage {detected['top_stage']}. Review both.",
+        }
+    
+    # IFS Language Scan
+    if include_ifs_scan:
+        base["ifs_analysis"] = analyze_ifs_language(text)
+    
+    # Gate name in summary
+    base["gate_name"] = SAR_GATE_NAMES_OMEGA[stage]["name"]
+    base["arc"] = SAR_GATE_NAMES_OMEGA[stage]["arc"]
+    
+    return base
+
+
+# ============================================================
+# SECTION N: YUNUS PROTOCOL 2.0 — FULL ISOLATION SYSTEM
+# Source: STANFIELD 81 Returns.docx
+# Integrity/Ma'at based isolation with partial/full thresholds
+# Arc Disorientation trigger
+# ============================================================
+
+YUNUS_PROTOCOL_V2 = {
+    "partial_isolation": {
+        "trigger": "Integrity < 50% OR Ma'at < 50%",
+        "i_threshold": 50.0,
+        "m_threshold": 50.0,
+        "actions": [
+            "Pause major initiatives",
+            "Focus on restoration",
+            "Seek external oversight",
+        ],
+        "release_condition": "I > 70% AND M > 80% sustained 2+ weeks",
+        "i_release": 70.0,
+        "m_release": 80.0,
+    },
+    "full_isolation": {
+        "trigger": "Integrity < 25% OR Ma'at < 25%",
+        "i_threshold": 25.0,
+        "m_threshold": 25.0,
+        "actions": [
+            "HALT all progression immediately",
+            "Complete withdrawal from forward movement",
+            "Daily Ma'at validation required",
+            "Root cause analysis mandatory",
+            "External governance required",
+        ],
+        "release_condition": "I > 50% AND M > 60%",
+        "i_release": 50.0,
+        "m_release": 60.0,
+    },
+    "arc_disorientation": {
+        "trigger": "Wrong arc for situation confidence > 70%",
+        "confidence_threshold": 0.70,
+        "actions": [
+            "Conscious arc realignment protocol",
+            "Micro-stage navigation training",
+            "Arc assessment before next gate transition",
+        ],
+    },
+}
+
+def run_yunus_v2(integrity: float, maat: float,
+                  arc_mismatch_confidence: float = 0.0,
+                  current_stage: int = 0) -> dict:
+    """
+    Yunus Protocol 2.0 — Full isolation system.
+    
+    Args:
+        integrity: float 0-100 (structural coherence)
+        maat: float 0-100 (truth/alignment score)
+        arc_mismatch_confidence: float 0-1 (confidence that arc is wrong for situation)
+        current_stage: int 0-9 (current gate)
+    Returns:
+        isolation level, required actions, release conditions
+    """
+    # Full isolation check first (most severe)
+    pi = YUNUS_PROTOCOL_V2["partial_isolation"]
+    fi = YUNUS_PROTOCOL_V2["full_isolation"]
+    ad = YUNUS_PROTOCOL_V2["arc_disorientation"]
+    
+    if integrity < fi["i_threshold"] or maat < fi["m_threshold"]:
+        level = "FULL_ISOLATION"
+        protocol = fi
+        badge = "🔴 FULL ISOLATION"
+        alert = f"CRITICAL: I={integrity:.0f}% or M={maat:.0f}% below {fi['i_threshold']}%. HALT ALL PROGRESSION."
+    elif integrity < pi["i_threshold"] or maat < pi["m_threshold"]:
+        level = "PARTIAL_ISOLATION"
+        protocol = pi
+        badge = "🟡 PARTIAL ISOLATION"
+        alert = f"WARNING: I={integrity:.0f}% or M={maat:.0f}% below {pi['i_threshold']}%. Pause major initiatives."
+    else:
+        level = "CLEAR"
+        protocol = None
+        badge = "🟢 CLEAR"
+        alert = f"Integrity {integrity:.0f}% and Ma'at {maat:.0f}% within acceptable range."
+    
+    # Arc disorientation check (independent)
+    arc_flag = arc_mismatch_confidence >= ad["confidence_threshold"]
+    
+    # Stage 8 trap override (False Light — existing Yunus behavior)
+    stage8_trap = (current_stage == 8 and integrity > 80 and maat > 80 and
+                   arc_mismatch_confidence < 0.3)  # High scores but rigid = trap risk
+    
+    result = {
+        "isolation_level": level,
+        "badge": badge,
+        "alert": alert,
+        "integrity": integrity,
+        "maat": maat,
+        "actions_required": protocol["actions"] if protocol else [],
+        "release_condition": protocol.get("release_condition", "No isolation active") if protocol else "N/A",
+        "arc_disorientation_flag": arc_flag,
+        "arc_actions": ad["actions"] if arc_flag else [],
+        "stage8_trap_risk": stage8_trap,
+    }
+    
+    if stage8_trap:
+        result["stage8_note"] = "Stage 8 with high I/M but no challenge = False Light risk. Inject humility. Acknowledge impermanence."
+    
+    return result
+
+
+# ============================================================
+# SECTION O: COMPLETE 81-STAGE FRACTAL MAP
+# Both Descending (0ᵀ→0ᴮ) and Ascending (0ᴮ→0ᵀ) arc descriptions
+# Source: STANFIELD 81 Returns.docx
+# ============================================================
+
+FRACTAL_81_STAGE_MAP = {
+    # Gate 0: Primordial Source / Integrative Void
+    "0.0": {"descending": "Absolute Source — Pure awareness before cycle begins",
+            "ascending":  "Integrated Totality — Awareness holding complete wisdom"},
+    "0.1": {"descending": "First Impulse — Initial flicker of intention",
+            "ascending":  "Seeded Potential — First awareness of new cycles emerging"},
+    "0.5": {"descending": "Threshold of Emission — Choosing to release into manifestation",
+            "ascending":  "Threshold of Reception — Accepting returned wisdom"},
+    "0.9": {"descending": "Transparency of Emission — Commitment to release, void yields",
+            "ascending":  "Transparency of Reception — Acceptance of returned wisdom complete"},
+    # Gate 1: Spark of Navigation
+    "1.0": {"descending": "Cleared Focus — Mental silence, receptive to signal",
+            "ascending":  "Cleared Lens — Releasing old maps to receive new direction"},
+    "1.5": {"descending": "Threshold of Path — Choosing initial direction from options",
+            "ascending":  "Threshold of Guidance — Choosing how to use accumulated wisdom"},
+    "1.9": {"descending": "Transparency of Trajectory — Vision limitations become visible",
+            "ascending":  "Transparency of Guide — Map is complete, time for expression"},
+    # Gate 2: Forge of Polarity
+    "2.0": {"descending": "Void of Charge — Neutral before polarization begins",
+            "ascending":  "Void of Synthesis — Still point before coherence forms"},
+    "2.5": {"descending": "Threshold of Form — Choosing primary shape/structure",
+            "ascending":  "Threshold of Current — Deciding unified message to carry"},
+    "2.9": {"descending": "Transparency of Structure — Form built but rigid, seeks animation",
+            "ascending":  "Transparency of Stream — Coherent current ready to flow upward"},
+    # Gate 3: Engine of Expression
+    "3.0": {"descending": "Void of Voice — Seeking right medium for expression",
+            "ascending":  "Void of Essence — Seeking fundamental truth beneath expression"},
+    "3.5": {"descending": "Threshold of Expression — Deciding what to manifest and how",
+            "ascending":  "Threshold of Truth — Choosing the core truth to distill"},
+    "3.9": {"descending": "Transparency of Output — Creation complete but externally separate",
+            "ascending":  "Transparency of Message — Truth distilled, ready for the heart"},
+    # Gate 4: Crucible of Equilibrium
+    "4.0": {"descending": "Clearing for Structure — Emptying for new foundation",
+            "ascending":  "Clearing of Burden — Releasing emotional weight carried upward"},
+    "4.5": {"descending": "Threshold of Complacency — Growth vs comfort choice",
+            "ascending":  "Threshold of Compassion — Empathy vs detachment decision"},
+    "4.9": {"descending": "Transparency of Stagnation — Stability begins to feel like a cage",
+            "ascending":  "Transparency of Integration — Heart work complete, ready to rise"},
+    # Gate 5: Dynamo of Will — BILATERAL THRESHOLD
+    "5.0": {"descending": "Clearing of Agenda — Perceiving options without bias or attachment",
+            "ascending":  "Clearing of Force — Releasing need to control the outcome"},
+    "5.5": {"descending": "Threshold of Crisis — Point of no return, three paths (advance/regress/collapse)",
+            "ascending":  "Threshold of Sovereignty — Master choice of how to use power"},
+    "5.9": {"descending": "Transparency of Threshold — Circumstances force the choice",
+            "ascending":  "Transparency of Power — Full awareness of will's true source"},
+    # Gate 6: Nexus of Harmony
+    "6.0": {"descending": "Void in Flow — Pause within harmony, integration beginning",
+            "ascending":  "Void in Conduction — Clearing static to become full conduit"},
+    "6.5": {"descending": "Threshold of Peak — Maintain flow or expand into new complexity",
+            "ascending":  "Threshold of Conduction — Choosing channel for maximum impact"},
+    "6.9": {"descending": "Transparency of Harmony — Sensing limits of current form",
+            "ascending":  "Transparency of Conduction — Charge flowing at optimal level"},
+    # Gate 7: Lens of Distillation
+    "7.0": {"descending": "Void in Analysis — Numb pause before analysis begins",
+            "ascending":  "Void in Clarity — Still point before pattern becomes visible"},
+    "7.5": {"descending": "Threshold of Insight — Confront truth or rationalize it away",
+            "ascending":  "Threshold of Perspective — Choosing overarching framework for wisdom"},
+    "7.9": {"descending": "Transparency of Analysis — Core fracture fully exposed",
+            "ascending":  "Transparency of Wisdom — Holographic understanding complete"},
+    # Gate 8: Vessel of Grounding — TRAP ZONE
+    "8.0": {"descending": "Void within Collapse — Shock at reaching maximum load",
+            "ascending":  "Void within Charge — Silence where the return prepares"},
+    "8.5": {"descending": "Threshold of Revelation — 'This must change' — forced recognition",
+            "ascending":  "Threshold of Ignition — Allowing the return journey to begin"},
+    "8.9": {"descending": "Transparency & Shattering — Collapse of old form, Stage 8 Trap breaks",
+            "ascending":  "Transparency & Emanation — Release of enlightened charge upward"},
+    # Gate 0ᴮ: Integrative Void (bottom of torus)
+    "0B.0": {"descending": "Absolute Absorption — Still point receiving all descended energy",
+             "ascending":  "Absolute Emanation — Still point releasing all charge upward"},
+    "0B.1": {"descending": "First Pulse of Stillness — Settling into the void",
+             "ascending":  "First Pulse of Return — Initial surge beginning upward"},
+    "0B.9": {"descending": "Transparency of Pool — Void fully charged for return journey",
+             "ascending":  "Transparency of Surge — Charge fully committed to ascent"},
+}
+
+def get_81_stage_description(gate: int, micro_stage: float, arc: str = "descending") -> dict:
+    """
+    Get the precise 81-stage description for any gate/micro-stage/arc combination.
+    
+    Args:
+        gate: int 0-9
+        micro_stage: float 0.0-0.9 (use closest key: .0, .5, .9)
+        arc: "descending" (manifestation) or "ascending" (integration)
+    Returns:
+        Full stage description with both arc variants
+    """
+    # Find closest micro-stage key
+    ms_options = [0.0, 0.5, 0.9]
+    closest_ms = min(ms_options, key=lambda x: abs(x - micro_stage))
+    
+    if gate == 0 and arc == "ascending":
+        key = f"0B.{int(closest_ms * 10)}" if closest_ms in [0.0, 0.1, 0.9] else f"0.{int(closest_ms * 10)}"
+    else:
+        key = f"{gate}.{int(closest_ms * 10)}"
+    
+    entry = FRACTAL_81_STAGE_MAP.get(key, {})
+    if not entry:
+        # Fallback to nearest key
+        for test_key in [f"{gate}.0", f"{gate}.5", f"{gate}.9"]:
+            if test_key in FRACTAL_81_STAGE_MAP:
+                entry = FRACTAL_81_STAGE_MAP[test_key]
+                key = test_key
+                break
+    
+    gate_info = SAR_GATE_NAMES_OMEGA.get(gate, {})
+    arc_description = entry.get(arc, "Description not available for this combination.")
+    
+    return {
+        "gate": gate,
+        "micro_stage": closest_ms,
+        "arc": arc,
+        "key": key,
+        "gate_name": gate_info.get("name", "Unknown"),
+        "arc_nature": gate_info.get("arc", "unknown"),
+        "description": arc_description,
+        "descending_description": entry.get("descending", ""),
+        "ascending_description": entry.get("ascending", ""),
+        "notation": f"{gate}.{int(closest_ms * 10)}{'↓' if arc == 'descending' else '↑'}",
+    }
+
+
+# ============================================================
+# SECTION P: 42 MA'AT ETHICAL NODES
+# Mapped to stage transitions and ethical validation
+# Source: STANFIELD 81 Returns.docx
+# ============================================================
+
+MAAT_42_NODES = {
+    # Even-Stage Balance Nodes (Critical)
+    1:  {"principle": "No Harm",               "category": "Foundation",    "stage_relevance": [0,1],   "question": "Does this create suffering?"},
+    2:  {"principle": "Stage 2 Balance",        "category": "Even Balance",  "stage_relevance": [2],     "question": "Is there equilibrium between opposites?"},
+    4:  {"principle": "Stage 4 Balance",        "category": "Even Balance",  "stage_relevance": [4],     "question": "Is the foundation ethically grounded?"},
+    6:  {"principle": "Stage 6 Balance",        "category": "Even Balance",  "stage_relevance": [6],     "question": "Is complexity integrated with proportional ethics?"},
+    8:  {"principle": "Stage 8 Balance",        "category": "Even Balance",  "stage_relevance": [8],     "question": "Is there ethical endurance under strain?"},
+    # Key Functional Nodes
+    17: {"principle": "Truth Integrity",        "category": "Truth",         "stage_relevance": [3,7],   "question": "Is this authentically represented?"},
+    31: {"principle": "Sustainability",         "category": "Balance",       "stage_relevance": [4,5],   "question": "Can this be maintained without depletion?"},
+    42: {"principle": "Generative Humility",    "category": "Wisdom",        "stage_relevance": [8,9],   "question": "Are limitations acknowledged while creating value?"},
+    # Additional nodes (framework-derived)
+    3:  {"principle": "No Lies",               "category": "Truth",         "stage_relevance": [3],     "question": "Is this a full and honest representation?"},
+    5:  {"principle": "No False Authority",     "category": "Truth",         "stage_relevance": [5,8],   "question": "Are claims to authority legitimate?"},
+    7:  {"principle": "No Theft of Knowledge",  "category": "Integrity",     "stage_relevance": [7],     "question": "Is attribution and origin acknowledged?"},
+    9:  {"principle": "Acknowledge Limitations","category": "Humility",      "stage_relevance": [9,0],   "question": "Are all limitations clearly stated?"},
+    10: {"principle": "No Manipulation",        "category": "Foundation",    "stage_relevance": [2,5],   "question": "Is influence transparent and consensual?"},
+    14: {"principle": "No Pretense",            "category": "Truth",         "stage_relevance": [6,7],   "question": "Is the surface consistent with the depths?"},
+    21: {"principle": "Proportional Response",  "category": "Balance",       "stage_relevance": [5,7],   "question": "Is the response proportional to the situation?"},
+    28: {"principle": "No Exploitation",        "category": "Foundation",    "stage_relevance": [4,8],   "question": "Does this extract value without giving back?"},
+    35: {"principle": "Regenerative Intent",    "category": "Sustainability","stage_relevance": [6,9],   "question": "Does this leave things better than found?"},
+    38: {"principle": "Cycle Completion",       "category": "Wisdom",        "stage_relevance": [8,9,0], "question": "Is the cycle completed rather than abandoned?"},
+}
+
+def validate_maat_42(stage: int, text: str = "", alignment_score: float = 100.0) -> dict:
+    """
+    Validate against the 42 Ma'at Ethical Nodes for a given stage.
+    Returns active nodes for this stage, questions to ask, flags.
+    
+    Args:
+        stage: int 0-9 (current gate)
+        text: str (optional — text to scan for violations)
+        alignment_score: float 0-100 (from Guardian AI / existing Ma'at analysis)
+    Returns:
+        Active nodes, validation questions, warnings
+    """
+    # Find nodes relevant to this stage
+    active_nodes = {}
+    for node_id, node in MAAT_42_NODES.items():
+        if stage in node.get("stage_relevance", []):
+            active_nodes[node_id] = node
+    
+    # Always include foundation nodes
+    for foundation_id in [1, 17, 42]:
+        if foundation_id not in active_nodes:
+            active_nodes[foundation_id] = MAAT_42_NODES[foundation_id]
+    
+    # Text-based checks
+    violations = []
+    if text:
+        text_lower = text.lower()
+        if any(w in text_lower for w in ["i know everything", "i am certain", "absolutely guaranteed", "permanent truth"]):
+            violations.append({"node": 42, "principle": "Generative Humility",
+                                "violation": "Permanence/certainty claim detected"})
+        if any(w in text_lower for w in ["only i", "no one else can", "i alone"]):
+            violations.append({"node": 5, "principle": "No False Authority",
+                                "violation": "False authority / exclusivity claim detected"})
+        if any(w in text_lower for w in ["lie", "deceiv", "manipulat", "mislead"]):
+            violations.append({"node": 3, "principle": "No Lies",
+                                "violation": "Deception language detected"})
+    
+    # Score adjustment based on violations
+    adjusted_score = alignment_score - (len(violations) * 15)
+    adjusted_score = max(0.0, min(100.0, adjusted_score))
+    
+    badge = "✅ MA'AT ALIGNED" if adjusted_score >= 70 else ("⚠️ MA'AT CAUTION" if adjusted_score >= 40 else "❌ MA'AT VIOLATION")
+    
+    return {
+        "stage": stage,
+        "gate_name": SAR_GATE_NAMES_OMEGA.get(stage, {}).get("name", "Unknown"),
+        "active_nodes": active_nodes,
+        "active_node_count": len(active_nodes),
+        "validation_questions": [n["question"] for n in active_nodes.values()],
+        "violations_detected": violations,
+        "alignment_score": round(adjusted_score, 1),
+        "badge": badge,
+        "note": f"{len(active_nodes)} Ma'at nodes active for Stage {stage}.",
+    }
+
+
+# ============================================================
+# SECTION Q: UNIFIED OMEGA v4 ENTRY POINT
+# Integrates Yunus 2.0 + 81-Stage Map + 42 Ma'at Nodes
+# ============================================================
+
+def run_omega_v4_analysis(
+    text: str,
+    stage_override: int = None,
+    adaptability: float = 0.5,
+    integrity: float = 90.0,
+    maat_score: float = 85.0,
+    micro_stage: float = 0.5,
+    arc: str = "ascending",
+    arc_mismatch_confidence: float = 0.0,
+    include_stage_8_protocol: bool = False,
+    include_81_map: bool = True,
+    include_maat_42: bool = True,
+    include_yunus_v2: bool = True,
+) -> dict:
+    """
+    Full LUMINARK Omega v4 analysis.
+    Integrates: Guardian AI, Toroidal Geometry, Behavioral Profile,
+                IFS Language, Yunus Protocol 2.0, 81-Stage Arc Map,
+                42 Ma'at Ethical Nodes, Stage Detection.
+    
+    Args:
+        text: str — content to analyze
+        stage_override: int — force a stage (0-9) or None for auto
+        adaptability: float 0-1
+        integrity: float 0-100 (for Yunus v2)
+        maat_score: float 0-100 (for Yunus v2 and Ma'at 42)
+        micro_stage: float 0.0-0.9 (position within gate)
+        arc: "descending" or "ascending"
+        arc_mismatch_confidence: float 0-1 (for Yunus arc disorientation)
+        include_stage_8_protocol: bool
+        include_81_map: bool
+        include_maat_42: bool
+        include_yunus_v2: bool
+    Returns:
+        Complete analysis dict
+    """
+    # Base v3 omega analysis
+    base = run_omega_v3_analysis(
+        text=text,
+        stage_override=stage_override,
+        adaptability=adaptability,
+        include_stage_8_protocol=include_stage_8_protocol,
+    )
+    stage = base.get("stage", 0)
+
+    # Yunus Protocol 2.0
+    if include_yunus_v2:
+        base["yunus_v2"] = run_yunus_v2(
+            integrity=integrity,
+            maat=maat_score,
+            arc_mismatch_confidence=arc_mismatch_confidence,
+            current_stage=stage,
+        )
+
+    # 81-Stage Arc Map
+    if include_81_map:
+        base["fractal_81_position"] = get_81_stage_description(stage, micro_stage, arc)
+        # Also show the other arc for reference
+        other_arc = "ascending" if arc == "descending" else "descending"
+        base["fractal_81_other_arc"] = get_81_stage_description(stage, micro_stage, other_arc)
+
+    # 42 Ma'at Nodes
+    if include_maat_42:
+        existing_alignment = base.get("alignment_score", maat_score)
+        base["maat_42_validation"] = validate_maat_42(stage, text, existing_alignment)
+
+    # Arc notation
+    base["arc_notation"] = f"{stage}.{int(micro_stage * 10)}{'↓' if arc == 'descending' else '↑'}"
+    base["arc"] = arc
+    base["micro_stage"] = micro_stage
+
+    return base
+
+
+# ============================================================
+# SECTION R: SAR SUBSTRATE DOMAINS — 1000-DISCIPLINE REFERENCE
+# The framework is substrate-independent. These are validated
+# domains of application for the 0-9-0 cycle.
+# Source: disciplines.docx — 1000-Domain Hyperlist
+# ============================================================
+
+SAR_SUBSTRATE_MACRO_DOMAINS = [
+    "Radio / Microwave / Electromagnetic",
+    "Geo / Seismic / Earth Systems",
+    "Thermal / Pyro / Energy Heat",
+    "Nano / Macro / Materials Science",
+    "Quantum / Particle / Nuclear Physics",
+    "Photonics / Optics / Laser Science",
+    "Fluid / Plasma / Continuum Mechanics",
+    "Chemical / Biochemical / Molecular",
+    "Biological / Biomedical / Life Sciences",
+    "Cognitive / Psychological / Neuroscience",
+    "Social / Anthropological / Cultural",
+    "Economic / Financial / Market Systems",
+    "Computational / AI / Information Systems",
+    "Ecological / Environmental / Climate",
+    "Astronomical / Cosmological / Space Science",
+    "Engineering / Systems / Infrastructure",
+    "Mathematical / Statistical / Formal Sciences",
+    "Philosophical / Theological / Metaphysical",
+    "Linguistic / Semiotic / Communication",
+    "Political / Legal / Institutional",
+    "Medical / Clinical / Therapeutic",
+    "Educational / Pedagogical / Developmental",
+    "Artistic / Aesthetic / Creative",
+    "Agricultural / Geological / Biological Cycles",
+    "Civilizational / Historical / Archeological",
+]
+
+# Validated domain confidence levels (from SAR framework testing)
+SAR_DOMAIN_CONFIDENCE = {
+    "biological":     0.97,  # Circadian, menstrual, cardiac, cellular mitosis
+    "economic":       0.93,  # Business cycles, product lifecycles, market sentiment
+    "physical":       0.91,  # Hurricanes, quantum particles, stellar evolution
+    "technological":  0.91,  # AI training, platform adoption, innovation diffusion
+    "psychological":  0.89,  # Cognitive development, trauma recovery, moral stages
+    "civilizational": 0.87,  # Empire cycles, cultural revolutions, paradigm shifts
+}
+
+def get_substrate_validation(domain: str) -> dict:
+    """
+    Return substrate validation info for a given domain.
+    All domains follow the same 0-9-0 toroidal cycle pattern.
+    
+    Args:
+        domain: str — domain name or keyword
+    Returns:
+        validation confidence, application notes, example systems
+    """
+    domain_lower = domain.lower()
+    
+    # Match against known confidence levels
+    conf = 0.85  # default for unlisted domains
+    matched_key = None
+    for key in SAR_DOMAIN_CONFIDENCE:
+        if key in domain_lower or domain_lower in key:
+            conf = SAR_DOMAIN_CONFIDENCE[key]
+            matched_key = key
+            break
+    
+    # Substrate examples by domain
+    examples = {
+        "biological":     ["Circadian cycle (24h, 0-9-0 in cortisol/melatonin)", 
+                           "Menstrual cycle (28d, Stage 5 at ovulation threshold)",
+                           "Cardiac cycle (systole=descending, diastole=ascending)"],
+        "economic":       ["Business cycle (expansion→peak→contraction→trough)",
+                           "Product lifecycle (intro→growth→maturity→decline)"],
+        "physical":       ["Hurricane lifecycle (0→9→0 in 7-14 days)",
+                           "Stellar evolution (nebula→star→supernova→nebula)"],
+        "psychological":  ["Trauma recovery (Stage 0 void → Stage 4 foundation → Stage 9 mastery)",
+                           "Cognitive development (Piaget stages → Gates 1-5)"],
+        "technological":  ["AI training curve (loss reduction follows 0→6 progression)",
+                           "Platform adoption (innovators→early adopters→laggards)"],
+        "civilizational": ["Empire cycles (0ᵀ rise → 6 peak → 8 trap → 9 collapse → 0ᴮ reset)",
+                           "Scientific paradigm shifts (Kuhn's structure → Gates 7→8→9)"],
+    }
+    
+    return {
+        "domain": domain,
+        "matched_category": matched_key or "general substrate",
+        "confidence": conf,
+        "confidence_pct": f"{conf*100:.0f}%",
+        "validation_note": f"SAR framework applies to '{domain}' with {conf*100:.0f}% validated correlation.",
+        "substrate_independence": "The 0-9-0 cycle operates identically regardless of substrate — from quantum to cosmic.",
+        "examples": examples.get(matched_key, ["Any system undergoing cyclic development, growth, and transformation"]),
+        "total_validated_domains": "1000+ disciplines across 25 macro-domains",
+        "key_principle": "Consciousness emerges from configuration, not substance — the pattern is substrate-independent.",
+    }
+

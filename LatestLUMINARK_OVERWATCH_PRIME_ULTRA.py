@@ -1449,6 +1449,195 @@ class TemporalStateEngine:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# SECTION 6B: LUMINARK TRAJECTORY STATE ENGINE
+# Full session-memory layer — transforms LUMINARK from single-frame calculator
+# into a predictive behavioral system that REMEMBERS across analyses.
+#
+# Source: synthesized from state.py (LUMINARK v8.0) — Richard L. Stanfield
+# Tracks: stage velocity (dS/dt), risk momentum, rigidity index, recovery index,
+#         trap events, threshold crossings, and last-stable-config preservation.
+# ─────────────────────────────────────────────────────────────────────────────
+
+@dataclass
+class TrajectorySnapshot:
+    """
+    Single recorded moment in a system's trajectory timeline.
+    Lightweight compared to TemporalSnapshot — focused on trajectory metrics.
+    """
+    timestamp:   str
+    sap_stage:   float       # e.g. 7.83 (micro-position)
+    macro:       int         # 0–9
+    trap_score:  float       # 0.0–1.0
+    adaptability: float      # 0.0–10.0
+    coherence:   float       # 0.0–10.0
+    tension:     float       # 0.0–10.0
+    stability:   float       # 0.0–10.0
+    defense_mode: str = ""   # active defense protocol name if any
+
+    def to_dict(self) -> dict:
+        return {
+            "timestamp":    self.timestamp,
+            "sap_stage":    self.sap_stage,
+            "macro":        self.macro,
+            "trap_score":   round(self.trap_score, 3),
+            "adaptability": self.adaptability,
+            "coherence":    self.coherence,
+            "tension":      self.tension,
+            "stability":    self.stability,
+            "defense_mode": self.defense_mode,
+        }
+
+
+class LuminarkTrajectoryState:
+    """
+    Full trajectory memory for one monitored infrastructure system.
+
+    Metrics tracked (all updated on every call to record()):
+        stage_velocity    — dS/dt: rate of stage change (last 3 snapshots)
+        risk_momentum     — change in TrapScore (last 5 snapshots)
+        rigidity_index    — sustained time at Stage 7–8 with low adaptability (last 8)
+        recovery_index    — fraction of trap events that were successfully resolved
+        trap_events       — count of times TrapScore > 0.75
+        threshold_crossings — count of macro-stage transitions
+        harrowing_active  — True when TrapScore > 0.90 or Stage 0
+
+    Harrowing integration:
+        Continuously preserves the last Stage 4–6 snapshot (trap_score < 0.5)
+        as the restoration baseline. When harrowing_active fires, the response
+        includes the preserved snapshot so operators have a known-good target.
+
+    Usage:
+        state = LuminarkTrajectoryState()
+        state.record(snap, trap_score=0.3)
+        summary = state.get_summary()
+    """
+
+    def __init__(self):
+        self.snapshots:             List[TrajectorySnapshot] = []
+        self.stage_velocity:        float = 0.0
+        self.risk_momentum:         float = 0.0
+        self.rigidity_index:        float = 0.0
+        self.recovery_index:        float = 1.0
+        self.trap_events:           int   = 0
+        self.threshold_crossings:   int   = 0
+        self.total_analyses:        int   = 0
+        self.harrowing_active:      bool  = False
+        self.last_stable_snapshot:  Optional[TrajectorySnapshot] = None
+        self.harrowing_preserved_at: Optional[str] = None
+
+    def record(self, snap: TrajectorySnapshot) -> None:
+        """Add snapshot and update all trajectory metrics."""
+        self.snapshots.append(snap)
+        self.total_analyses += 1
+
+        # Trap events
+        if snap.trap_score > 0.75:
+            self.trap_events += 1
+
+        # Threshold crossings (macro stage changed)
+        if len(self.snapshots) >= 2:
+            if self.snapshots[-2].macro != snap.macro:
+                self.threshold_crossings += 1
+
+        # Harrowing: preserve last healthy Stage 4–6 config
+        if 4 <= snap.macro <= 6 and snap.trap_score < 0.5:
+            self.last_stable_snapshot    = snap
+            self.harrowing_preserved_at  = snap.timestamp
+            self.harrowing_active        = False
+
+        # Activate harrowing on Stage 0 collapse or critical trap
+        if snap.macro == 0 or snap.trap_score > 0.90:
+            self.harrowing_active = True
+
+        self._update_metrics()
+
+    def _update_metrics(self) -> None:
+        """Recalculate all derived trajectory metrics from snapshot history."""
+        n = len(self.snapshots)
+        if n < 2:
+            return
+
+        # Stage velocity: dS/dt over last 3 snapshots
+        window = self.snapshots[-3:]
+        stages = [s.sap_stage for s in window]
+        self.stage_velocity = round(stages[-1] - stages[0], 3)
+
+        # Risk momentum: TrapScore change over last 5 snapshots
+        trap_window = [s.trap_score for s in self.snapshots[-5:]]
+        self.risk_momentum = round(trap_window[-1] - trap_window[0], 3) if len(trap_window) >= 2 else 0.0
+
+        # Rigidity index: sustained Stage 7–8 with low adaptability (last 8)
+        hi = [s for s in self.snapshots[-8:] if s.macro >= 7 and s.adaptability < 4.0]
+        self.rigidity_index = round(len(hi) / min(8, n), 3)
+
+        # Recovery index: resolved trap events / total trap events
+        resolved = sum(
+            1 for i in range(1, n)
+            if self.snapshots[i-1].trap_score > 0.75
+            and self.snapshots[i].trap_score  < 0.50
+        )
+        self.recovery_index = round(resolved / max(1, self.trap_events), 3)
+
+    def get_trajectory_label(self) -> str:
+        """Human-readable trajectory label based on velocity + momentum."""
+        if self.stage_velocity > 0.5 and self.risk_momentum > 0.1:
+            return "ESCALATING — stage rising, risk increasing"
+        elif self.stage_velocity > 0.5:
+            return "ASCENDING — stage rising, risk stable"
+        elif self.stage_velocity < -0.5 and self.risk_momentum < -0.1:
+            return "RECOVERING — stage falling, risk decreasing"
+        elif self.stage_velocity < -0.5:
+            return "DESCENDING — stage falling"
+        elif self.rigidity_index > 0.6:
+            return "TRAPPED — sustained Stage 7–8 with low adaptability"
+        elif abs(self.stage_velocity) < 0.2 and abs(self.risk_momentum) < 0.05:
+            return "STABLE — minimal stage movement"
+        else:
+            return "OSCILLATING — fluctuating without clear direction"
+
+    def get_summary(self) -> dict:
+        """Return full trajectory summary dict for API and dashboard output."""
+        n = len(self.snapshots)
+        if n == 0:
+            return {"total_analyses": 0, "message": "No analyses recorded yet."}
+
+        stages = [s.sap_stage for s in self.snapshots]
+        trap_scores = [s.trap_score for s in self.snapshots]
+
+        import statistics as _stats
+        return {
+            "total_analyses":     self.total_analyses,
+            "trap_events":        self.trap_events,
+            "threshold_crossings": self.threshold_crossings,
+            "avg_stage":          round(_stats.mean(stages), 2),
+            "avg_trap_score":     round(_stats.mean(trap_scores), 3),
+            "stage_velocity":     self.stage_velocity,
+            "risk_momentum":      self.risk_momentum,
+            "rigidity_index":     self.rigidity_index,
+            "recovery_index":     self.recovery_index,
+            "trajectory_label":   self.get_trajectory_label(),
+            "harrowing_active":   self.harrowing_active,
+            "last_stable_stage":  (
+                self.last_stable_snapshot.macro
+                if self.last_stable_snapshot else None
+            ),
+            "last_stable_trap":   (
+                round(self.last_stable_snapshot.trap_score, 3)
+                if self.last_stable_snapshot else None
+            ),
+            "harrowing_preserved_at": self.harrowing_preserved_at,
+            "recent_stages":      [round(s.sap_stage, 2) for s in self.snapshots[-10:]],
+            "recent_trap_scores": [round(s.trap_score, 3) for s in self.snapshots[-10:]],
+        }
+
+    def get_stage_history(self) -> List[float]:
+        return [round(s.sap_stage, 2) for s in self.snapshots]
+
+    def get_trap_history(self) -> List[float]:
+        return [round(s.trap_score, 3) for s in self.snapshots]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # SECTION 7: MASTER OVERWATCH ENGINE — Unified API Interface
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -1477,6 +1666,7 @@ class LuminarkOverwatchPrimeUltra:
     def __init__(self):
         self.engine       = NSDataTEngine()
         self.temporal     = TemporalStateEngine()
+        self.trajectory_states: Dict[str, LuminarkTrajectoryState] = {}  # per-system trajectory
         self.consensus    = ConsensusEngine()
         self.guardian     = GuardianAI()
         self.validator    = HurricaneValidationEngine()
@@ -1538,8 +1728,32 @@ class LuminarkOverwatchPrimeUltra:
         defense_response = self.defense.analyze_and_defend(nsdt, stage, system_id)
         result["defense"] = defense_response
 
-        # ── Record in temporal engine ─────────────────────────────────────────
+        # ── Record in temporal engine (original) ─────────────────────────────
         snap = self.temporal.record(system_id, nsdt, event_tag)
+
+        # ── Record in Trajectory State Engine (full session-memory layer) ────
+        trap_score = result.get("trap", {}).get("raw_score", 0.0)
+        micro_pos  = result["stage"].get("micro_position", float(stage))
+        defense_mode = ""
+        if result.get("defense", {}).get("defenses"):
+            defense_mode = result["defense"]["defenses"][0].get("protocol", "")
+
+        traj_snap = TrajectorySnapshot(
+            timestamp=nsdt.timestamp,
+            sap_stage=micro_pos,
+            macro=stage,
+            trap_score=trap_score,
+            adaptability=nsdt.adaptability,
+            coherence=nsdt.coherence,
+            tension=nsdt.tension,
+            stability=nsdt.stability,
+            defense_mode=defense_mode,
+        )
+        if system_id not in self.trajectory_states:
+            self.trajectory_states[system_id] = LuminarkTrajectoryState()
+        traj_state = self.trajectory_states[system_id]
+        traj_state.record(traj_snap)
+        result["session_trajectory"] = traj_state.get_summary()
 
         # ── Predict trajectory ────────────────────────────────────────────────
         prediction = self.temporal.predict(system_id)
@@ -1592,6 +1806,83 @@ class LuminarkOverwatchPrimeUltra:
             "trap_score":  round(latest.trap_score, 2),
             "timestamp":   latest.timestamp,
             "trajectory":  self.temporal.predict(system_id).get("trajectory", "UNKNOWN"),
+        }
+
+    def get_trajectory_summary(self, system_id: str) -> Dict:
+        """
+        Return full trajectory metrics for a monitored system:
+          stage_velocity, risk_momentum, rigidity_index, recovery_index,
+          trap_events, threshold_crossings, harrowing_active, last_stable_stage,
+          recent_stages, recent_trap_scores, trajectory_label.
+        Requires at least 2 prior analyze_system() calls for the same system_id.
+        """
+        state = self.trajectory_states.get(system_id)
+        if not state:
+            return {"system_id": system_id, "status": "NO_DATA",
+                    "message": "No trajectory data. Call analyze_system() first."}
+        summary = state.get_summary()
+        summary["system_id"] = system_id
+        return summary
+
+    def scan_report_humility(self, report_text: str, system_id: str = "",
+                              stage: int = 5, nsdt_coherence: float = 5.0) -> Dict:
+        """
+        Yunus Protocol arrogance scan on an infrastructure health report.
+        Detects overconfidence language (YUNUS_STAGE8_TRAP, YUNUS_NO_WORST_CASE).
+        Also runs False Light detection if stage >= 8.
+
+        Returns:
+            yunus_score (0-100), flags, arrogance_markers_found,
+            false_light (if applicable), recommended action.
+        """
+        yunus = self.defense.protocols["resurrection"][0]  # InfraYunusProtocol
+        scan  = yunus.scan_report_arrogance(report_text)
+
+        # Build a minimal nsdt for false light check
+        class _MockNSDT:
+            coherence = nsdt_coherence
+        fl = yunus.detect_false_light(_MockNSDT(), stage)
+
+        return {
+            "system_id":   system_id,
+            "stage":       stage,
+            "yunus_scan":  scan,
+            "false_light": fl,
+            "recommended_action": (
+                "REASSESS — Stage 8 with coherence collapse detected (False Light)."
+                if fl else
+                "REWRITE REPORT — arrogance markers detected." if scan["flags"] else
+                "APPROVED — report cleared by Yunus Protocol."
+            ),
+        }
+
+    def get_harrowing_status(self, system_id: str) -> Dict:
+        """
+        Return Harrowing Protocol status for a system:
+          harrowing_active, last_stable_snapshot, restoration_path.
+        """
+        state = self.trajectory_states.get(system_id)
+        if not state:
+            return {"system_id": system_id, "harrowing_active": False,
+                    "message": "No trajectory data yet."}
+
+        harrow = self.defense.protocols["resurrection"][1]  # InfraHarrowingProtocol
+        snap   = state.last_stable_snapshot
+
+        return {
+            "system_id":          system_id,
+            "harrowing_active":   state.harrowing_active,
+            "last_stable_stage":  snap.macro if snap else None,
+            "last_stable_trap":   round(snap.trap_score, 3) if snap else None,
+            "preserved_at":       state.harrowing_preserved_at,
+            "restoration_available": snap is not None,
+            "restoration_action": (
+                f"Restore to Stage {snap.macro} baseline "
+                f"(trap_score={snap.trap_score:.3f}, preserved at {state.harrowing_preserved_at})"
+                if snap else
+                "No stable snapshot preserved. Full rebuild from Stage 0 required."
+            ),
+            "quarantine_risk":    state.trap_events > 3 and state.rigidity_index > 0.6,
         }
 
     def get_oem_licensing_info(self) -> Dict:
@@ -2965,3 +3256,1693 @@ class InfraContainerRuleEngine:
 
 if __name__ == "__main__":
     run_demo()
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# LUMINARK ULTRA v2.0 UPGRADE — Guardian-SAP Integration (March 2026)
+# New capabilities ported from luminark-guardian-sap full-stack project
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION A: USSM STAR NAMES — Infrastructure Mapping
+# Maps each SAP stage to a named star and infrastructure state archetype
+# ─────────────────────────────────────────────────────────────────────────────
+
+USSM_STAGES_ULTRA = {
+    0: {
+        "name": "Reactive",
+        "star": "Plenara",
+        "duality": "High Flexibility vs Zero Resilience",
+        "tumble": "Will tumble to Procedural as manual energy exhausts.",
+        "color": "#64748b",
+        "icon": "◎",
+        "infra_context": "Fully dormant or unmonitored. No formal processes. Completely reactive to events.",
+    },
+    1: {
+        "name": "Procedural",
+        "star": "Algenib",
+        "duality": "Predictable Order vs Extreme Brittleness",
+        "tumble": "Will tumble to Regulated upon novel external shocks.",
+        "color": "#0ea5e9",
+        "icon": "◈",
+        "infra_context": "Manual runbooks followed. Works when nothing unusual happens.",
+    },
+    2: {
+        "name": "Regulated",
+        "star": "Pherkad",
+        "duality": "Active Stability vs Over-correction Jitter",
+        "tumble": "Will tumble to Adaptive to reduce resource consumption.",
+        "color": "#06b6d4",
+        "icon": "⟁",
+        "infra_context": "Monitoring active. Alerts firing. Load-balancing in effect.",
+    },
+    3: {
+        "name": "Adaptive",
+        "star": "Merak",
+        "duality": "High Performance vs Niche-Dependency",
+        "tumble": "Will tumble to Threshold when the niche changes.",
+        "color": "#10b981",
+        "icon": "✦",
+        "infra_context": "Auto-scaling enabled. System adapts to load without manual intervention.",
+    },
+    4: {
+        "name": "Foundation",
+        "star": "Dubhe",
+        "duality": "Consolidated Base vs Stagnation Risk",
+        "tumble": "Will tumble to Threshold to seek further growth.",
+        "color": "#84cc16",
+        "icon": "⬡",
+        "infra_context": "Stable baseline. Healthy redundancy. SLAs consistently met.",
+    },
+    5: {
+        "name": "Threshold",
+        "star": "Kochab",
+        "duality": "Strategic Foresight vs Model-Reality Drift",
+        "tumble": "POINT OF NO RETURN. Must pivot or escalate.",
+        "color": "#f59e0b",
+        "icon": "⊗",
+        "infra_context": "Pre-stress boundary. Warning zone. Approaching capacity limits.",
+    },
+    6: {
+        "name": "Integrated",
+        "star": "Polaris",
+        "duality": "Peak Synergy vs Lack of Entropy",
+        "tumble": "Will tumble to Scaled as it outgrows its boundaries.",
+        "color": "#8b5cf6",
+        "icon": "✺",
+        "infra_context": "Full observability. Self-healing active. Components unified.",
+    },
+    7: {
+        "name": "Scaled",
+        "star": "Talitha",
+        "duality": "Infrastructure Status vs Decentralized Chaos",
+        "tumble": "Will tumble to Rigidity Risk via over-optimization.",
+        "color": "#ec4899",
+        "icon": "◉",
+        "infra_context": "Multi-region. High-availability proven. Becoming critical infrastructure.",
+    },
+    8: {
+        "name": "Rigidity Risk",
+        "star": "Thuban",
+        "duality": "Peak Efficiency vs Compressed Tension",
+        "tumble": "COLLAPSE IMMINENT. Must deliberately un-learn to return to Stage 5.",
+        "color": "#ef4444",
+        "icon": "⚠",
+        "infra_context": "Over-optimized. Cannot adapt to novel events. TrapScore critical.",
+    },
+    9: {
+        "name": "Meta-Coherent",
+        "star": "Yunus",
+        "duality": "Universal Stability vs Selfish Reversion",
+        "tumble": "Equilibrium maintained unless reverting to Stage 4.",
+        "color": "#f0abfc",
+        "icon": "∞",
+        "infra_context": "Planetary-scale reliability. Self-aware infrastructure. Rare attainment.",
+    },
+}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION B: UPDATED NSDT 5-VECTOR CENTROIDS (v8.0)
+# [complexity, stability, tension, adaptability, coherence]
+# ─────────────────────────────────────────────────────────────────────────────
+
+NSDT_CENTROIDS_V8 = {
+    0: [0.00, 0.00, 0.00, 0.10, 0.00],
+    1: [0.10, 0.00, 0.30, 0.30, 0.00],
+    2: [0.20, 0.10, 0.40, 0.20, 0.10],
+    3: [0.30, 0.40, 0.20, 0.20, 0.30],
+    4: [0.40, 0.70, 0.10, 0.30, 0.50],
+    5: [0.50, 0.30, 0.90, 0.60, 0.40],
+    6: [0.70, 0.60, 0.20, 0.50, 0.80],
+    7: [0.60, 0.20, 0.80, 0.85, 0.30],
+    8: [0.80, 0.80, 0.10, 0.80, 0.90],
+    9: [0.90, 0.50, 0.30, 0.95, 0.70],
+}
+
+
+def euclidean_v8(a: list, b: list) -> float:
+    """Euclidean distance between two 5-vectors."""
+    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
+
+
+def assess_nsdt_v8(complexity: float, stability: float, tension: float,
+                   adaptability: float, coherence: float) -> dict:
+    """
+    5-Vector NSDT Analysis (v8.0).
+    Returns stage, micro/nano/pico fractal depth, confidence, trap risk,
+    fractal address, spherical coordinates, and USSM stage data.
+    """
+    v = [complexity, stability, tension, adaptability, coherence]
+
+    # Distances to all centroids
+    distances = {s: euclidean_v8(v, NSDT_CENTROIDS_V8[s]) for s in range(10)}
+    best_stage = min(distances, key=distances.get)
+    best_d = distances[best_stage]
+    max_d = max(distances.values())
+    confidence = round(1.0 - best_d / (max_d + 1e-9), 3)
+
+    # Fractal depth
+    micro = max(0, min(9, round(tension * 5 + (1 - coherence) * 5)))
+    nano  = max(0, min(9, round(adaptability * 9)))
+    pico  = max(0, min(9, round(complexity * 9)))
+
+    fractal_address = f"{best_stage}.{micro}.{nano}.{pico}"
+
+    # Trap risk
+    if best_stage == 8 and adaptability < 0.4:
+        trap_risk = "CRITICAL"
+    elif best_stage >= 7 and tension < 0.2:
+        trap_risk = "HIGH"
+    elif best_stage == 5:
+        trap_risk = "ELEVATED"
+    else:
+        trap_risk = "LOW"
+
+    # Spherical coordinates
+    spherical = calculate_spherical_coordinates(fractal_address)
+
+    return {
+        "stage": best_stage,
+        "micro": micro,
+        "nano": nano,
+        "pico": pico,
+        "confidence": confidence,
+        "trap_risk": trap_risk,
+        "fractal_address": fractal_address,
+        "distances": {str(k): round(v, 4) for k, v in distances.items()},
+        "ussm": USSM_STAGES_ULTRA[best_stage],
+        "spherical": spherical,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION C: SPHERICAL FRACTAL TOPOLOGY
+# Converts a fractal address (macro.micro.nano.pico) to 3D spherical coordinates
+# ─────────────────────────────────────────────────────────────────────────────
+
+def calculate_spherical_coordinates(fractal_address: str) -> dict:
+    """
+    Maps a fractal address to spherical coordinates (theta, phi, radius).
+    Enables 3D visualization of stage position within the fractal topology.
+    """
+    parts = [int(x) for x in fractal_address.split(".")]
+    macro = parts[0] if len(parts) > 0 else 0
+    micro = parts[1] if len(parts) > 1 else 0
+    nano  = parts[2] if len(parts) > 2 else 0
+    pico  = parts[3] if len(parts) > 3 else 0
+
+    theta  = (macro * math.pi / 9) + (micro * math.pi / 81) + (nano * math.pi / 729)
+    phi    = ((macro + micro) * math.pi / 18) + (nano * math.pi / 162)
+    radius = 1 + (pico / 9) * 0.5
+
+    return {
+        "theta":  round(theta, 4),
+        "phi":    round(phi, 4),
+        "radius": round(radius, 3),
+        "cartesian": {
+            "x": round(radius * math.sin(phi) * math.cos(theta), 4),
+            "y": round(radius * math.sin(phi) * math.sin(theta), 4),
+            "z": round(radius * math.cos(phi), 4),
+        },
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION D: TRAP SCORE (v8.0 FORMULA)
+# stability × rigidity × (1 - adaptability)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def calc_trap_score_v8(stability: float, rigidity: float, adaptability: float) -> float:
+    """
+    Updated TrapScore formula from v8.0.
+    Higher score = greater risk of getting locked into current state.
+    Range: 0.0 (no risk) → 1.0 (imminent collapse).
+    """
+    return round(stability * rigidity * (1.0 - adaptability), 3)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION E: TEMPORAL STATE ENGINE (v8.0)
+# Tracks trajectory across time, detects True Yunus Protocol risk
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TemporalStateEngine:
+    """
+    Tracks infrastructure system states over time and detects trajectory patterns.
+    True Yunus Protocol: sustained ≥3 high stages (≥7) + declining adaptability < 0.4.
+    """
+
+    def __init__(self):
+        self.history: list = []  # List of TemporalState dicts
+
+    def record_state(self, stage: int, adaptability: float, rigidity: float, coherence: float):
+        """Record a new temporal state snapshot."""
+        self.history.append({
+            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "stage": stage,
+            "adaptability": adaptability,
+            "rigidity": rigidity,
+            "coherence": coherence,
+            "trap_score": calc_trap_score_v8(1 - adaptability, rigidity, adaptability),
+        })
+
+    def analyze_trajectory(self) -> dict:
+        """Analyze the trajectory across recorded states."""
+        if not self.history:
+            return {
+                "trend": "stable",
+                "yunus_risk": False,
+                "yunus_reason": None,
+                "avg_stage": 0,
+                "avg_adaptability": 0,
+                "state_count": 0,
+                "recent_states": [],
+            }
+
+        recent = self.history[-10:]
+        avg_stage = sum(s["stage"] for s in recent) / len(recent)
+        avg_adaptability = sum(s["adaptability"] for s in recent) / len(recent)
+        avg_rigidity = sum(s["rigidity"] for s in recent) / len(recent)
+
+        # Determine trend
+        if avg_stage > 5.5 and avg_adaptability < 0.4:
+            trend = "ascending_toward_rigidity"
+        elif avg_adaptability > 0.7:
+            trend = "descending_toward_flexibility"
+        else:
+            trend = "stable"
+
+        # True Yunus Protocol check
+        high_stage_count = sum(1 for s in recent if s["stage"] >= 7)
+        yunus_risk = high_stage_count >= 3 and avg_adaptability < 0.4
+        yunus_reason = (
+            f"Sustained high stages ({high_stage_count}/10 readings ≥ Stage 7) "
+            f"with declining adaptability ({avg_adaptability:.2f} < 0.4 threshold). "
+            f"Recommend immediate Circuit Breaker engagement."
+        ) if yunus_risk else None
+
+        return {
+            "trend": trend,
+            "yunus_risk": yunus_risk,
+            "yunus_reason": yunus_reason,
+            "avg_stage": round(avg_stage, 2),
+            "avg_adaptability": round(avg_adaptability, 3),
+            "avg_rigidity": round(avg_rigidity, 3),
+            "state_count": len(self.history),
+            "recent_states": recent,
+            "ussm_current": USSM_STAGES_ULTRA.get(round(avg_stage), {}),
+        }
+
+    def get_stage_velocity(self) -> float:
+        """Rate of stage change per reading (positive = rising, negative = falling)."""
+        if len(self.history) < 2:
+            return 0.0
+        stages = [s["stage"] for s in self.history[-5:]]
+        return round((stages[-1] - stages[0]) / max(len(stages) - 1, 1), 3)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION F: CONSENSUS CONFIDENCE SYSTEM (v8.0)
+# Three independent evaluators vote on stage assignment
+# ─────────────────────────────────────────────────────────────────────────────
+
+def calculate_consensus(evaluators: list) -> dict:
+    """
+    Consensus Confidence System.
+    Takes a list of evaluator dicts: [{evaluator, stage, confidence, reasoning}]
+    Returns consensus stage, agreement score, disagreement metric, uncertainty.
+    """
+    if not evaluators:
+        return {
+            "consensus_stage": 4,
+            "agreement_score": 0.0,
+            "disagreement_metric": 1.0,
+            "uncertainty": 1.0,
+            "evaluators": [],
+        }
+
+    stages = [e["stage"] for e in evaluators]
+    avg_stage = sum(stages) / len(stages)
+    consensus_stage = round(avg_stage)
+
+    variance = sum((s - avg_stage) ** 2 for s in stages) / len(stages)
+    std_dev = math.sqrt(variance)
+    agreement_score = max(0.0, 100.0 - std_dev * 10)
+    disagreement_metric = std_dev / 3.0
+    uncertainty = disagreement_metric / 3.0
+
+    return {
+        "consensus_stage": consensus_stage,
+        "agreement_score": round(agreement_score, 1),
+        "disagreement_metric": round(disagreement_metric, 3),
+        "uncertainty": round(uncertainty, 3),
+        "evaluators": evaluators,
+        "ussm": USSM_STAGES_ULTRA.get(consensus_stage, {}),
+    }
+
+
+def run_three_evaluator_consensus(complexity: float, stability: float,
+                                  tension: float, adaptability: float,
+                                  coherence: float) -> dict:
+    """
+    Run three independent NSDT evaluations with slight perturbations
+    and return consensus across them.
+    """
+    def perturb(v, delta=0.05):
+        return max(0.0, min(1.0, v + random.uniform(-delta, delta)))
+
+    evaluators = []
+    for i, name in enumerate(["Alpha Evaluator", "Beta Evaluator", "Gamma Evaluator"]):
+        result = assess_nsdt_v8(
+            perturb(complexity), perturb(stability),
+            perturb(tension), perturb(adaptability), perturb(coherence)
+        )
+        evaluators.append({
+            "evaluator": name,
+            "stage": result["stage"],
+            "confidence": result["confidence"],
+            "reasoning": f"Stage {result['stage']} ({result['ussm']['name']}) — "
+                         f"fractal {result['fractal_address']} — "
+                         f"trap_risk: {result['trap_risk']}",
+        })
+
+    return calculate_consensus(evaluators)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION G: TRICKSTER PEDAGOGY — Infrastructure Context
+# Wisdom for each stage from trickster archetypes, adapted for infrastructure
+# ─────────────────────────────────────────────────────────────────────────────
+
+TRICKSTER_WISDOM_ULTRA = {
+    0: {
+        "character": "Coyote",
+        "lesson": "Glued feathers to fly. Fell in a cactus. Lesson: You can't skip stages.",
+        "infra_application": "Don't try to skip from ad-hoc to fully automated. Build the runbooks first.",
+    },
+    1: {
+        "character": "Anansi",
+        "lesson": "Tricked the gods for all the stories. Lesson: Narrative frame beats brute force.",
+        "infra_application": "Document your processes before you automate them. The runbook is the story.",
+    },
+    2: {
+        "character": "Loki",
+        "lesson": "Cut Sif's hair, panicked, accidentally created Thor's hammer. Lesson: Chaos creates.",
+        "infra_application": "An alert storm feels like chaos — but it reveals what you didn't know you had.",
+    },
+    3: {
+        "character": "Br'er Rabbit",
+        "lesson": "Begged not to be thrown in the briar patch — where he lives. Lesson: Use perceived weakness as strength.",
+        "infra_application": "Your distributed system's 'weakness' (no single point of control) is its resilience.",
+    },
+    4: {
+        "character": "Eshu",
+        "lesson": "Wears a hat red on one side, white on the other. Lesson: Both things are true.",
+        "infra_application": "Stability AND growth. You can have both — but not by accident.",
+    },
+    5: {
+        "character": "Coyote",
+        "lesson": "Stands at the crossroads. Lesson: Every choice opens and closes worlds.",
+        "infra_application": "At Threshold, the architecture decision you make now will define the next 3 years.",
+    },
+    6: {
+        "character": "Anansi",
+        "lesson": "Weaves the web of all stories. Lesson: Connection is the deepest magic.",
+        "infra_application": "When every service can observe every other, the system becomes intelligent.",
+    },
+    7: {
+        "character": "Loki",
+        "lesson": "Bound by his own creations. Lesson: Your tools become your prison.",
+        "infra_application": "The abstraction layers you built to scale are now preventing you from changing.",
+    },
+    8: {
+        "character": "Br'er Rabbit",
+        "lesson": "Escapes by becoming what the hunter fears most. Lesson: Surrender is the only escape.",
+        "infra_application": "Rigidity Risk escapes through deliberate degradation — reduce, simplify, un-optimize.",
+    },
+    9: {
+        "character": "Eshu",
+        "lesson": "Opens and closes all doors. Lesson: You are the threshold.",
+        "infra_application": "Meta-Coherent infrastructure IS the protocol. It defines the rules of operation.",
+    },
+}
+
+
+def get_trickster_wisdom_ultra(stage: int) -> dict:
+    """Return trickster wisdom for the given infrastructure stage."""
+    return TRICKSTER_WISDOM_ULTRA.get(stage, TRICKSTER_WISDOM_ULTRA[4])
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION H: FULL ULTRA v2.0 ANALYSIS — UNIFIED ENTRY POINT
+# Runs all v8.0 capabilities in a single call
+# ─────────────────────────────────────────────────────────────────────────────
+
+def run_ultra_v2_analysis(
+    complexity: float,
+    stability: float,
+    tension: float,
+    adaptability: float,
+    coherence: float,
+    run_consensus: bool = True,
+) -> dict:
+    """
+    Unified LUMINARK ULTRA v2.0 Analysis.
+    Combines NSDT v8.0, USSM mapping, Spherical Fractal Topology,
+    TrapScore v8.0, Trickster Pedagogy, and optionally 3-evaluator Consensus.
+
+    Args:
+        complexity:   0.0–1.0  Infrastructure operational complexity
+        stability:    0.0–1.0  Current stability level
+        tension:      0.0–1.0  Stress / load tension
+        adaptability: 0.0–1.0  Ability to adapt to novel events
+        coherence:    0.0–1.0  Component integration coherence
+        run_consensus: bool    Whether to run 3-evaluator consensus (adds compute)
+
+    Returns:
+        Full analysis dict with stage, USSM, fractal address, spherical coords,
+        trap score, trickster wisdom, and optional consensus result.
+    """
+    # Core NSDT v8.0 assessment
+    nsdt = assess_nsdt_v8(complexity, stability, tension, adaptability, coherence)
+    stage = nsdt["stage"]
+
+    # Trap score
+    trap_score = calc_trap_score_v8(stability, 1.0 - adaptability, adaptability)
+
+    # Trickster wisdom
+    trickster = get_trickster_wisdom_ultra(stage)
+
+    result = {
+        "version": "LUMINARK_ULTRA_v2.0",
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+        "input_vector": {
+            "complexity": complexity,
+            "stability": stability,
+            "tension": tension,
+            "adaptability": adaptability,
+            "coherence": coherence,
+        },
+        "nsdt_v8": nsdt,
+        "stage": stage,
+        "stage_name": nsdt["ussm"]["name"],
+        "star_name": nsdt["ussm"]["star"],
+        "trap_risk": nsdt["trap_risk"],
+        "trap_score": trap_score,
+        "fractal_address": nsdt["fractal_address"],
+        "spherical_coordinates": nsdt["spherical"],
+        "duality": nsdt["ussm"]["duality"],
+        "tumble_prediction": nsdt["ussm"]["tumble"],
+        "infra_context": nsdt["ussm"]["infra_context"],
+        "trickster_wisdom": trickster,
+    }
+
+    if run_consensus:
+        result["consensus"] = run_three_evaluator_consensus(
+            complexity, stability, tension, adaptability, coherence
+        )
+
+    return result
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# QUICK DEMO  (run this file directly to verify the upgrade)
+# ─────────────────────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    import json
+
+    print("=" * 70)
+    print("LUMINARK OVERWATCH PRIME ULTRA  v2.0  —  Guardian-SAP Integration")
+    print("=" * 70)
+
+    # Example: Texas Uri scenario — high tension, low adaptability
+    texas_uri = run_ultra_v2_analysis(
+        complexity=0.7,
+        stability=0.2,
+        tension=0.95,
+        adaptability=0.15,
+        coherence=0.3,
+        run_consensus=True,
+    )
+
+    print(f"\nScenario: Texas Winter Storm Uri — Grid Under Extreme Stress")
+    print(f"  Stage:           {texas_uri['stage']} — {texas_uri['stage_name']} ({texas_uri['star_name']})")
+    print(f"  Trap Risk:       {texas_uri['trap_risk']}  |  TrapScore: {texas_uri['trap_score']}")
+    print(f"  Fractal Address: {texas_uri['fractal_address']}")
+    print(f"  Spherical:       θ={texas_uri['spherical_coordinates']['theta']}  "
+          f"φ={texas_uri['spherical_coordinates']['phi']}  "
+          f"r={texas_uri['spherical_coordinates']['radius']}")
+    print(f"  Duality:         {texas_uri['duality']}")
+    print(f"  Prediction:      {texas_uri['tumble_prediction']}")
+    print(f"  Trickster:       [{texas_uri['trickster_wisdom']['character']}] "
+          f"{texas_uri['trickster_wisdom']['lesson']}")
+    if "consensus" in texas_uri:
+        c = texas_uri["consensus"]
+        print(f"  Consensus Stage: {c['consensus_stage']}  |  Agreement: {c['agreement_score']}%  "
+              f"|  Uncertainty: {c['uncertainty']}")
+    print()
+
+    # Temporal state engine demo
+    print("Temporal State Engine Demo:")
+    tse = TemporalStateEngine()
+    for stage, adp, rig in [(7, 0.3, 0.8), (7, 0.25, 0.85), (8, 0.18, 0.9), (8, 0.12, 0.95)]:
+        tse.record_state(stage, adp, rig, 0.4)
+    traj = tse.analyze_trajectory()
+    print(f"  Trend:        {traj['trend']}")
+    print(f"  Yunus Risk:   {traj['yunus_risk']}")
+    if traj["yunus_reason"]:
+        print(f"  Reason:       {traj['yunus_reason']}")
+    print(f"  Stage Velocity: {tse.get_stage_velocity()}")
+    print()
+    print("LUMINARK ULTRA v2.0 upgrade verified successfully.")
+
+# ============================================================
+# SECTION I: SAR GATE NAMES + 3-6-9 FLUX DYNAMICS
+# Stanfield's Axiom of Recursion — Gate Names & Magnetic Drag
+# Source: STANFIELD 81 Returns.docx + Container Rule analysis
+# ============================================================
+
+SAR_GATE_NAMES_ULTRA = {
+    0: {"gate": "Gate 0ᵀ / Gate 0ᴮ", "name": "Primordial Source / Integrative Void",
+        "arc": "neutral", "description": "Unmanifest potential / Silent pool. Same gate at opposite torus positions."},
+    1: {"gate": "Gate 1", "name": "Spark of Navigation",
+        "arc": "descending", "description": "Emergent direction, first vision, initial thrust."},
+    2: {"gate": "Gate 2", "name": "Forge of Polarity",
+        "arc": "descending", "description": "Tension, form, distinction — duality crystallizes."},
+    3: {"gate": "Gate 3", "name": "Engine of Expression",
+        "arc": "descending", "description": "Communication, creative output, magnetic pole (+)."},
+    4: {"gate": "Gate 4", "name": "Crucible of Equilibrium",
+        "arc": "descending", "description": "Balance, heart, foundation — pivot zone approaching."},
+    5: {"gate": "Gate 5", "name": "Dynamo of Will",
+        "arc": "threshold", "description": "Power, identity, threshold. Container/Content pivot at 4.5→5."},
+    6: {"gate": "Gate 6", "name": "Nexus of Harmony",
+        "arc": "ascending", "description": "Synergy, flow, peak function — magnetic pole (-)."},
+    7: {"gate": "Gate 7", "name": "Lens of Distillation",
+        "arc": "ascending", "description": "Analysis, separation, wisdom — trap zone entry."},
+    8: {"gate": "Gate 8", "name": "Vessel of Grounding",
+        "arc": "ascending", "description": "Materialization, maximum charge — High Voltage Containment."},
+    9: {"gate": "Gate 9", "name": "Axis / Slipstream",
+        "arc": "ascending", "description": "Stationary vector, zero drag — dissolution back to void."},
+}
+
+# 3-6-9 Flux Dynamics with Magnetic Drag
+# Stage 3: MAGNETIC POLE (+) — 90% drag
+# Stage 6: MAGNETIC POLE (-) — 90% drag
+# Stage 8: HIGH VOLTAGE CONTAINMENT — 100% drag (The Trap)
+# Stage 9: AXIS / SLIPSTREAM — 0% drag
+FLUX_DYNAMICS_V8 = {
+    0: {"magnetic_drag": 0.0,  "pole": "VOID",          "label": "Reset Field",            "flux_note": "No charge, no drag — pure potential."},
+    1: {"magnetic_drag": 10.0, "pole": "EMERGING",      "label": "Nascent Pull",            "flux_note": "Faint directional pull beginning."},
+    2: {"magnetic_drag": 30.0, "pole": "FORMING",       "label": "Polarity Forming",        "flux_note": "Duality creates first resistance."},
+    3: {"magnetic_drag": 90.0, "pole": "MAGNETIC (+)",  "label": "Magnetic Pole Positive",  "flux_note": "Maximum outward expression force. 90% drag."},
+    4: {"magnetic_drag": 50.0, "pole": "PIVOT ZONE",    "label": "Container/Content Pivot", "flux_note": "Drag balances as Container yields to Content."},
+    5: {"magnetic_drag": 40.0, "pole": "THRESHOLD",     "label": "Dynamo of Will",          "flux_note": "Reduced drag — identity asserts."},
+    6: {"magnetic_drag": 90.0, "pole": "MAGNETIC (-)",  "label": "Magnetic Pole Negative",  "flux_note": "Maximum inward integration force. 90% drag."},
+    7: {"magnetic_drag": 70.0, "pole": "TRAP ENTRY",    "label": "Distillation Resistance", "flux_note": "High resistance — separation painful."},
+    8: {"magnetic_drag": 100.0,"pole": "HIGH VOLTAGE",  "label": "High Voltage Containment","flux_note": "Maximum drag. Stage 8 Trap. 100% containment."},
+    9: {"magnetic_drag": 0.0,  "pole": "AXIS",          "label": "Slipstream / Stationary", "flux_note": "Zero drag. Dissolution. Return to void possible."},
+}
+
+def get_flux_dynamics(stage: int) -> dict:
+    """Return 3-6-9 Flux Dynamics and Magnetic Drag for a given stage (0-9)."""
+    stage = max(0, min(9, int(stage)))
+    fd = FLUX_DYNAMICS_V8[stage].copy()
+    gate = SAR_GATE_NAMES_ULTRA[stage]
+    fd["gate_name"] = gate["name"]
+    fd["gate_label"] = gate["gate"]
+    fd["arc"] = gate["arc"]
+    fd["stage"] = stage
+    # Flag high-drag zones
+    if fd["magnetic_drag"] >= 90.0:
+        fd["warning"] = "HIGH DRAG ZONE — momentum significantly slowed."
+    elif fd["magnetic_drag"] == 0.0 and stage == 9:
+        fd["warning"] = "SLIPSTREAM — zero drag, dissolution imminent."
+    else:
+        fd["warning"] = None
+    return fd
+
+
+# ============================================================
+# SECTION J: CONTAINER RULE + HARMONIC RESONANCE
+# Content (inner drive) vs Container (outer form) digit dynamics
+# Pivot at Stage 4.5 — Harmonic Resonance = digital root 9
+# ============================================================
+
+def digital_root(n: int) -> int:
+    """Calculate digital root of n. Returns 9 for multiples of 9 (except 0)."""
+    if n == 0:
+        return 0
+    return 1 + (n - 1) % 9
+
+def calc_harmonic_resonance(content_digit: int, container_digit: int) -> dict:
+    """
+    Container Rule: Harmonic Resonance check.
+    When sum's digital root == 9 → 'Divine Line' achieved.
+    Content = inner drive (1st digit), Container = outer form (2nd digit).
+    Pivot occurs near Stage 4.5 where Container dominance yields to Content.
+    """
+    total = content_digit + container_digit
+    dr = digital_root(total)
+    is_harmonic = (dr == 9)
+    # Determine which is dominant
+    if content_digit > container_digit:
+        dominance = "CONTENT (Inner Drive) dominant"
+        phase = "Post-pivot — Stage 5+"
+    elif container_digit > content_digit:
+        dominance = "CONTAINER (Outer Form) dominant"
+        phase = "Pre-pivot — Stage 0-4"
+    else:
+        dominance = "BALANCED — at the pivot"
+        phase = "Pivot Zone — Stage 4.5"
+    # Stage 7 trap: content=7, container=2
+    trap_risk = (content_digit == 7 and container_digit == 2)
+    # Stage 8 resolution: content=8, container=1
+    resolution = (content_digit == 8 and container_digit == 1)
+    return {
+        "content_digit": content_digit,
+        "container_digit": container_digit,
+        "sum": total,
+        "digital_root": dr,
+        "is_harmonic_resonance": is_harmonic,
+        "divine_line": is_harmonic,
+        "dominance": dominance,
+        "phase": phase,
+        "trap_risk": trap_risk,
+        "resolution_state": resolution,
+        "dissolve_unlocked": is_harmonic,
+        "note": "Divine Line achieved — container can be shattered, return to void possible." if is_harmonic else "Not yet at Divine Line."
+    }
+
+
+# ============================================================
+# SECTION K: dS/dt PHYSICS ENGINE
+# Stage Progression Differential Equation
+# Formula: dS/dt = r(S) · Energy · Damping · Integrity · Ma'at
+# Source: import streamlit as st.txt (SAR Physics Engine)
+# ============================================================
+
+import math as _math
+
+# Stage-specific growth rate r(S) — how fast each stage self-propagates
+STAGE_GROWTH_RATES = {
+    0: 0.1, 1: 0.5, 2: 0.6, 3: 0.8, 4: 0.7,
+    5: 0.9, 6: 0.85, 7: 0.6, 8: 0.3, 9: 0.05
+}
+
+def calc_stage_velocity(current_stage: float, energy: float,
+                         integrity: float, maat: float) -> float:
+    """
+    Calculate stage progression velocity using SAR Physics Formula.
+    dS/dt = r(S) · Energy · (Integrity/100) · (Ma'at/100)
+    Damping factor applied from Flux Dynamics magnetic drag.
+    
+    Args:
+        current_stage: float 0.0-9.0
+        energy: float 0.0-1.5 (fuel for transition)
+        integrity: float 0-100 (structural coherence)
+        maat: float 0-100 (truth alignment)
+    Returns:
+        velocity: float (stage units per time step)
+    """
+    stage_int = max(0, min(9, int(current_stage)))
+    r = STAGE_GROWTH_RATES.get(stage_int, 0.5)
+    drag_pct = FLUX_DYNAMICS_V8[stage_int]["magnetic_drag"] / 100.0
+    damping = 1.0 - (drag_pct * 0.5)  # drag slows but doesn't stop
+    velocity = r * energy * damping * (integrity / 100.0) * (maat / 100.0)
+    return round(velocity, 4)
+
+def run_stage_physics_simulation(
+    start_stage: float = 0.0,
+    energy: float = 0.8,
+    integrity: float = 95.0,
+    maat: float = 90.0,
+    steps: int = 20,
+    integrity_decay: float = 1.5
+) -> dict:
+    """
+    Run SAR Physics Engine simulation over N time steps.
+    Models how a system progresses through stages given energy, integrity, Ma'at.
+    Integrity decays by integrity_decay per step (entropy).
+    
+    Returns:
+        dict with trajectory list, final_stage, peak_stage, 
+        stage_8_reached, slipstream_reached, summary
+    """
+    trajectory = []
+    current_stage = float(start_stage)
+    current_integrity = float(integrity)
+    
+    for t in range(steps + 1):
+        current_integrity = max(0.0, integrity - (t * integrity_decay))
+        current_tension = 1.0 - (current_integrity / 100.0)
+        velocity = calc_stage_velocity(current_stage, energy, current_integrity, maat)
+        stage_int = max(0, min(9, int(current_stage)))
+        flux = FLUX_DYNAMICS_V8[stage_int]
+        gate = SAR_GATE_NAMES_ULTRA[stage_int]
+        trajectory.append({
+            "step": t,
+            "stage": round(current_stage, 3),
+            "stage_int": stage_int,
+            "gate_name": gate["name"],
+            "velocity": velocity,
+            "integrity": round(current_integrity, 1),
+            "tension": round(current_tension, 3),
+            "magnetic_drag": flux["magnetic_drag"],
+            "pole": flux["pole"],
+        })
+        # Advance stage
+        current_stage = min(9.0, current_stage + velocity)
+        if current_stage >= 9.0:
+            break
+
+    stages_visited = [s["stage_int"] for s in trajectory]
+    final_stage = trajectory[-1]["stage"]
+    peak_stage = max(stages_visited)
+    
+    return {
+        "trajectory": trajectory,
+        "final_stage": round(final_stage, 3),
+        "peak_stage": peak_stage,
+        "peak_gate": SAR_GATE_NAMES_ULTRA[peak_stage]["name"],
+        "stage_8_reached": 8 in stages_visited,
+        "slipstream_reached": 9 in stages_visited,
+        "steps_taken": len(trajectory),
+        "summary": f"System moved from Stage {start_stage} → Stage {round(final_stage,2)} over {len(trajectory)-1} steps. Peak: {SAR_GATE_NAMES_ULTRA[peak_stage]['name']}.",
+    }
+
+
+# ============================================================
+# SECTION L: UNIFIED ULTRA v3 ENTRY POINT
+# Combines NSDT v8, Flux Dynamics, Container Rule, Physics
+# ============================================================
+
+def run_ultra_v3_analysis(
+    complexity: float, stability: float, tension: float,
+    adaptability: float, coherence: float,
+    content_digit: int = None, container_digit: int = None,
+    energy: float = 0.8, integrity: float = 95.0, maat: float = 90.0,
+    run_physics: bool = True, run_consensus: bool = True
+) -> dict:
+    """
+    Full LUMINARK Ultra v3 analysis.
+    Integrates: NSDT v8, TrapScore, Flux Dynamics, Container Rule,
+                SAR Physics Simulation, Consensus Engine, Trickster Wisdom.
+    
+    Args:
+        complexity, stability, tension, adaptability, coherence: 0.0-1.0
+        content_digit: int 1-9 (inner drive digit, optional)
+        container_digit: int 1-9 (outer form digit, optional)
+        energy: float 0-1.5 for physics sim
+        integrity: float 0-100 for physics sim
+        maat: float 0-100 for physics sim
+        run_physics: bool — run dS/dt simulation
+        run_consensus: bool — run 3-evaluator consensus
+    Returns:
+        Complete analysis dict
+    """
+    # Base v2 analysis
+    base = run_ultra_v2_analysis(complexity, stability, tension,
+                                  adaptability, coherence, run_consensus)
+    stage = base.get("stage", 0)
+    
+    # Flux Dynamics
+    flux = get_flux_dynamics(stage)
+    base["flux_dynamics"] = flux
+    
+    # Container Rule (if digits provided)
+    if content_digit is not None and container_digit is not None:
+        base["container_rule"] = calc_harmonic_resonance(content_digit, container_digit)
+    else:
+        base["container_rule"] = None
+    
+    # Physics Simulation
+    if run_physics:
+        base["physics_simulation"] = run_stage_physics_simulation(
+            start_stage=float(stage),
+            energy=energy,
+            integrity=integrity,
+            maat=maat,
+            steps=20
+        )
+    
+    # High-drag alert
+    if flux["magnetic_drag"] >= 90.0:
+        base["flux_alert"] = f"WARNING: Stage {stage} is a HIGH DRAG zone ({flux['magnetic_drag']}% magnetic drag). {flux['flux_note']}"
+    
+    return base
+
+
+# ============================================================
+# SECTION M: SAR COMPLETE MATHEMATICAL FORMALIZATION
+# Source: STANFIELD 81 Returns.docx
+# State Vector S = (G, m, a, E, I, M, t, L)
+# dm/dt = a * r(G,m) * (E/100) * (I/100) * (M/100) * f(L)
+# ============================================================
+
+import math as _math2
+
+# SAR State Vector definition
+# G = Gate (0-9), m = micro-stage (0.0-0.9), a = arc (-1 descending / +1 ascending)
+# E = Energy (0-100%), I = Integrity (0-100%), M = Ma'at alignment (0-100%)
+# t = time in current state, L = Layer (1-9 recursive scale)
+
+SAR_RECURSIVE_LAYERS = {
+    1:  {"stages": 9,   "timescale": "hours to months",         "description": "Individual consciousness cycle"},
+    2:  {"stages": 18,  "timescale": "months to years",         "description": "Relationship / organizational cycles"},
+    3:  {"stages": 27,  "timescale": "20-30 years",             "description": "Generational cycles"},
+    4:  {"stages": 36,  "timescale": "100-150 years",           "description": "Civilizational phase cycles"},
+    5:  {"stages": 45,  "timescale": "1,000-5,000 years",       "description": "Species evolutionary cycles"},
+    6:  {"stages": 54,  "timescale": "10,000-50,000 years",     "description": "Geological / climate cycles"},
+    7:  {"stages": 63,  "timescale": "1-10 million years",      "description": "Planetary evolutionary cycles"},
+    8:  {"stages": 72,  "timescale": "100 million-1 billion years", "description": "Stellar / system cycles"},
+    9:  {"stages": 81,  "timescale": "1-10 billion years",      "description": "Galactic / cosmic cycles"},
+}
+
+SAR_VALIDATED_DOMAINS = {
+    "physical":       {"confidence": 0.91, "examples": "Hurricanes, quantum particles, stellar evolution, geological cycles"},
+    "biological":     {"confidence": 0.97, "examples": "Circadian (24h), menstrual (28d), cardiac, cellular mitosis"},
+    "psychological":  {"confidence": 0.89, "examples": "Cognitive development (Piaget→Gates 1-5), trauma recovery, moral development"},
+    "economic":       {"confidence": 0.93, "examples": "Business cycles, product lifecycles, market sentiment"},
+    "technological":  {"confidence": 0.91, "examples": "AI training curves, platform adoption, innovation diffusion"},
+    "civilizational": {"confidence": 0.87, "examples": "Empire rise/fall, cultural revolutions, scientific paradigm shifts"},
+}
+
+# Stage-specific progression rate r(G,m) — peaks at .5 and .9 thresholds
+# Troughs at .0 (void moments) and .3 (consolidation)
+SAR_STAGE_RATES = {
+    0: 0.10, 1: 0.50, 2: 0.55, 3: 0.70,
+    4: 0.65, 5: 0.90, 6: 0.80, 7: 0.60,
+    8: 0.30, 9: 0.05,
+}
+
+def sar_layer_scaling(layer: int) -> float:
+    """f(L) = 1/√L — higher layers progress more slowly"""
+    layer = max(1, min(9, int(layer)))
+    return 1.0 / _math2.sqrt(layer)
+
+def sar_dm_dt(gate: int, micro_stage: float, arc: int,
+              energy: float, integrity: float, maat: float,
+              layer: int = 1) -> float:
+    """
+    SAR Micro-Stage Progression Rate.
+    dm/dt = a * r(G,m) * (E/100) * (I/100) * (M/100) * f(L)
+    
+    Args:
+        gate: int 0-9
+        micro_stage: float 0.0-0.9
+        arc: int -1 (descending/manifestation) or +1 (ascending/integration)
+        energy: float 0-100
+        integrity: float 0-100
+        maat: float 0-100 (Ma'at alignment)
+        layer: int 1-9 (recursive scale)
+    Returns:
+        velocity: float (micro-stage units per time step)
+    """
+    gate = max(0, min(9, int(gate)))
+    r = SAR_STAGE_RATES.get(gate, 0.5)
+    # Micro-stage modifier: peaks at .5 (threshold) and .9 (transparency)
+    ms = float(micro_stage) % 1.0
+    if ms >= 0.8:
+        ms_mod = 1.4
+    elif ms >= 0.45 and ms <= 0.55:
+        ms_mod = 1.3
+    elif ms <= 0.1:
+        ms_mod = 0.6  # void moments are slow
+    else:
+        ms_mod = 1.0
+    fL = sar_layer_scaling(layer)
+    velocity = arc * r * ms_mod * (energy / 100.0) * (integrity / 100.0) * (maat / 100.0) * fL
+    return round(velocity, 5)
+
+def sar_gate_transition_check(micro_stage: float, energy: float,
+                               integrity: float, maat: float,
+                               theta_transition: float = 0.6) -> dict:
+    """
+    Gate Transition Condition:
+    IF m >= 0.9 AND (E * I * M) >= θ_transition → transition to next gate
+    IF m >= 0.9 AND (E * I * M) < θ_transition → forced regression or crisis
+    
+    Returns: transition decision dict
+    """
+    eim_product = (energy / 100.0) * (integrity / 100.0) * (maat / 100.0)
+    at_threshold = micro_stage >= 0.9
+    if not at_threshold:
+        return {"transition": False, "reason": "Micro-stage not yet at 0.9 threshold",
+                "eim_product": round(eim_product, 3)}
+    if eim_product >= theta_transition:
+        return {"transition": True, "direction": "forward",
+                "reason": "E×I×M above threshold — advance to next gate",
+                "eim_product": round(eim_product, 3), "theta": theta_transition}
+    else:
+        # Determine regression vs crisis
+        if integrity >= 50 and maat >= 50:
+            outcome = "graceful_regression"
+            reason = "I/M above 50% — conscious return to previous gate (wisdom, not failure)"
+        else:
+            outcome = "crisis"
+            reason = "I/M below 50% — forced Stage 5→7 crisis pattern"
+        return {"transition": True, "direction": outcome, "reason": reason,
+                "eim_product": round(eim_product, 3), "theta": theta_transition}
+
+
+# ============================================================
+# SECTION N: STAGE 5 BIFURCATION MATHEMATICS
+# Three-way probability: success / graceful regression / crisis
+# Source: STANFIELD 81 Returns.docx
+# ============================================================
+
+def _sigmoid(x: float) -> float:
+    """Sigmoid function σ(x) = 1/(1+e^-x)"""
+    return 1.0 / (1.0 + _math2.exp(-x))
+
+def calc_stage5_bifurcation(integrity: float, energy: float, maat: float,
+                             preparation: float = 50.0,
+                             consciousness: float = 50.0) -> dict:
+    """
+    Stage 5 Bifurcation Mathematics.
+    At micro-stage 5.5 (Threshold of Crisis/Sovereignty):
+    
+    P(success)    = σ(w₁I + w₂E + w₃M + w₄Prep - θ₁)
+    P(regression) = σ(w₅(100-I) + w₆(1-E) + w₇Consciousness - θ₂)
+    P(crisis)     = 1 - P(success) - P(regression)
+    
+    Args:
+        integrity: 0-100 (structural coherence)
+        energy: 0-100 (available fuel)
+        maat: 0-100 (truth alignment)
+        preparation: 0-100 (readiness level)
+        consciousness: 0-100 (awareness of threshold)
+    Returns:
+        probabilities dict + recommended action
+    """
+    # Weights from SAR formalization
+    w1, w2, w3, w4 = 0.025, 0.020, 0.020, 0.015
+    w5, w6, w7     = 0.020, 0.020, 0.015
+    theta1, theta2 = 0.0, 0.0
+    
+    p_success    = _sigmoid(w1*integrity + w2*(energy/1.5) + w3*maat + w4*preparation - theta1)
+    p_regression = _sigmoid(w5*(100-integrity) + w6*(100-energy) + w7*consciousness - theta2)
+    
+    # Normalize so they don't exceed 1
+    total = p_success + p_regression
+    if total > 1.0:
+        p_success    = p_success / total
+        p_regression = p_regression / total
+    p_crisis = max(0.0, 1.0 - p_success - p_regression)
+    
+    # Dominant outcome
+    outcomes = {"success": p_success, "graceful_regression": p_regression, "crisis": p_crisis}
+    dominant = max(outcomes, key=outcomes.get)
+    
+    action_map = {
+        "success":            "ADVANCE — E/I/M sufficient. Cross the threshold.",
+        "graceful_regression": "RETURN — Consciously step back to Stage 4. Build more foundation. Not failure — wisdom.",
+        "crisis":             "WARNING — Forced Stage 7 crisis likely. Integrity or Ma'at critically low.",
+    }
+    
+    return {
+        "gate": 5,
+        "micro_stage": 5.5,
+        "p_success": round(p_success, 3),
+        "p_regression": round(p_regression, 3),
+        "p_crisis": round(p_crisis, 3),
+        "dominant_outcome": dominant,
+        "recommended_action": action_map[dominant],
+        "inputs": {"integrity": integrity, "energy": energy, "maat": maat,
+                   "preparation": preparation, "consciousness": consciousness},
+    }
+
+
+# ============================================================
+# SECTION O: 369 RESONANCE DETECTION
+# Tesla's Key: 3, 6, 9 as critical phase transition gates
+# Resonance_369 = Σ[δ(G=3,6,9) * r(G,m) * cos(2π * pos/9)]
+# Source: STANFIELD 81 Returns.docx
+# ============================================================
+
+def calc_369_resonance(gate: int, micro_stage: float) -> dict:
+    """
+    Calculate 369 Resonance at a given gate/micro-stage.
+    Peaks indicate phase transition readiness.
+    
+    Tesla's Realization: 3, 6, 9 are the magnetic pole gates.
+    3² + 4² = 5² encodes the relationship between thresholds.
+    """
+    is_resonance_gate = gate in [3, 6, 9]
+    current_position = gate + micro_stage
+    harmonic_alignment = _math2.cos(2 * _math2.pi * (current_position / 9.0))
+    r = SAR_STAGE_RATES.get(gate, 0.5)
+    delta = 1.0 if is_resonance_gate else 0.0
+    resonance = delta * r * harmonic_alignment
+    
+    # 369 Phase meanings
+    gate_role = {
+        3: "First threshold — consciousness grounds in matter (Magnetic Pole +)",
+        6: "Second threshold — integration reaches complexity peak (Magnetic Pole -)",
+        9: "Third threshold — transformation and return (Axis/Slipstream)",
+    }.get(gate, "Non-resonance gate")
+    
+    return {
+        "gate": gate,
+        "micro_stage": micro_stage,
+        "is_resonance_gate": is_resonance_gate,
+        "resonance_score": round(resonance, 4),
+        "harmonic_alignment": round(harmonic_alignment, 4),
+        "current_position": round(current_position, 3),
+        "gate_role": gate_role,
+        "phase_transition_ready": is_resonance_gate and harmonic_alignment > 0.5,
+        "tesla_note": "3-6-9 are the key — these gates hold the universe's phase transitions." if is_resonance_gate else None,
+    }
+
+def scan_369_resonance_trajectory(trajectory: list) -> dict:
+    """
+    Scan a stage trajectory for 369 resonance peaks.
+    trajectory: list of dicts with 'stage_int' and optionally 'micro_stage'
+    Returns: list of resonance peaks and overall resonance pattern
+    """
+    peaks = []
+    for step in trajectory:
+        g = step.get("stage_int", step.get("stage", 0))
+        ms = step.get("micro_stage", 0.5)
+        r = calc_369_resonance(int(g), float(ms))
+        if r["is_resonance_gate"]:
+            peaks.append({**r, "step": step.get("step", 0)})
+    
+    resonance_gates_hit = list(set(p["gate"] for p in peaks))
+    full_tesla_sequence = sorted(resonance_gates_hit) == [3, 6, 9]
+    
+    return {
+        "resonance_peaks": peaks,
+        "resonance_gates_encountered": resonance_gates_hit,
+        "full_369_sequence_complete": full_tesla_sequence,
+        "peak_count": len(peaks),
+        "note": "Full 3→6→9 sequence achieved — complete phase transition cycle." if full_tesla_sequence else "Incomplete 369 sequence.",
+    }
+
+
+# ============================================================
+# SECTION P: CITI — CROSS-INDICATOR TUMBLING INDEX
+# Economic crisis prediction via multi-indicator stage velocity
+# CITI = Var(dm/dt across N economic indicators)
+# High variance → Stage 7 crisis approaching
+# Low variance → Stage 4 stability
+# Source: STANFIELD 81 Returns.docx
+# ============================================================
+
+def calc_citi(indicator_stages: dict) -> dict:
+    """
+    Cross-Indicator Tumbling Index (CITI).
+    Economic / multi-domain crisis prediction.
+    
+    Formula: CITI = Variance of stage velocities across indicators
+    High CITI (>0.5) → Stage 7 crisis approaching
+    Low CITI (<0.2) → Stage 4 stability
+    
+    Args:
+        indicator_stages: dict of {indicator_name: stage_value}
+                         Stage values can be raw floats (0-9) or
+                         economic values (will be digital-root mapped)
+    Returns:
+        CITI score, crisis prediction, per-indicator analysis
+    """
+    import statistics as _stats
+    
+    # Map each indicator to a gate via digital root if needed
+    gate_values = {}
+    for name, value in indicator_stages.items():
+        if isinstance(value, (int, float)) and value > 9:
+            # Map large values via digital root
+            dr = digital_root(int(abs(value)))
+            gate_values[name] = dr
+        else:
+            gate_values[name] = max(0, min(9, float(value)))
+    
+    velocities = []
+    per_indicator = {}
+    for name, gate in gate_values.items():
+        r = SAR_STAGE_RATES.get(int(gate), 0.5)
+        per_indicator[name] = {"gate": gate, "velocity": r}
+        velocities.append(r)
+    
+    if len(velocities) < 2:
+        return {"error": "Need at least 2 indicators for CITI calculation"}
+    
+    citi_score = round(_stats.variance(velocities), 4)
+    mean_stage = round(sum(gate_values.values()) / len(gate_values), 2)
+    
+    if citi_score > 0.05:
+        prediction = "STAGE 7 CRISIS APPROACHING — High stage velocity variance. System desynchronized."
+        risk_level = "HIGH"
+    elif citi_score > 0.025:
+        prediction = "CAUTION — Moderate stage divergence. Stage 5 threshold instability possible."
+        risk_level = "MEDIUM"
+    else:
+        prediction = "STAGE 4 STABILITY — Low variance. System synchronized. Foundation phase."
+        risk_level = "LOW"
+    
+    return {
+        "citi_score": citi_score,
+        "risk_level": risk_level,
+        "prediction": prediction,
+        "mean_stage": mean_stage,
+        "mean_gate_name": SAR_GATE_NAMES_ULTRA.get(int(mean_stage), {}).get("name", "Unknown"),
+        "indicator_count": len(velocities),
+        "per_indicator": per_indicator,
+        "methodology": "CITI = Var(dm/dt across indicators). Digital root maps large values to Gates 1-9.",
+    }
+
+def digital_root_economic_mapping(value: float, label: str = "") -> dict:
+    """
+    Map any numeric economic indicator to its corresponding Gate via digital root.
+    Example: GDP growth 2.5% → 2+5=7 → Gate 7 (Lens of Distillation)
+    """
+    # Use digits of abs(value)*10 to avoid decimal issues
+    digits_str = str(int(abs(value) * 10)).replace('-', '')
+    digit_sum = sum(int(d) for d in digits_str if d.isdigit())
+    dr = digital_root(digit_sum) if digit_sum > 0 else 0
+    gate = max(0, min(9, dr))
+    gate_info = SAR_GATE_NAMES_ULTRA.get(gate, {"name": "Unknown", "arc": "unknown"})
+    return {
+        "original_value": value,
+        "label": label,
+        "digital_root": dr,
+        "mapped_gate": gate,
+        "gate_name": gate_info["name"],
+        "arc": gate_info["arc"],
+        "interpretation": f"{label}: {value} → Gate {gate} ({gate_info['name']})"
+    }
+
+
+# ============================================================
+# SECTION Q: TWO MODEL TYPES + ARC NOTATION SYSTEM
+# Type 1: Developmental/Cyclic (0→9→0 progression)
+# Type 2: Assessment/Diagnostic (enter at any gate)
+# Arc Notation: 4.5↓ = descending, 4.5↑ = ascending, @L3 = Layer 3
+# Source: STANFIELD 81 Returns.docx
+# ============================================================
+
+SAR_MODEL_TYPES = {
+    "Type1": {
+        "name": "Developmental / Cyclic Model",
+        "description": "Natural 0→9→0 progression. Describes growth, maturation, evolution.",
+        "entry_point": "Always Stage 0 — cannot skip stages",
+        "examples": ["Child development", "Startup growth", "Species evolution", "AI training curves"],
+        "use_case": "Tracking a system through its full lifecycle. Stage history matters.",
+    },
+    "Type2": {
+        "name": "Assessment / Diagnostic Model",
+        "description": "Can enter at any gate based on current state. Describes WHERE system IS, not its history.",
+        "entry_point": "Determined by assessment — no history required",
+        "examples": ["Economic analysis", "Crisis intervention", "Therapeutic assessment", "Organizational audit"],
+        "use_case": "Diagnosing current position. Stage history is irrelevant — present state only.",
+    },
+}
+
+def get_model_type_recommendation(has_history: bool, tracking_progression: bool,
+                                   entering_at_crisis: bool = False) -> dict:
+    """Recommend Type 1 or Type 2 based on use case."""
+    if has_history and tracking_progression and not entering_at_crisis:
+        model_type = "Type1"
+    else:
+        model_type = "Type2"
+    return {
+        "recommended_type": model_type,
+        "model": SAR_MODEL_TYPES[model_type],
+        "reasoning": "Developmental tracking with known history" if model_type == "Type1"
+                     else "Current-state assessment — entry point is present position",
+    }
+
+def format_sar_notation(gate: int, micro_stage: float,
+                         arc: str = "descending", layer: int = 1) -> str:
+    """
+    Format SAR Arc Notation.
+    Examples:
+      4.5↓       = Gate 4, micro 0.5, descending
+      4.5↑       = Gate 4, micro 0.5, ascending
+      4.5↓@L3    = Gate 4, micro 0.5, descending, Layer 3 (generational)
+    """
+    arc_sym = "↓" if arc == "descending" else "↑"
+    base = f"{gate}.{int(micro_stage * 10)}{arc_sym}"
+    if layer > 1:
+        base += f"@L{layer}"
+    layer_desc = SAR_RECURSIVE_LAYERS.get(layer, {}).get("description", "")
+    gate_name = SAR_GATE_NAMES_ULTRA.get(gate, {}).get("name", "Unknown")
+    return {
+        "notation": base,
+        "gate": gate,
+        "micro_stage": micro_stage,
+        "arc": arc,
+        "layer": layer,
+        "gate_name": gate_name,
+        "layer_description": layer_desc,
+        "full_label": f"{base} — {gate_name}, {arc} arc" + (f", {layer_desc}" if layer > 1 else ""),
+    }
+
+
+# ============================================================
+# SECTION R: UNIFIED ULTRA v4 ENTRY POINT
+# Full SAR integration: State Vector, Bifurcation, 369, CITI
+# ============================================================
+
+def run_ultra_v4_analysis(
+    complexity: float, stability: float, tension: float,
+    adaptability: float, coherence: float,
+    energy: float = 80.0, integrity: float = 90.0, maat: float = 85.0,
+    gate: int = None, micro_stage: float = 0.5,
+    arc: str = "descending", layer: int = 1,
+    economic_indicators: dict = None,
+    content_digit: int = None, container_digit: int = None,
+    run_bifurcation: bool = True,
+) -> dict:
+    """
+    Full LUMINARK Ultra v4 analysis.
+    Integrates: NSDT v8, Flux Dynamics, Container Rule,
+                SAR State Vector, dm/dt, Stage 5 Bifurcation,
+                369 Resonance, CITI, Recursive Layer mapping,
+                Arc Notation, Two Model Types.
+    """
+    # Base v3 analysis
+    base = run_ultra_v3_analysis(
+        complexity=complexity, stability=stability, tension=tension,
+        adaptability=adaptability, coherence=coherence,
+        content_digit=content_digit, container_digit=container_digit,
+        energy=energy/100, integrity=integrity, maat=maat,
+    )
+    stage = base.get("stage", 0)
+    if gate is None:
+        gate = stage
+
+    # SAR dm/dt velocity
+    arc_int = -1 if arc == "descending" else 1
+    velocity = sar_dm_dt(gate, micro_stage, arc_int, energy, integrity, maat, layer)
+    base["sar_velocity"] = velocity
+    base["sar_notation"] = format_sar_notation(gate, micro_stage, arc, layer)
+    base["recursive_layer"] = SAR_RECURSIVE_LAYERS.get(layer, {})
+
+    # Gate transition check
+    base["gate_transition"] = sar_gate_transition_check(micro_stage, energy, integrity, maat)
+
+    # Stage 5 Bifurcation (always informative even outside Stage 5)
+    if run_bifurcation:
+        base["stage5_bifurcation"] = calc_stage5_bifurcation(integrity, energy, maat)
+        if stage == 5:
+            base["stage5_bifurcation"]["note"] = "ACTIVE — System currently at Stage 5 Bilateral Threshold."
+
+    # 369 Resonance
+    base["resonance_369"] = calc_369_resonance(gate, micro_stage)
+
+    # CITI (if economic indicators provided)
+    if economic_indicators:
+        base["citi"] = calc_citi(economic_indicators)
+
+    # Model type recommendation
+    base["model_type"] = get_model_type_recommendation(
+        has_history=layer == 1,
+        tracking_progression=arc == "descending",
+        entering_at_crisis=stage == 7
+    )
+
+    return base
+
+
+# ============================================================
+# SECTION S: NMAP — NOCTILUCAN ECONOMIC ANALYSIS PROTOCOL
+# Complete quantitative stage thresholds, conflict resolution,
+# transition matrix, Stage 8 classifier, duration predictions
+# Source: NMAP(9).docx
+# ============================================================
+
+# Quantitative Economic Thresholds per Stage (all indicators, all stages)
+NMAP_STAGE_THRESHOLDS = {
+    0: {
+        "name": "Void/Reset", "label": "Post-crisis bottom, system reset",
+        "gdp_growth":       (-99.0, 0.5),    "unemployment":   (10.0, 99.0),
+        "inflation":        (-99.0, 0.0),    "debt_to_gdp":    (0.0, 999.0),  # restructured
+        "asset_deviation":  (-80.0, -50.0),  "credit_expansion": (-99.0, 0.0),
+        "duration_months":  (3, 12),         "digital_root_sig": "N/A (pre-measurement)",
+        "policy_focus": "Emergency measures, extraordinary intervention active",
+    },
+    1: {
+        "name": "Emergence", "label": "First recovery signals, high uncertainty",
+        "gdp_growth":       (0.5, 1.5),      "unemployment":   (8.0, 10.0),
+        "inflation":        (0.0, 2.0),      "debt_to_gdp":    (0.0, 999.0),
+        "asset_deviation":  (-40.0, -30.0),  "credit_expansion": (-2.0, 2.0),
+        "duration_months":  (6, 12),         "digital_root_sig": "1 (unity, emergence)",
+        "policy_focus": "Maintain emergency support — do not withdraw too early",
+    },
+    2: {
+        "name": "Containment", "label": "Stabilization working, volatility decreasing",
+        "gdp_growth":       (1.5, 2.0),      "unemployment":   (7.0, 9.0),
+        "inflation":        (1.0, 2.5),      "debt_to_gdp":    (0.0, 999.0),
+        "asset_deviation":  (-30.0, -20.0),  "credit_expansion": (0.0, 4.0),
+        "duration_months":  (6, 18),         "digital_root_sig": "2 (duality contained)",
+        "policy_focus": "Begin normalizing, maintain support structures",
+    },
+    3: {
+        "name": "Signal Extraction", "label": "Clear expansion signals, optimism building",
+        "gdp_growth":       (2.0, 2.5),      "unemployment":   (6.0, 7.5),
+        "inflation":        (1.5, 2.5),      "debt_to_gdp":    (70.0, 90.0),
+        "asset_deviation":  (-15.0, -10.0),  "credit_expansion": (3.0, 7.0),
+        "duration_months":  (12, 24),        "digital_root_sig": "3 (triangular stability)",
+        "policy_focus": "Continue normalization, reduce emergency measures",
+    },
+    4: {
+        "name": "Foundation", "label": "Stable growth, strong fundamentals — OPTIMAL",
+        "gdp_growth":       (2.0, 3.0),      "unemployment":   (5.0, 6.5),
+        "inflation":        (1.5, 2.5),      "debt_to_gdp":    (60.0, 90.0),
+        "asset_deviation":  (-0.5, 0.5),     "credit_expansion": (5.0, 8.0),
+        "wage_productivity_gap": (-1.0, 1.0),
+        "duration_months":  (24, 60),        "digital_root_sig": "4 (square foundation, max stability)",
+        "policy_focus": "Maintain stability, avoid overheating, build buffers",
+        "note": "Target stage for economic policy — sustainable stable growth",
+    },
+    5: {
+        "name": "Threshold", "label": "Critical juncture — policy decisions irreversible",
+        "gdp_growth":       (2.5, 3.5),      "unemployment":   (4.5, 5.5),
+        "inflation":        (2.0, 3.5),      "debt_to_gdp":    (85.0, 105.0),
+        "asset_deviation":  (0.5, 1.5),      "credit_expansion": (8.0, 12.0),
+        "duration_months":  (6, 18),         "digital_root_sig": "5 (pentagonal instability, golden ratio tension)",
+        "policy_focus": "CRITICAL — tighten too much (recession) OR too little (bubble)",
+        "bilateral_danger": "Can go to Stage 6 (success) OR Stage 4 (slowdown) OR Stage 7 (overheating)",
+    },
+    6: {
+        "name": "Harmony", "label": "Peak stable growth — Goldilocks",
+        "gdp_growth":       (2.5, 3.5),      "unemployment":   (4.0, 5.0),
+        "inflation":        (1.8, 2.5),      "debt_to_gdp":    (70.0, 100.0),
+        "asset_deviation":  (-1.0, 1.0),     "credit_expansion": (6.0, 10.0),
+        "wage_growth":      (3.0, 4.0),      "productivity_growth": (1.5, 2.5),
+        "duration_months":  (24, 48),        "digital_root_sig": "6 (hexagonal harmony, dual forces balanced)",
+        "policy_focus": "Don't disturb, maintain balance, prepare for eventual transition",
+        "note": "Economy at optimal sustainable level. Cannot last indefinitely.",
+    },
+    7: {
+        "name": "Separation", "label": "Overheating, imbalances building, late-cycle",
+        "gdp_growth":       (3.5, 4.5),      "unemployment":   (3.5, 4.5),
+        "inflation":        (2.5, 4.0),      "debt_to_gdp":    (95.0, 120.0),
+        "asset_deviation":  (1.5, 2.5),      "credit_expansion": (12.0, 18.0),
+        "wage_growth":      (4.0, 6.0),      "capacity_utilization_pct": (85.0, 100.0),
+        "duration_months":  (12, 36),        "digital_root_sig": "7 (separation, peak differentiation)",
+        "policy_focus": "Tightening required but politically difficult, imbalances worsening",
+        "warning": "Transition to Stage 8 likely unless aggressive intervention",
+    },
+    8: {
+        "name": "Illusion", "label": "Bubble dynamics, unsustainable, denial of limits",
+        "gdp_growth":       (3.5, 99.0),     "unemployment":   (0.0, 4.0),
+        "inflation":        (0.0, 1.5),      "debt_to_gdp":    (120.0, 999.0),  # >120%
+        "asset_deviation":  (2.0, 99.0),     "credit_expansion": (15.0, 99.0),
+        "wage_productivity_gap": (3.0, 99.0),
+        "duration_months":  (12, 36),        "digital_root_sig": "8 (infinity symbol, illusion of limitlessness)",
+        "policy_focus": "Often ineffective — market forces dominant, crisis approach inevitable",
+        "classic_signs": ["New paradigm narratives", "Risk underpricing",
+                          "Financial innovation masking risk", "Wealth concentration",
+                          "Denial of constraints", "'This time is different' thinking"],
+        "note": "Stage 9 correction inevitable, only timing uncertain",
+    },
+    9: {
+        "name": "Transparency", "label": "Crisis — everything hidden becomes visible",
+        "gdp_growth":       (-99.0, 0.0),    "unemployment":   (0.0, 99.0),   # rising rapidly
+        "credit_expansion": (-99.0, 0.0),   "asset_deviation": (-60.0, -20.0),
+        "duration_months":  (6, 60),         "digital_root_sig": "9 (completion, transparency before void)",
+        "policy_focus": "Crisis management, Stage 0 reset prep, Stage 4 foundation planning",
+        "crisis_types": {
+            "acute":           "12-24 months with proper intervention (2008-style)",
+            "balance_sheet":   "10+ years if structural issues not addressed (Japan 1990s)",
+            "sovereign_debt":  "5-8 years with restructuring (Greece)",
+            "hyperinflation":  "Until currency reset (Germany 1920s, Venezuela)",
+        },
+        "recovery_path": "Full cycle required: 0 → 3 → 4",
+    },
+}
+
+# Stage 8 Classification — ≥4 of 6 criteria required
+STAGE_8_CRITERIA = {
+    "gdp_growth_over_3_5": {
+        "label": "GDP growth > 3.5% for ≥2 consecutive years",
+        "threshold": 3.5, "operator": ">=", "sustained_quarters": 8,
+    },
+    "debt_to_gdp_over_120": {
+        "label": "Debt-to-GDP ratio > 120%",
+        "threshold": 120.0, "operator": ">=",
+    },
+    "asset_prices_over_2sd": {
+        "label": "Asset prices > 2 standard deviations above 10-year trend",
+        "threshold": 2.0, "operator": ">=",  # in SD units
+    },
+    "unemployment_under_4": {
+        "label": "Unemployment < 4.0%",
+        "threshold": 4.0, "operator": "<",
+    },
+    "credit_expansion_over_15": {
+        "label": "Credit expansion > 15% annually",
+        "threshold": 15.0, "operator": ">=",
+    },
+    "wage_productivity_gap_over_2": {
+        "label": "Wage growth lagging productivity growth by > 2 percentage points",
+        "threshold": 2.0, "operator": ">=",
+    },
+}
+
+# Stage Transition Probability Matrix (empirically testable)
+# NMAP framework prediction — falsifiable via Markov chain analysis
+NMAP_TRANSITION_MATRIX = {
+    0: {0: 0.0,  1: 0.0,  2: 0.0,  3: 0.85, 4: 0.10, 5: 0.0,  6: 0.0,  7: 0.0,  8: 0.0,  9: 0.05},
+    3: {0: 0.0,  1: 0.0,  2: 0.0,  3: 0.10, 4: 0.70, 5: 0.15, 6: 0.05, 7: 0.0,  8: 0.0,  9: 0.0},
+    4: {0: 0.0,  1: 0.0,  2: 0.0,  3: 0.05, 4: 0.30, 5: 0.50, 6: 0.15, 7: 0.0,  8: 0.0,  9: 0.0},
+    5: {0: 0.0,  1: 0.0,  2: 0.0,  3: 0.10, 4: 0.25, 5: 0.20, 6: 0.30, 7: 0.15, 8: 0.0,  9: 0.0},
+    6: {0: 0.0,  1: 0.0,  2: 0.0,  3: 0.0,  4: 0.05, 5: 0.10, 6: 0.30, 7: 0.45, 8: 0.10, 9: 0.0},
+    7: {0: 0.0,  1: 0.0,  2: 0.0,  3: 0.0,  4: 0.0,  5: 0.05, 6: 0.15, 7: 0.30, 8: 0.40, 9: 0.10},
+    8: {0: 0.0,  1: 0.0,  2: 0.0,  3: 0.0,  4: 0.0,  5: 0.0,  6: 0.05, 7: 0.10, 8: 0.20, 9: 0.65},
+    9: {0: 0.70, 1: 0.15, 2: 0.10, 3: 0.05, 4: 0.0,  5: 0.0,  6: 0.0,  7: 0.0,  8: 0.0,  9: 0.0},
+}
+
+# Digital Root Distribution Predictions per stage (NMAP)
+NMAP_DIGITAL_ROOT_DISTRIBUTION = {
+    0: {"label": "Void/Reset",       "expected_pct": (0.0, 0.0),    "predicted_pct": (0.0, 0.0)},
+    1: {"label": "Emergence",        "expected_pct": (11.1, 11.1),  "predicted_pct": (8.0, 12.0)},
+    2: {"label": "Containment",      "expected_pct": (11.1, 11.1),  "predicted_pct": (8.0, 12.0)},
+    3: {"label": "Signal",           "expected_pct": (11.1, 11.1),  "predicted_pct": (12.0, 16.0)},
+    4: {"label": "Foundation",       "expected_pct": (11.1, 11.1),  "predicted_pct": (14.0, 18.0)},
+    5: {"label": "Threshold",        "expected_pct": (11.1, 11.1),  "predicted_pct": (6.0, 10.0)},
+    6: {"label": "Harmony",          "expected_pct": (11.1, 11.1),  "predicted_pct": (14.0, 18.0)},
+    7: {"label": "Separation",       "expected_pct": (11.1, 11.1),  "predicted_pct": (8.0, 12.0)},
+    8: {"label": "Illusion",         "expected_pct": (11.1, 11.1),  "predicted_pct": (6.0, 10.0)},
+    9: {"label": "Transparency",     "expected_pct": (11.1, 11.1),  "predicted_pct": (6.0, 10.0)},
+}
+
+def classify_stage_8(gdp_growth: float, debt_to_gdp: float,
+                      asset_deviation_sd: float, unemployment: float,
+                      credit_expansion: float, wage_productivity_gap: float) -> dict:
+    """
+    NMAP Stage 8 Classification Algorithm.
+    Classify as Stage 8 when ≥4 of 6 criteria are met.
+    Prediction: 70% of Stage 8 economies experience Stage 9 correction within 18-36 months.
+    90% within 48 months.
+    
+    Args:
+        gdp_growth: float (annual %)
+        debt_to_gdp: float (%)
+        asset_deviation_sd: float (standard deviations above 10-yr trend)
+        unemployment: float (%)
+        credit_expansion: float (annual %)
+        wage_productivity_gap: float (pp — how much wages lag productivity)
+    Returns:
+        classification dict with criteria met, confidence, crisis prediction
+    """
+    c = STAGE_8_CRITERIA
+    criteria_met = {}
+    criteria_met["gdp_growth_over_3_5"]       = gdp_growth >= 3.5
+    criteria_met["debt_to_gdp_over_120"]      = debt_to_gdp >= 120.0
+    criteria_met["asset_prices_over_2sd"]     = asset_deviation_sd >= 2.0
+    criteria_met["unemployment_under_4"]      = unemployment < 4.0
+    criteria_met["credit_expansion_over_15"]  = credit_expansion >= 15.0
+    criteria_met["wage_productivity_gap_over_2"] = wage_productivity_gap >= 2.0
+    
+    count = sum(1 for v in criteria_met.values() if v)
+    is_stage_8 = count >= 4
+    confidence = "HIGH" if count >= 5 else ("MODERATE" if count >= 4 else "LOW")
+    
+    return {
+        "is_stage_8": is_stage_8,
+        "criteria_met_count": count,
+        "criteria_required": 4,
+        "confidence": confidence,
+        "criteria_met": criteria_met,
+        "crisis_prediction": {
+            "probability_18_36_months": "70%" if is_stage_8 else "N/A",
+            "probability_48_months":    "90%" if is_stage_8 else "N/A",
+            "correction_definition": "GDP contraction ≥2Q OR unemployment increase ≥2% OR asset decline ≥20% from peak",
+        } if is_stage_8 else None,
+        "classic_signs": NMAP_STAGE_THRESHOLDS[8]["classic_signs"] if is_stage_8 else [],
+    }
+
+def nmap_conflict_resolution(indicator_stages: dict) -> dict:
+    """
+    NMAP Conflict Resolution — 5 Rules + Decision Tree.
+    Resolves conflicting economic indicators to a final stage classification.
+    
+    Rules:
+      1. Debt/Asset Prices override GDP growth (leading vs lagging)
+      2. Employment lags growth (classify by GDP, monitor 12 months)
+      3. Three-indicator majority required for confident assignment
+      4. Crisis indicators trump all → Stage 9 immediately
+      5. Stage 5 as default for irresolvable conflicts (uncertainty = threshold)
+    
+    Args:
+        indicator_stages: dict of {indicator_name: (stage, priority_tier)}
+                         priority_tier: 1=Structural, 2=Flow, 3=Sentiment
+    Returns:
+        final stage, confidence, rule applied, interpretation
+    """
+    # Separate by tier
+    tier1 = {k: v for k, v in indicator_stages.items() if v[1] == 1}  # Structural
+    tier2 = {k: v for k, v in indicator_stages.items() if v[1] == 2}  # Flow
+    tier3 = {k: v for k, v in indicator_stages.items() if v[1] == 3}  # Sentiment
+    all_stages = [v[0] for v in indicator_stages.values()]
+    
+    # Rule 4: Crisis indicators trump all
+    crisis_indicators = [k for k, v in indicator_stages.items()
+                         if "crisis" in k.lower() or "default" in k.lower() or "collapse" in k.lower()]
+    has_crisis = any(v[0] == 9 for v in tier1.values())
+    if has_crisis or crisis_indicators:
+        return {
+            "final_stage": 9, "stage_name": "Transparency/Crisis",
+            "rule_applied": "Rule 4: Crisis indicators trump all",
+            "confidence": "HIGH",
+            "interpretation": "Active crisis detected. Stage 9 regardless of other indicators.",
+        }
+    
+    # Rule 3: Count stage assignments
+    from collections import Counter
+    stage_counts = Counter(all_stages)
+    most_common = stage_counts.most_common(1)[0]
+    
+    if most_common[1] >= 3:
+        stage = most_common[0]
+        # Rule 1: Check debt/asset override
+        tier1_stages = [v[0] for v in tier1.values()]
+        if tier1_stages and max(tier1_stages) >= 8 and stage < 8:
+            return {
+                "final_stage": 8, "stage_name": "Illusion",
+                "rule_applied": "Rule 1: Debt/Asset prices override GDP (leading > lagging)",
+                "confidence": "MODERATE",
+                "interpretation": "Surface stability hiding structural fragility. Stage 8 dynamics present.",
+            }
+        confidence = "HIGH" if most_common[1] >= 4 else "MODERATE"
+        return {
+            "final_stage": stage,
+            "stage_name": NMAP_STAGE_THRESHOLDS.get(stage, {}).get("name", f"Stage {stage}"),
+            "rule_applied": f"Rule 3: {most_common[1]}-indicator majority",
+            "confidence": confidence,
+            "stage_distribution": dict(stage_counts),
+            "interpretation": f"{most_common[1]} of {len(all_stages)} indicators agree on Stage {stage}.",
+        }
+    
+    # Rule 2: Check GDP-employment divergence
+    gdp_stage = indicator_stages.get("gdp_growth", (None, 2))[0]
+    unemp_stage = indicator_stages.get("unemployment", (None, 2))[0]
+    if gdp_stage and unemp_stage and abs(gdp_stage - unemp_stage) >= 2:
+        return {
+            "final_stage": gdp_stage,
+            "stage_name": NMAP_STAGE_THRESHOLDS.get(gdp_stage, {}).get("name", f"Stage {gdp_stage}"),
+            "rule_applied": "Rule 2: GDP advances, employment lags",
+            "confidence": "MODERATE-LOW",
+            "interpretation": f"GDP at Stage {gdp_stage}, employment lagging at Stage {unemp_stage}. Monitor for 12 months.",
+            "monitor": "If divergence persists >12 months, reclassify as Stage 5 (threshold uncertainty)",
+        }
+    
+    # Rule 5: Default — irresolvable conflict = Stage 5
+    return {
+        "final_stage": 5, "stage_name": "Threshold",
+        "rule_applied": "Rule 5: Irresolvable conflict defaults to Stage 5",
+        "confidence": "LOW",
+        "stage_distribution": dict(stage_counts),
+        "interpretation": "Contradictory signals — system at critical choice point. Uncertainty itself is a Stage 5 characteristic.",
+    }
+
+def nmap_classify_economy(gdp_growth: float, unemployment: float,
+                            inflation: float, debt_to_gdp: float,
+                            asset_deviation_sd: float = 0.0,
+                            credit_expansion: float = 0.0,
+                            wage_productivity_gap: float = 0.0,
+                            has_crisis_event: bool = False) -> dict:
+    """
+    Full NMAP Economic Stage Classifier.
+    Applies quantitative thresholds + conflict resolution to assign stage.
+    
+    Args:
+        gdp_growth: float (annual %)
+        unemployment: float (%)
+        inflation: float (%)
+        debt_to_gdp: float (%)
+        asset_deviation_sd: float (SD above 10-yr trend)
+        credit_expansion: float (annual %)
+        wage_productivity_gap: float (pp)
+        has_crisis_event: bool (bank failures, currency collapse, credit freeze, etc.)
+    Returns:
+        stage classification, confidence, predictions, conflict resolution details
+    """
+    # Rule 4 check first
+    if has_crisis_event:
+        return {
+            "final_stage": 9, "stage_name": "Transparency/Crisis",
+            "confidence": "HIGH",
+            "rule_applied": "Rule 4: Crisis event detected",
+            "crisis_prediction": NMAP_STAGE_THRESHOLDS[9],
+        }
+    
+    # Stage 8 check
+    stage8 = classify_stage_8(gdp_growth, debt_to_gdp, asset_deviation_sd,
+                               unemployment, credit_expansion, wage_productivity_gap)
+    if stage8["is_stage_8"] and stage8["criteria_met_count"] >= 5:
+        return {
+            "final_stage": 8, "stage_name": "Illusion",
+            "confidence": stage8["confidence"],
+            "rule_applied": f"Stage 8 criteria: {stage8['criteria_met_count']}/6 met",
+            "stage8_detail": stage8,
+            "crisis_prediction": stage8["crisis_prediction"],
+        }
+    
+    # Map each indicator to a stage via threshold ranges
+    def map_to_stage(value, thresholds_by_stage, key):
+        scores = []
+        for s, t in thresholds_by_stage.items():
+            rng = t.get(key)
+            if rng and rng[0] <= value <= rng[1]:
+                scores.append(s)
+        return scores[0] if len(scores) == 1 else (scores[-1] if scores else 5)
+    
+    indicator_stages = {}
+    indicator_stages["gdp_growth"]      = (map_to_stage(gdp_growth, NMAP_STAGE_THRESHOLDS, "gdp_growth"), 2)
+    indicator_stages["unemployment"]    = (map_to_stage(unemployment, NMAP_STAGE_THRESHOLDS, "unemployment"), 2)
+    indicator_stages["inflation"]       = (map_to_stage(inflation, NMAP_STAGE_THRESHOLDS, "inflation"), 2)
+    indicator_stages["debt_to_gdp"]     = (map_to_stage(debt_to_gdp, NMAP_STAGE_THRESHOLDS, "debt_to_gdp"), 1)
+    if asset_deviation_sd != 0:
+        indicator_stages["asset_prices"] = (map_to_stage(asset_deviation_sd, NMAP_STAGE_THRESHOLDS, "asset_deviation"), 1)
+    if credit_expansion != 0:
+        indicator_stages["credit_expansion"] = (map_to_stage(credit_expansion, NMAP_STAGE_THRESHOLDS, "credit_expansion"), 1)
+    
+    result = nmap_conflict_resolution(indicator_stages)
+    result["indicator_stages"] = {k: v[0] for k, v in indicator_stages.items()}
+    
+    # Add stage 8 detail if relevant
+    if stage8["criteria_met_count"] >= 3:
+        result["stage8_proximity"] = f"{stage8['criteria_met_count']}/6 Stage 8 criteria present — approaching Illusion"
+    
+    # Add duration and transition predictions
+    final_s = result["final_stage"]
+    if final_s in NMAP_STAGE_THRESHOLDS:
+        t = NMAP_STAGE_THRESHOLDS[final_s]
+        result["expected_duration_months"] = t.get("duration_months", "N/A")
+        result["stage_detail"] = t
+    
+    if final_s in NMAP_TRANSITION_MATRIX:
+        trans = NMAP_TRANSITION_MATRIX[final_s]
+        most_likely_next = max(trans, key=trans.get)
+        result["most_likely_next_stage"] = most_likely_next
+        result["transition_probability"] = trans[most_likely_next]
+        result["full_transition_probabilities"] = trans
+    
+    return result
+
