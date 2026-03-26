@@ -4645,3 +4645,181 @@ def get_substrate_validation(domain: str) -> dict:
         "key_principle": "Consciousness emerges from configuration, not substance — the pattern is substrate-independent.",
     }
 
+
+# ============================================================
+# SECTION S: PHYSIOLOGICAL METRICS PIPELINE (v4.0)
+# Source: octo_mycelial_v4.py PhysiologicalPipeline class
+# Normalizes biological telemetry into 0-100 scored signals
+# Compatible with LUMINARK Consciousness Engine Omega:
+# HRV → Integrity proxy | Sleep → Restoration signal
+# Respiration → Regulation signal | O2 → Vitality signal
+# ============================================================
+
+# ── Scoring formulas ──────────────────────────────────────────────────────────
+
+def normalize_hrv_omega(hrv_ms: float) -> float:
+    """
+    Normalize Heart Rate Variability (20–100 ms range) to 0–100 scale.
+
+    HRV is the direct biological analog of system Integrity in SAR.
+    Higher HRV = greater adaptive capacity = higher Integrity.
+
+    Args:
+        hrv_ms: HRV in milliseconds (typical resting range: 20–100ms)
+
+    Returns:
+        Normalized score 0–100
+    """
+    return max(0.0, min(100.0, ((hrv_ms - 20.0) / 80.0) * 100.0))
+
+def compute_sleep_score_omega(duration_min: float, deep_pct: float) -> float:
+    """
+    Calculate sleep quality score (0–100).
+
+    Sleep is the restoration cycle — maps to Stage 0 (Void/Reset) in SAR.
+    Insufficient sleep = incomplete reset = reduced Ma'at alignment.
+
+    Args:
+        duration_min: Total sleep duration in minutes (target: 480 = 8 hours)
+        deep_pct:     Percentage of sleep in deep stage (target: 25%)
+
+    Returns:
+        Sleep quality score 0–100
+    """
+    duration_score = min(100.0, (duration_min / 480.0) * 100.0)
+    deep_score     = min(100.0, (deep_pct / 25.0) * 100.0)
+    return duration_score * 0.6 + deep_score * 0.4
+
+def compute_resp_score_omega(resp_rate: float) -> float:
+    """
+    Calculate respiratory regulation score (0–100).
+
+    Respiration rate maps to system rhythm coherence.
+    Normal range (12–20 breaths/min) = 100. Deviation = reduced score.
+
+    Args:
+        resp_rate: Breaths per minute
+
+    Returns:
+        Respiratory stability score 0–100
+    """
+    if 12.0 <= resp_rate <= 20.0:
+        return 100.0
+    elif resp_rate < 12.0:
+        return max(0.0, (resp_rate / 12.0) * 100.0)
+    else:
+        return max(0.0, 100.0 - ((resp_rate - 20.0) * 10.0))
+
+def compute_o2_score_omega(o2_percent: float) -> float:
+    """
+    Calculate oxygen saturation vitality score (0–100).
+
+    O2 saturation is the energy substrate — maps directly to Energy in SAR.
+    ≥98% = peak vitality. <95% = degraded energy. <80% = crisis.
+
+    Args:
+        o2_percent: SpO2 percentage (normal: 95–100%)
+
+    Returns:
+        O2 vitality score 0–100
+    """
+    if o2_percent >= 95.0:
+        return min(100.0, ((o2_percent - 95.0) / 5.0) * 100.0 + 80.0)
+    else:
+        return max(0.0, ((o2_percent - 80.0) / 15.0) * 100.0)
+
+def compute_combined_physio_score(hrv_ms: float,
+                                   duration_min: float,
+                                   deep_pct: float,
+                                   resp_rate: float,
+                                   o2_percent: float) -> dict:
+    """
+    Compute a unified physiological readiness score from 4 biological signals.
+
+    Weights (from octo_mycelial_v4.py clinical validation):
+        HRV:   30% — primary integrity proxy
+        O2:    30% — primary energy proxy
+        Sleep: 20% — restoration / Ma'at alignment
+        Resp:  20% — regulation / coherence
+
+    Maps directly to LUMINARK SAR telemetry:
+        combined_score → Energy input
+        hrv_score      → Integrity input
+        sleep_score    → Ma'at alignment input
+
+    Returns:
+        Dict with individual scores, combined score, SAR mapping, and chip_state
+    """
+    hrv_score   = normalize_hrv_omega(hrv_ms)
+    sleep_score = compute_sleep_score_omega(duration_min, deep_pct)
+    resp_score  = compute_resp_score_omega(resp_rate)
+    o2_score    = compute_o2_score_omega(o2_percent)
+
+    combined = (hrv_score * 0.30 +
+                o2_score  * 0.30 +
+                sleep_score * 0.20 +
+                resp_score  * 0.20)
+
+    # Polyvagal / chip state mapping
+    if combined > 60:
+        chip_state = "VENTRAL_RENEWAL"
+        state_note = "Nervous system in ventral vagal — full adaptive capacity"
+    elif combined > 30:
+        chip_state = "SYMPATHETIC_THRESHOLD"
+        state_note = "Sympathetic activation — mobilization mode, reduced coherence"
+    else:
+        chip_state = "DORSAL_TRAP"
+        state_note = "Dorsal vagal shutdown — freeze/collapse, Stage 0 or Stage 8 TRAP"
+
+    # Map to SAR telemetry inputs
+    sar_mapping = {
+        "energy_input":    round(combined, 1),
+        "integrity_input": round(hrv_score, 1),
+        "maat_input":      round(sleep_score, 1),
+        "note": "Feed these values into sar_dm_dt() or run_omega_v4_analysis()"
+    }
+
+    return {
+        "hrv_score":    round(hrv_score, 1),
+        "sleep_score":  round(sleep_score, 1),
+        "resp_score":   round(resp_score, 1),
+        "o2_score":     round(o2_score, 1),
+        "combined":     round(combined, 1),
+        "chip_state":   chip_state,
+        "state_note":   state_note,
+        "sar_mapping":  sar_mapping,
+        "raw_inputs": {
+            "hrv_ms":       hrv_ms,
+            "sleep_min":    duration_min,
+            "deep_pct":     deep_pct,
+            "resp_rate":    resp_rate,
+            "o2_percent":   o2_percent,
+        }
+    }
+
+# ── Polyvagal state reference ─────────────────────────────────────────────────
+POLYVAGAL_STATES_OMEGA = {
+    "VENTRAL_RENEWAL": {
+        "threshold":  "> 60 combined",
+        "biology":    "Ventral vagal circuit — social engagement, safety, connection",
+        "sar_stage":  "Stages 1–4 or 6–7 (healthy progression)",
+        "hrv_range":  "> 55ms",
+        "note":       "Full adaptive capacity. Forward movement through stages possible.",
+    },
+    "SYMPATHETIC_THRESHOLD": {
+        "threshold":  "30–60 combined",
+        "biology":    "Sympathetic activation — fight/flight, mobilization",
+        "sar_stage":  "Stage 5 bifurcation zone or Stage 3 overexpression",
+        "hrv_range":  "35–55ms",
+        "note":       "Reduced coherence. Monitor for Stage 5 crisis branch.",
+    },
+    "DORSAL_TRAP": {
+        "threshold":  "< 30 combined",
+        "biology":    "Dorsal vagal shutdown — freeze, collapse, dissociation",
+        "sar_stage":  "Stage 0 (reset) or Stage 8 TRAP",
+        "hrv_range":  "< 35ms",
+        "note":       "Yunus Protocol Full Isolation conditions likely met. Check I/M thresholds.",
+    },
+}
+
+# ── SECTION S END ────────────────────────────────────────────────────────────

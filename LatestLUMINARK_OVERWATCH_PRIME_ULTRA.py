@@ -4946,3 +4946,320 @@ def nmap_classify_economy(gdp_growth: float, unemployment: float,
     
     return result
 
+
+# ============================================================
+# SECTION T: OCTO-MYCELIAL v4.0 ENHANCEMENT LAYER
+# Source: octo_mycelial_v4.py (Stanfield 2025)
+# New in v4.0: RISS stage weights, determine_sar_stage,
+# inject_threat_v4, threat history, network variability
+# impact table, run_protection_cycle, get_system_stats
+# ============================================================
+
+# ── SAR Stage Weights for RISS (Recursive Impact & State Score) ───────────────
+# Stage 5: 1.8 (THRESHOLD — critical decision point)
+# Stage 8: 2.2 (TRAP — maximum danger, highest multiplier)
+# Stage 9: 1.4 (Transformation/Teaching)
+RISS_SAR_STAGE_WEIGHTS = {
+    1: 0.3,   # Stage 1: Low impact — reconnaissance probe
+    2: 0.5,   # Stage 2: Building — initial foothold
+    3: 0.7,   # Stage 3: Expression — initial compromise
+    4: 1.0,   # Stage 4: Foundation — established presence
+    5: 1.8,   # Stage 5: THRESHOLD — lateral movement, critical decision point
+    6: 1.5,   # Stage 6: Peak complexity — multiple vectors active
+    7: 1.6,   # Stage 7: Analysis/Distillation — command and control
+    8: 2.2,   # Stage 8: TRAP — critical infrastructure impact, maximum danger
+    9: 1.4,   # Stage 9: Transformation/Teaching — recovery phase
+}
+
+# ── Threat Type → SAR Stage Mapping (Cyber Kill Chain) ────────────────────────
+# Maps each kill chain phase to its corresponding SAR stage
+THREAT_TO_SAR_STAGE = {
+    "reconnaissance":        1,   # Early probing → Stage 1 (Spark)
+    "lateral_movement":      5,   # Threshold — critical fork point
+    "persistence":           4,   # Established presence → Stage 4 (Foundation)
+    "privilege_escalation":  6,   # Peak complexity → Stage 6 (Nexus)
+    "command_and_control":   7,   # Analysis/Distillation → Stage 7 (Lens)
+    "exfiltration":          7,   # Data extraction → Stage 7
+    "impact":                8,   # Infrastructure impact → Stage 8 (Trap)
+}
+
+# ── Network Variability Impact per Threat Type ────────────────────────────────
+# How much each threat type degrades network variability (HRV analog)
+NETWORK_VARIABILITY_IMPACT = {
+    "reconnaissance":        10,  # Minimal — passive observation
+    "lateral_movement":      25,  # Moderate — spreading through system
+    "persistence":           40,  # High — embedding hooks into system
+    "privilege_escalation":  35,  # High — authority structure disruption
+    "command_and_control":   45,  # Very high — external command channel
+    "exfiltration":          50,  # Severe — data leaving the system
+    "impact":                60,  # Maximum — direct destructive action
+}
+
+# ── RISS Formula ──────────────────────────────────────────────────────────────
+# RISS = (base_score + scale_factor + variability_penalty) * stage_weight
+# Where:
+#   base_score          = threat type severity (30–90)
+#   scale_factor        = network spread impact (0–50, 3 per affected node)
+#   variability_penalty = HRV analog degradation (0–30)
+#   stage_weight        = SAR stage multiplier (0.3–2.2)
+
+RISS_THREAT_BASE_SCORES = {
+    "reconnaissance":        30,
+    "lateral_movement":      50,
+    "persistence":           70,
+    "privilege_escalation":  65,
+    "command_and_control":   75,
+    "exfiltration":          85,
+    "impact":                90,
+}
+
+def determine_sar_stage_from_threat(threat_type: str, network_health: float) -> int:
+    """
+    Map a Cyber Kill Chain threat type to its SAR stage.
+
+    Args:
+        threat_type:    One of the THREAT_TO_SAR_STAGE keys (lowercase)
+        network_health: Current network variability / HRV analog (0–100)
+
+    Returns:
+        SAR stage integer (1–9)
+    """
+    base_stage = THREAT_TO_SAR_STAGE.get(threat_type, 5)
+
+    if network_health < 30:
+        return 8   # System in crisis → Stage 8 (Trap) overrides everything
+    elif network_health < 50:
+        return min(7, base_stage + 1)   # Degraded → push stage up
+    else:
+        return base_stage   # Healthy system → maintain base stage mapping
+
+def calc_riss_v4(threat_type: str,
+                 affected_nodes: int,
+                 network_variability: float,
+                 sar_stage: int = 5) -> dict:
+    """
+    Calculate the Recursive Impact & State Score (RISS) for an infrastructure threat.
+
+    RISS = (base + scale + variability_penalty) * stage_weight
+
+    Args:
+        threat_type:          Cyber Kill Chain phase (e.g. 'lateral_movement')
+        affected_nodes:       Number of nodes currently compromised
+        network_variability:  HRV analog for the network (0–100, higher = healthier)
+        sar_stage:            Current SAR stage (used to look up multiplier)
+
+    Returns:
+        dict with riss_score, severity, stage_weight, formula_components
+    """
+    base    = RISS_THREAT_BASE_SCORES.get(threat_type, 50)
+    scale   = min(50, affected_nodes * 3)
+    penalty = (100 - network_variability) * 0.3
+    weight  = RISS_SAR_STAGE_WEIGHTS.get(sar_stage, 1.0)
+    raw     = (base + scale + penalty) * weight
+    score   = min(100, int(raw))
+
+    if score >= 80:   severity = "CRITICAL"
+    elif score >= 60: severity = "HIGH"
+    elif score >= 40: severity = "MEDIUM"
+    else:             severity = "LOW"
+
+    return {
+        "riss_score":     score,
+        "severity":       severity,
+        "threat_type":    threat_type,
+        "sar_stage":      sar_stage,
+        "stage_weight":   weight,
+        "stage_name":     {1:"Spark",2:"Forge",3:"Engine",4:"Crucible",5:"Dynamo",
+                           6:"Nexus",7:"Lens",8:"Vessel/TRAP",9:"Slipstream"}.get(sar_stage, "Unknown"),
+        "formula_components": {
+            "base_score":          base,
+            "scale_factor":        round(scale, 2),
+            "variability_penalty": round(penalty, 2),
+            "raw_riss":            round(raw, 2),
+        },
+        "network_variability_used": network_variability,
+        "affected_nodes":           affected_nodes,
+    }
+
+def run_threat_v4(threat_type: str,
+                  current_network_variability: float,
+                  affected_nodes: int,
+                  threat_history: list = None) -> dict:
+    """
+    Full v4.0 threat assessment pipeline.
+
+    1. Determine SAR stage from threat type + network health
+    2. Calculate RISS score
+    3. Compute network variability degradation
+    4. Return complete threat event record
+
+    Args:
+        threat_type:                 Cyber Kill Chain phase string
+        current_network_variability: Current HRV analog (0–100)
+        affected_nodes:              Number of currently compromised nodes
+        threat_history:              Optional running list of prior threat events
+
+    Returns:
+        Complete threat event dict including RISS, SAR stage, variability impact
+    """
+    import time as _time_t
+    sar_stage = determine_sar_stage_from_threat(threat_type, current_network_variability)
+    riss      = calc_riss_v4(threat_type, affected_nodes, current_network_variability, sar_stage)
+    impact    = NETWORK_VARIABILITY_IMPACT.get(threat_type, 30)
+    new_var   = max(10.0, current_network_variability - impact)
+
+    chip_state = ("VENTRAL_RENEWAL"     if new_var > 60 else
+                  "SYMPATHETIC_THRESHOLD" if new_var > 30 else
+                  "DORSAL_TRAP")
+
+    event = {
+        "timestamp":            _time_t.time(),
+        "threat_type":          threat_type,
+        "sar_stage":            sar_stage,
+        "riss_score":           riss["riss_score"],
+        "severity":             riss["severity"],
+        "stage_name":           riss["stage_name"],
+        "stage_weight":         riss["stage_weight"],
+        "affected_nodes":       affected_nodes,
+        "network_variability":  {
+            "before": current_network_variability,
+            "impact": impact,
+            "after":  new_var,
+        },
+        "chip_state":           chip_state,
+        "formula":              riss["formula_components"],
+    }
+
+    if threat_history is not None:
+        threat_history.append(event)
+
+    return event
+
+def get_octo_system_stats_v4(threat_history: list,
+                              current_network_variability: float,
+                              total_nodes: int,
+                              healthy_nodes: int,
+                              isolated_nodes: int = 0) -> dict:
+    """
+    Generate comprehensive Octo-Mycelial v4 system statistics.
+
+    Includes RISS distribution, threat type breakdown, network health,
+    and overall chip state assessment.
+
+    Args:
+        threat_history:               List of threat event dicts from run_threat_v4()
+        current_network_variability:  Current HRV analog (0–100)
+        total_nodes:                  Total nodes in the network
+        healthy_nodes:                Nodes currently in healthy state
+        isolated_nodes:               Nodes quarantined via isolation protocol
+
+    Returns:
+        Complete stats dict matching v4.0 dashboard format
+    """
+    import time as _time_s
+
+    riss_scores = [e["riss_score"] for e in threat_history]
+    critical    = [s for s in riss_scores if s >= 80]
+    high        = [s for s in riss_scores if 60 <= s < 80]
+    recent_1h   = [e for e in threat_history
+                   if _time_s.time() - e.get("timestamp", 0) < 3600]
+
+    threat_type_counts = {}
+    for e in recent_1h:
+        k = e.get("threat_type", "unknown")
+        threat_type_counts[k] = threat_type_counts.get(k, 0) + 1
+
+    chip_state = ("VENTRAL_RENEWAL"     if current_network_variability > 60 else
+                  "SYMPATHETIC_THRESHOLD" if current_network_variability > 30 else
+                  "DORSAL_TRAP")
+
+    stage_weight_summary = {
+        stage: RISS_SAR_STAGE_WEIGHTS[stage]
+        for stage in sorted(RISS_SAR_STAGE_WEIGHTS)
+    }
+
+    return {
+        "network": {
+            "total_nodes":      total_nodes,
+            "healthy_nodes":    healthy_nodes,
+            "compromised_nodes": total_nodes - healthy_nodes - isolated_nodes,
+            "isolated_nodes":   isolated_nodes,
+            "health_pct":       round(healthy_nodes / max(total_nodes, 1) * 100, 1),
+        },
+        "variability": {
+            "current":    current_network_variability,
+            "chip_state": chip_state,
+            "label":      ("Network HRV healthy — adaptive response active" if current_network_variability > 60 else
+                           "Network HRV stressed — sympathetic threshold" if current_network_variability > 30 else
+                           "Network HRV collapsed — dorsal trap / crisis mode"),
+        },
+        "riss": {
+            "total_threats":   len(threat_history),
+            "avg_riss":        round(sum(riss_scores) / max(len(riss_scores), 1), 1),
+            "max_riss":        max(riss_scores) if riss_scores else 0,
+            "critical_count":  len(critical),
+            "high_count":      len(high),
+            "sar_stage_weights": stage_weight_summary,
+        },
+        "threat_history": {
+            "total":         len(threat_history),
+            "recent_1h":     len(recent_1h),
+            "threat_types":  threat_type_counts,
+            "most_dangerous": max(threat_history, key=lambda e: e.get("riss_score", 0))
+                              if threat_history else None,
+        },
+    }
+
+# ── Convenience wrapper: run a full protection cycle ────────────────────────
+def run_protection_cycle_v4(network_state: dict, threat_history: list = None) -> dict:
+    """
+    Orchestrate one complete v4.0 Octo-Mycelial protection cycle.
+
+    Accepts a network_state dict with:
+        threat_type (str)           — Cyber Kill Chain phase
+        network_variability (float) — current HRV analog (0-100)
+        affected_nodes (int)        — currently compromised node count
+        total_nodes (int)           — total network size
+        healthy_nodes (int)         — currently healthy nodes
+
+    Returns:
+        Cycle result including threat event, RISS stats, and recommended action
+    """
+    if threat_history is None:
+        threat_history = []
+
+    threat_type          = network_state.get("threat_type", "lateral_movement")
+    net_var              = network_state.get("network_variability", 75.0)
+    affected             = network_state.get("affected_nodes", 1)
+    total                = network_state.get("total_nodes", 35)
+    healthy              = network_state.get("healthy_nodes", total - affected)
+
+    # Run threat assessment
+    event = run_threat_v4(threat_type, net_var, affected, threat_history)
+
+    # Get system stats
+    stats = get_octo_system_stats_v4(
+        threat_history, event["network_variability"]["after"], total, healthy
+    )
+
+    # Recommended action based on RISS + chip state
+    riss   = event["riss_score"]
+    state  = event["chip_state"]
+    if riss >= 80 or state == "DORSAL_TRAP":
+        action = "ISOLATE_AND_REGENERATE — quarantine compromised nodes immediately"
+    elif riss >= 60 or state == "SYMPATHETIC_THRESHOLD":
+        action = "ADAPTIVE_CAMOUFLAGE — reroute 60% processing from compromised nodes"
+    else:
+        action = "MONITOR — continue sensing cycle, no immediate action required"
+
+    return {
+        "cycle_complete":   True,
+        "threat_event":     event,
+        "system_stats":     stats,
+        "recommended_action": action,
+        "sar_stage":        event["sar_stage"],
+        "riss_score":       riss,
+        "chip_state":       state,
+    }
+
+# ── SECTION T END ────────────────────────────────────────────────────────────
