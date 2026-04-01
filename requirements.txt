@@ -1,13 +1,3 @@
-# LUMINARK Unified API — Python Dependencies
-# Install with: pip install -r requirements.txt
-
-# ── API framework ──────────────────────────────────────────────────────────────
-fastapi==0.111.0
-uvicorn[standard]==0.29.0
-pydantic==2.7.1
-
-# ── optional: OpenAI Oracle (only needed if using live AI readings) ────────────
-# openai==1.30.0
-
-# ── optional: async support ───────────────────────────────────────────────────
-anyio==4.3.0
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2

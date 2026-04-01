@@ -1,10 +1,13 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # LUMINARK Unified API — Dockerfile
-# Meridian Axiom Alignment Technologies
+# Meridian Axiom Alignment Technologies (MAAT)
+# Framework: Stanfield's Axiom of Perpetuity (SAP)
+# Author: Richard L. Stanfield | LuminarkMeridian@gmail.com
+# Confidential — Proprietary IP
 # ─────────────────────────────────────────────────────────────────────────────
 #
 # Build:    docker build -t luminark-api .
-# Run:      docker run -p 8000:8000 luminark-api
+# Run:      docker run -p 8000:8000 -e LUMINARK_API_KEY=your-secret-key luminark-api
 # Dev:      docker run -p 8000:8000 -v $(pwd):/app luminark-api
 #
 # The container exposes the FastAPI server at http://localhost:8000
@@ -14,9 +17,9 @@
 FROM python:3.11-slim
 
 # ── metadata ──────────────────────────────────────────────────────────────────
-LABEL maintainer="info.rstanfield@gmail.com"
-LABEL description="LUMINARK Unified API — Predictive Stage Intelligence"
-LABEL version="1.0.0"
+LABEL maintainer="LuminarkMeridian@gmail.com"
+LABEL description="LUMINARK Unified API — Predictive Stage Intelligence (MAAT)"
+LABEL version="1.1.0"
 
 # ── system setup ──────────────────────────────────────────────────────────────
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -32,10 +35,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ── copy application files ────────────────────────────────────────────────────
 COPY main.py .
 COPY LUMINARK_CONSCIOUSNESS_ENGINE_OMEGA.py .
-COPY LUMINARK_OVERWATCH_PRIME_ULTRA.py .
+COPY LatestLUMINARK_OVERWATCH_PRIME_ULTRA.py .
 
-# ── optional: copy test suite ─────────────────────────────────────────────────
-COPY test_omega.py .
+# ── copy test suite if present ────────────────────────────────────────────────
+COPY test_omega.py* ./
 
 # ── expose port ───────────────────────────────────────────────────────────────
 EXPOSE 8000
