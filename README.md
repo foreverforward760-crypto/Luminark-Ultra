@@ -118,7 +118,7 @@ Maximum tension. Power and will converging. The Golden Ratio (φ = 1.618) first 
 1. **Breakthrough to Stage 6** — Threshold crossed with sufficient energy, integrity, and preparation
 2. **Graceful Regression to Stage 4** — Conscious return to foundation when not ready. **This is wisdom, not failure.**
 3. **Forced Collapse to Stage 7** — Crisis from delayed decision. Threshold attempted without readiness.
-
+4. Point of no return
 - *Infrastructure:* Approaching operational limits — BILATERAL THRESHOLD — MONITOR IMMEDIATELY
 - *Consciousness:* Career pivot, life crisis — "Do I scale? Maintain? Contract?"
 - *Organization:* Strategic inflection point — the moment that determines survival or decline
