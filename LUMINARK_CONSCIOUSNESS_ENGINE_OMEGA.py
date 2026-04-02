@@ -80,21 +80,23 @@ class SAPStage(Enum):
     EXPRESSION = 6  # Authentic flow — alignment, purpose in motion
     CRISIS     = 7  # Purification — forced reckoning, shadow confrontation
     RIGIDITY   = 8  # Permanence trap — omniscience illusion, frozen certainty
-    VOID       = 9  # Dissolution — death/rebirth cycle, return to zero
+    TRANSPARENCY_OF_THE_GUIDE = 9  # Conscious dissolution — teaching, transmission, return to 0ᴮ Integrative Void
 
 
 # Detailed stage metadata: name, subtitle, geometry, polyvagal state, duration
 STAGE_METADATA = {
-    0: {"name": "PLENARA",     "subtitle": "Void Potential",         "geometry": "point",     "polyvagal": "ventral", "avg_days": "variable"},
-    1: {"name": "SEED",        "subtitle": "First Impulse",          "geometry": "circle",    "polyvagal": "ventral", "avg_days": "7-30"},
-    2: {"name": "EMERGENCE",   "subtitle": "Rising Identity",        "geometry": "crescent",  "polyvagal": "ventral", "avg_days": "30-90"},
-    3: {"name": "BREAKTHROUGH","subtitle": "Creative Explosion",     "geometry": "triangle",  "polyvagal": "sympathetic", "avg_days": "14-60"},
-    4: {"name": "FOUNDATION",  "subtitle": "Integration & Structure","geometry": "square",    "polyvagal": "ventral", "avg_days": "90-365"},
-    5: {"name": "THRESHOLD",   "subtitle": "Crisis Point — Irreversible Choice","geometry": "pentagon","polyvagal": "sympathetic","avg_days": "30-90"},
-    6: {"name": "EXPRESSION",  "subtitle": "Authentic Flow",         "geometry": "hexagon",   "polyvagal": "ventral", "avg_days": "90-730"},
-    7: {"name": "CRISIS",      "subtitle": "Purification — Shadow Confrontation","geometry": "heptagon","polyvagal": "dorsal","avg_days": "14-180"},
-    8: {"name": "RIGIDITY",    "subtitle": "Permanence Trap — Omniscience Illusion","geometry": "octagon","polyvagal": "sympathetic","avg_days": "variable"},
-    9: {"name": "VOID",        "subtitle": "Dissolution — Death/Rebirth","geometry": "nonagon","polyvagal": "dorsal","avg_days": "variable"},
+    # Canonical Stanfield's Axiom of Perpetuity (SAP) stage names — NEVER ALTER
+    # Author: Richard L. Stanfield | Meridian Axiom Alignment Technologies (MAAT)
+    0: {"name": "PLENARA",                   "subtitle": "Void Potential — Primordial Source",                   "geometry": "sphere",   "polyvagal": "ventral",     "avg_days": "variable"},
+    1: {"name": "SPARK OF NAVIGATION",       "subtitle": "First Impulse — Emergent Direction",                  "geometry": "point",    "polyvagal": "ventral",     "avg_days": "7-30"},
+    2: {"name": "FORGE OF POLARITY",         "subtitle": "Rising Identity — Duality and Tension Form",          "geometry": "line",     "polyvagal": "ventral",     "avg_days": "30-90"},
+    3: {"name": "ENGINE OF EXPRESSION",      "subtitle": "Creative Explosion — Identity Crystallizing",         "geometry": "triangle", "polyvagal": "sympathetic", "avg_days": "14-60"},
+    4: {"name": "CRUCIBLE OF EQUILIBRIUM",   "subtitle": "Integration and Structure — Heart-Centered Balance",  "geometry": "square",   "polyvagal": "ventral",     "avg_days": "90-365"},
+    5: {"name": "DYNAMO OF WILL",            "subtitle": "Bilateral Threshold — Irreversible Choice / Point of No Return", "geometry": "pentagon","polyvagal": "sympathetic","avg_days": "30-90"},
+    6: {"name": "NEXUS OF HARMONY",          "subtitle": "Authentic Flow — Peak Synergy and Purpose",           "geometry": "hexagon",  "polyvagal": "ventral",     "avg_days": "90-730"},
+    7: {"name": "LENS OF DISTILLATION",      "subtitle": "Forced Purification — Shadow Confrontation",          "geometry": "heptagon", "polyvagal": "dorsal",      "avg_days": "14-180"},
+    8: {"name": "VESSEL OF GROUNDING",       "subtitle": "FALSE HELL — Permanence Trap / Omniscience Illusion", "geometry": "octagon",  "polyvagal": "sympathetic", "avg_days": "variable"},
+    9: {"name": "TRANSPARENCY OF THE GUIDE", "subtitle": "Conscious Dissolution — Teaching, Transmission, Return","geometry": "nonagon", "polyvagal": "dorsal",     "avg_days": "variable"},
 }
 
 # 369 Resonance pattern (Tesla's harmonic law applied to SAP)
@@ -992,7 +994,7 @@ class HarrowingProtocol:
                 f"The Harrowing is not defeat. It is archaeology of self."
             ),
             "effect":  "Lost parts reclaimed — renewal accelerated. The descent IS the healing.",
-            "restoration_note": "Stage 9 Void → Stage 1 Seed: the void births new emergence.",
+            "restoration_note": "Stage 9 TRANSPARENCY OF THE GUIDE → Stage 0ᴮ → Stage 1 SPARK OF NAVIGATION: the void births new emergence.",
         }
         # Attach last stable snapshot if available
         if self._last_stable_stage is not None:
@@ -1444,7 +1446,7 @@ class PersonalAssessmentEngine:
             6: ["Protect flow state", "Say no to complexity", "Document what's working"],
             7: ["Find one honest witness", "Stop explaining — start examining", "Rest is productive now"],
             8: ["Find your challenger — you need a mirror", "Audit your certainties", "Ask: what am I not seeing?"],
-            9: ["Stop before rebuilding", "Let the dissolution complete", "Seed is already forming underneath"],
+            9: ["Stop before rebuilding", "Let the dissolution complete", "SPARK OF NAVIGATION is already forming within PLENARA"],
         }
         actions = focus_map.get(stage, ["Monitor SPAT weekly", "Follow the stage guidance"])
 
@@ -1797,7 +1799,7 @@ NAM_ARCHETYPES = {
         "stages": [0, 1, 2, 3],
         "name": "Aurogenesis",
         "meaning": "Emergence from void — raw creation, polarity, first expression",
-        "archetype": "The Seed / The Spark",
+        "archetype": "SPARK OF NAVIGATION / PLENARA",
         "operator_note": "Protect and nurture. Do not force structure prematurely.",
     },
     "STELLIFEX": {

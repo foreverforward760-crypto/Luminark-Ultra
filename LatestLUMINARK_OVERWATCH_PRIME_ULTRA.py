@@ -80,16 +80,18 @@ class InfraStage(Enum):
     VOID       = 9   # Terminal / renewal — forced shutdown or full restoration
 
 STAGE_LABELS = {
-    0: ("PLENARA",     "Dormant/Reserve",        "▪ Fully quiescent — optimal reserve margin"),
-    1: ("SEED",        "Initializing",           "▪ Component spin-up, first load uptake"),
-    2: ("EMERGENCE",   "Early Operational",      "▪ Activating subsystems, load rising normally"),
-    3: ("BREAKTHROUGH","Peak Performance",        "▪ Maximum efficiency — breakthrough output"),
-    4: ("FOUNDATION",  "Stable Baseline",        "▪ Normal ops, healthy redundancy active"),
-    5: ("THRESHOLD",   "Pre-Stress Warning",     "▪ Approaching operational limits — MONITOR"),
-    6: ("EXPRESSION",  "Adaptive Stress",        "▪ System compensating — WATCH CLOSELY"),
-    7: ("CRISIS",      "Failure Trajectory",     "▪ Cascading risk detected — INTERVENE NOW"),
-    8: ("RIGIDITY",    "Permanence Trap",        "▪ Adaptation blocked — EMERGENCY PROTOCOL"),
-    9: ("VOID",        "Terminal/Renewal",       "▪ Forced shutdown OR full restoration"),
+    # Canonical Stanfield's Axiom of Perpetuity (SAP) stage names — NEVER ALTER
+    # Author: Richard L. Stanfield | Meridian Axiom Alignment Technologies (MAAT)
+    0: ("PLENARA",                    "Dormant/Reserve",     "▪ Fully quiescent — void potential, optimal reserve margin"),
+    1: ("SPARK OF NAVIGATION",        "Initializing",        "▪ Component spin-up, first load uptake — emergent direction"),
+    2: ("FORGE OF POLARITY",          "Early Operational",   "▪ Activating subsystems, load rising — duality and tension forming"),
+    3: ("ENGINE OF EXPRESSION",       "Peak Performance",    "▪ Maximum efficiency — creative explosion, breakthrough output"),
+    4: ("CRUCIBLE OF EQUILIBRIUM",    "Stable Baseline",     "▪ Normal ops, healthy redundancy — foundation and balance active"),
+    5: ("DYNAMO OF WILL",             "Pre-Stress Warning",  "▪ Approaching operational limits — BILATERAL THRESHOLD — MONITOR"),
+    6: ("NEXUS OF HARMONY",           "Adaptive Stress",     "▪ System compensating — synergy under load — WATCH CLOSELY"),
+    7: ("LENS OF DISTILLATION",       "Failure Trajectory",  "▪ Cascading risk — forced reckoning — INTERVENE NOW"),
+    8: ("VESSEL OF GROUNDING",        "FALSE HELL",          "▪ Adaptation blocked — Permanence Trap — EMERGENCY PROTOCOL"),
+    9: ("TRANSPARENCY OF THE GUIDE",  "Terminal/Renewal",    "▪ Conscious dissolution — teaching, transmission, return to 0ᴮ"),
 }
 
 # ── Extended SAP Metadata for Infrastructure  (merged from Consciousness Engine)
@@ -103,39 +105,39 @@ SAP_INFRA_METADATA = {
     1: {"geometry": "circle",   "resonance": None,
         "infra_signature":  "First power-on, initial load uptake, subsystems spinning up",
         "operator_note":    "Normal startup sequence. Monitor ramp rate for anomalies.",
-        "sap_origin":       "SEED: First impulse — fragile but real"},
+        "sap_origin":       "SPARK OF NAVIGATION: First impulse — emergent direction, first vision"},
     2: {"geometry": "crescent", "resonance": None,
         "infra_signature":  "Rising to operational load — components activating in sequence",
         "operator_note":    "Watch for early cascade triggers during initial ramp.",
-        "sap_origin":       "EMERGENCE: Identity forming — rising into visibility"},
+        "sap_origin":       "FORGE OF POLARITY: Identity forming — duality and tension, boundaries established"},
     3: {"geometry": "triangle", "resonance": "CREATION_POINT (369 resonance) — peak output window",
         "infra_signature":  "Maximum throughput, peak efficiency — breakthrough performance",
         "operator_note":    "Capitalize on peak window. Stage 3 ends without warning.",
-        "sap_origin":       "BREAKTHROUGH: Creative explosion — maximum energy"},
+        "sap_origin":       "ENGINE OF EXPRESSION: Creative explosion — maximum energy, identity crystallizing"},
     4: {"geometry": "square",   "resonance": None,
         "infra_signature":  "Stable baseline ops — redundancy active, load balanced",
         "operator_note":    "Standard maintenance window. Build buffer capacity now.",
-        "sap_origin":       "FOUNDATION: Integration — the structure that holds everything else"},
+        "sap_origin":       "CRUCIBLE OF EQUILIBRIUM: Integration — the structure that holds everything else, heart-centered balance"},
     5: {"geometry": "pentagon", "resonance": None,
         "infra_signature":  "Threshold zone — stress accumulating, approaching limits",
         "operator_note":    "INCREASE monitoring frequency. Pre-position response resources.",
-        "sap_origin":       "THRESHOLD: Irreversible choice — the bilateral tension point"},
+        "sap_origin":       "DYNAMO OF WILL: Bilateral threshold — irreversible choice, power converging, point of no return"},
     6: {"geometry": "hexagon",  "resonance": "HARMONY_POINT (369) — system adapting, not yet failing",
         "infra_signature":  "Active compensation — system modulating under load",
         "operator_note":    "Adaptive response underway. High vigilance. May stabilize OR progress to 7.",
-        "sap_origin":       "EXPRESSION: Authentic flow — action aligned under pressure"},
+        "sap_origin":       "NEXUS OF HARMONY: Authentic flow — peak synergy, action aligned with purpose"},
     7: {"geometry": "heptagon", "resonance": None,
         "infra_signature":  "Failure trajectory — cascading instability, subsystems failing",
         "operator_note":    "EMERGENCY RESPONSE. Dispatch field crew. Prepare failover.",
-        "sap_origin":       "CRISIS: Forced purification — shadow confrontation"},
+        "sap_origin":       "LENS OF DISTILLATION: Forced purification — shadow confrontation, wisdom through breakdown"},
     8: {"geometry": "octagon",  "resonance": None,
         "infra_signature":  "Permanence trap — system frozen, adaptation fully blocked",
         "operator_note":    "CRITICAL: High stability MASKS hidden brittleness. Inversion Principle active.",
-        "sap_origin":       "RIGIDITY: Omniscience trap — certainty without openness"},
+        "sap_origin":       "VESSEL OF GROUNDING (FALSE HELL): Omniscience trap — certainty without openness, Permanence Trap"},
     9: {"geometry": "nonagon",  "resonance": "COMPLETION_POINT (369) — full cycle, dissolution/rebirth",
         "infra_signature":  "Terminal failure OR forced restoration — the cycle completes",
         "operator_note":    "VOID: Either full controlled shutdown and rebuild, or catastrophic failure.",
-        "sap_origin":       "VOID: Death/rebirth — the end that seeds the beginning"},
+        "sap_origin":       "TRANSPARENCY OF THE GUIDE: Dissolution — conscious teaching, transmission, return to 0ᴮ Integrative Void"},
 }
 
 
@@ -1153,7 +1155,7 @@ class InfraHarrowingProtocol:
                 f"Begin shutdown sequence NOW. Preserve all config data."
             ),
             "sap_context":      "The descent IS the healing — choose it before it chooses you.",
-            "restoration_note": "Stage 9 Void → Stage 1 Seed: rebirth sequence begins at shutdown.",
+            "restoration_note": "Stage 9 TRANSPARENCY OF THE GUIDE → Stage 0ᴮ → Stage 1 SPARK OF NAVIGATION: rebirth sequence begins at shutdown.",
         }
         # Attach last stable snapshot if available
         if self._last_stable_stage is not None:
@@ -2159,7 +2161,7 @@ def run_demo():
 
 CONTAINER_RULE_TABLE = {
     #  stage: (content_digit, container_digit, description, magnetic_drag_pct)
-    1: (9, 1, "NAVIGATION — Seed State",           20),
+    1: (9, 1, "NAVIGATION — Spark of Navigation",  20),
     2: (1, 8, "FORMATION — Container Dominant",     0),
     3: (2, 7, "EXPANSION — Magnetic Pole (+)",      90),
     4: (3, 6, "FOUNDATION — Pivot Approaching",     0),
