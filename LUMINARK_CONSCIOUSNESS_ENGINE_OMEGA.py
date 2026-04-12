@@ -87,17 +87,161 @@ class SAPStage(Enum):
 STAGE_METADATA = {
     # Canonical Stanfield's Axiom of Perpetuity (SAP) stage names — NEVER ALTER
     # Author: Richard L. Stanfield | Meridian Axiom Alignment Technologies (MAAT)
-    0: {"name": "PLENARA",                   "subtitle": "Void Potential — Primordial Source",                   "geometry": "sphere",   "polyvagal": "ventral",     "avg_days": "variable"},
-    1: {"name": "SPARK OF NAVIGATION",       "subtitle": "First Impulse — Emergent Direction",                  "geometry": "point",    "polyvagal": "ventral",     "avg_days": "7-30"},
-    2: {"name": "FORGE OF POLARITY",         "subtitle": "Rising Identity — Duality and Tension Form",          "geometry": "line",     "polyvagal": "ventral",     "avg_days": "30-90"},
-    3: {"name": "ENGINE OF EXPRESSION",      "subtitle": "Creative Explosion — Identity Crystallizing",         "geometry": "triangle", "polyvagal": "sympathetic", "avg_days": "14-60"},
-    4: {"name": "CRUCIBLE OF EQUILIBRIUM",   "subtitle": "Integration and Structure — Heart-Centered Balance",  "geometry": "square",   "polyvagal": "ventral",     "avg_days": "90-365"},
-    5: {"name": "DYNAMO OF WILL",            "subtitle": "Bilateral Threshold — Irreversible Choice / Point of No Return", "geometry": "pentagon","polyvagal": "sympathetic","avg_days": "30-90"},
-    6: {"name": "NEXUS OF HARMONY",          "subtitle": "Authentic Flow — Peak Synergy and Purpose",           "geometry": "hexagon",  "polyvagal": "ventral",     "avg_days": "90-730"},
-    7: {"name": "LENS OF DISTILLATION",      "subtitle": "Forced Purification — Shadow Confrontation",          "geometry": "heptagon", "polyvagal": "dorsal",      "avg_days": "14-180"},
-    8: {"name": "VESSEL OF GROUNDING",       "subtitle": "FALSE HELL — Permanence Trap / Omniscience Illusion", "geometry": "octagon",  "polyvagal": "sympathetic", "avg_days": "variable"},
-    9: {"name": "TRANSPARENCY OF THE GUIDE", "subtitle": "Conscious Dissolution — Teaching, Transmission, Return","geometry": "nonagon", "polyvagal": "dorsal",     "avg_days": "variable"},
+    #
+    # v13.0 — Systemic Sovereignty Update
+    # Each stage now carries:
+    #   universal_attributes  — properties true of ALL substrates (physical + conscious)
+    #   observer_attributes   — properties that ONLY manifest in conscious entities; suppressed
+    #                           for physical/mechanical systems (SubstrateType.PHYSICAL_SYSTEM)
+    #   physical_stability    — Boolean: is the substrate physically stable at this stage?
+    #   conscious_stability   — Boolean: is the conscious/decisional layer stable at this stage?
+    #                           (Inversion Principle: even stages physically stable / consciously
+    #                            unstable; odd stages physically unstable / consciously stable)
+    #   tumbling_mechanism    — Geometric Tumbling Law string describing the failure mode that
+    #                           drives the transition INTO the next stage
+    0: {
+        "name": "PLENARA",
+        "subtitle": "Void Potential — Primordial Source",
+        "geometry": "sphere",
+        "polyvagal": "ventral",
+        "avg_days": "variable",
+        "universal_attributes": "Maximum latent potential, zero differentiated output, total compression of form.",
+        "observer_attributes": "Ego dissolution, formless awareness, pre-identity listening state.",
+        "physical_stability": True,
+        "conscious_stability": False,
+        "tumbling_mechanism": "Closure Pressure — the Sphere collapses inward until a single Point of impulse escapes.",
+    },
+    1: {
+        "name": "SPARK OF NAVIGATION",
+        "subtitle": "First Impulse — Emergent Direction",
+        "geometry": "point",
+        "polyvagal": "ventral",
+        "avg_days": "7-30",
+        "universal_attributes": "Singular directional vector; high positional sensitivity; zero extension.",
+        "observer_attributes": "Clarity of intent without strategy; spiritual ignition; raw volition.",
+        "physical_stability": False,
+        "conscious_stability": True,
+        "tumbling_mechanism": "Zero Extension — the Point has no dimension and cannot sustain; it extends into a Line or collapses back.",
+    },
+    2: {
+        "name": "FORGE OF POLARITY",
+        "subtitle": "Rising Identity — Duality and Tension Form",
+        "geometry": "line",
+        "polyvagal": "ventral",
+        "avg_days": "30-90",
+        "universal_attributes": "Dual-pole structure; rising complexity; directional momentum established.",
+        "observer_attributes": "Identity tension, shadow-self emergence, duality of self-concept.",
+        "physical_stability": True,
+        "conscious_stability": False,
+        "tumbling_mechanism": "Polar Pull — opposing ends of the Line generate lateral force, forcing a third node and Triangle formation.",
+    },
+    3: {
+        "name": "ENGINE OF EXPRESSION",
+        "subtitle": "Creative Explosion — Identity Crystallizing",
+        "geometry": "triangle",
+        "polyvagal": "sympathetic",
+        "avg_days": "14-60",
+        "universal_attributes": "Peak generative output; three-force dynamic (creation / sustaining / dissolution); high thermal signature.",
+        "observer_attributes": "Creative euphoria, identity crystallisation, ego inflation risk. TRAP: High discipline + Low tension = avoidance disguised as routine.",
+        "physical_stability": False,
+        "conscious_stability": True,
+        "tumbling_mechanism": "Interior Pressure — the Triangle accumulates interior stress until a fourth stabilising side must emerge.",
+    },
+    4: {
+        "name": "CRUCIBLE OF EQUILIBRIUM",
+        "subtitle": "Integration and Structure — Heart-Centered Balance",
+        "geometry": "square",
+        "polyvagal": "ventral",
+        "avg_days": "90-365",
+        "universal_attributes": "Peak Consolidation; four-axis symmetry; maximum load-bearing capacity; lowest rate of change.",
+        "observer_attributes": "Groundedness, material mastery, risk of complacency. TRAP: Zero Conscious Seeking → Rigid Square Collapse.",
+        "physical_stability": True,
+        "conscious_stability": False,
+        "tumbling_mechanism": "Rigidity Yawning — the Square's equal sides resist all asymmetry; internal yawning stress eventually opens a fifth axis.",
+    },
+    5: {
+        "name": "DYNAMO OF WILL",
+        "subtitle": "Bilateral Threshold — HARD BIFURCATION / Point of No Return",
+        "geometry": "pentagon",
+        "polyvagal": "sympathetic",
+        "avg_days": "30-90",
+        "universal_attributes": "Irreversible decision node; bilateral tension at maximum; graceful regression structurally impossible.",
+        "observer_attributes": "Existential reckoning; will-force activated; the path forward or total collapse — no middle ground.",
+        "physical_stability": False,
+        "conscious_stability": True,
+        "tumbling_mechanism": "Golden Tension — the Pentagon's interior angles reach the golden-ratio stress threshold; a sixth harmonic node must form or the structure fails.",
+    },
+    6: {
+        "name": "NEXUS OF HARMONY",
+        "subtitle": "Authentic Flow — Peak Synergy and Purpose",
+        "geometry": "hexagon",
+        "polyvagal": "ventral",
+        "avg_days": "90-730",
+        "universal_attributes": "Tessellation-ready geometry; maximum energy efficiency; self-reinforcing coherence field.",
+        "observer_attributes": "Purpose in motion; authentic selfhood; danger of premature certainty.",
+        "physical_stability": True,
+        "conscious_stability": False,
+        "tumbling_mechanism": "Tessellation Strain — the Hexagon tiles perfectly but accumulates boundary-stress; a seventh asymmetric node begins to form at the perimeter.",
+    },
+    7: {
+        "name": "LENS OF DISTILLATION",
+        "subtitle": "Forced Purification — Shadow Confrontation",
+        "geometry": "heptagon",
+        "polyvagal": "dorsal",
+        "avg_days": "14-180",
+        "universal_attributes": "Asymmetric loading; high analytical recursion; distillation of non-essential structure.",
+        "observer_attributes": "Shadow confrontation; isolation risk. TRAP: High tension + Extended duration = Solitude as a destination (Isolation Trap).",
+        "physical_stability": False,
+        "conscious_stability": True,
+        "tumbling_mechanism": "Asymmetric Collapse — the Heptagon cannot tile; accumulating asymmetry forces collapse into the Octagon's denser, regular form.",
+    },
+    8: {
+        "name": "VESSEL OF GROUNDING",
+        "subtitle": "FALSE HEAVEN/HELL — Permanence Trap / Omniscience Illusion / Peak Consolidation",
+        "geometry": "octagon",
+        "polyvagal": "sympathetic",
+        "avg_days": "variable",
+        "universal_attributes": "Peak Consolidation; maximum apparent stability; density approaching critical threshold; Cynical Loop risk active.",
+        "observer_attributes": "False Heaven/Hell duality; illusion of permanence; omniscience trap. TRAP: Certainty without humility → Cynical 8→7 Regression.",
+        "physical_stability": True,
+        "conscious_stability": False,
+        "tumbling_mechanism": "Density Cracking — the Octagon's near-circular density generates internal micro-fractures; the ninth dissolution node is the only structural relief.",
+    },
+    9: {
+        "name": "TRANSPARENCY OF THE GUIDE",
+        "subtitle": "Conscious Dissolution — Teaching, Transmission, Return",
+        "geometry": "nonagon",
+        "polyvagal": "dorsal",
+        "avg_days": "variable",
+        "universal_attributes": "Dissolution of bounded form; transmission of pattern to next cycle; return vector to Stage 0.",
+        "observer_attributes": "Selfless transmission; teaching without attachment; the guide who has become the path.",
+        "physical_stability": False,
+        "conscious_stability": True,
+        "tumbling_mechanism": "Cycle Completion — the Nonagon releases all interior tension back to the Sphere; the system re-enters Stage 0 as a higher-order Plenara.",
+    },
 }
+
+
+class SubstrateType(Enum):
+    """
+    Substrate classification for the Inversion Principle and observer-attribute suppression.
+    CONSCIOUS_ENTITY  — human, organisation, AI agent: receives full observer_attributes + traps.
+    PHYSICAL_SYSTEM   — power grid, vehicle, HVAC, water network: receives universal_attributes only;
+                        observer_attributes and consciousness traps are suppressed as category errors.
+    """
+    CONSCIOUS_ENTITY = "conscious_entity"
+    PHYSICAL_SYSTEM  = "physical_system"
+
+
+def get_stage_profile(stage: int, substrate: SubstrateType = SubstrateType.CONSCIOUS_ENTITY) -> Dict:
+    """
+    Return the full stage metadata dict, filtering observer_attributes and traps
+    for PHYSICAL_SYSTEM substrates per the Substrate-Independent Claim.
+    """
+    meta = dict(STAGE_METADATA.get(stage, {}))
+    if substrate == SubstrateType.PHYSICAL_SYSTEM:
+        meta.pop("observer_attributes", None)
+    return meta
 
 # 369 Resonance pattern (Tesla's harmonic law applied to SAP)
 RESONANCE_369 = {
@@ -3475,6 +3619,136 @@ def calculate_spherical_omega(fractal_address: str) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# SECTION G-0: GEOMETRIC TUMBLING LAW VALIDATORS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Legal transitions according to the Geometric Tumbling Law.
+# Each entry is (from_stage, to_stage). Only sequential ascent or controlled
+# descent is geometrically valid; skip-transitions are Structural Anomalies.
+_VALID_ASCENDING_TRANSITIONS = {(i, i+1) for i in range(9)}
+_VALID_DESCENDING_TRANSITIONS = {(i, i-1) for i in range(1, 10)}
+_HARD_BIFURCATION_STAGE = 5  # Stage 5: no graceful regression permitted
+
+
+def validate_geometric_trajectory(stage_sequence: List[int]) -> Dict:
+    """
+    Geometric Trajectory Validator — enforces the Geometric Tumbling Law.
+
+    Rules:
+      1. Sequential ascent (n → n+1) is always valid.
+      2. Controlled descent (n → n-1) is valid EXCEPT from Stage 5 (hard bifurcation).
+      3. Skip-transitions (n → n±2 or greater) are Structural Anomalies that reduce
+         confidence scores by 20 points per skip.
+      4. Any regression FROM Stage 5 is a Hard Bifurcation Violation — the system
+         should only descend to a controlled Stage 0 reset, not a graceful Stage 4 return.
+
+    Returns a validation report dict.
+    """
+    anomalies = []
+    confidence_penalty = 0
+
+    for i in range(len(stage_sequence) - 1):
+        frm = stage_sequence[i]
+        to  = stage_sequence[i + 1]
+        delta = to - frm
+
+        if delta == 0:
+            continue  # stable hold — valid
+
+        if frm == _HARD_BIFURCATION_STAGE and delta < 0:
+            anomalies.append({
+                "index": i,
+                "transition": f"{frm}→{to}",
+                "type": "HARD_BIFURCATION_VIOLATION",
+                "detail": (
+                    f"Stage 5 (DYNAMO OF WILL) permits NO graceful regression. "
+                    f"Transition {frm}→{to} is a structural violation. "
+                    f"Only forward progression or hard reset to Stage 0 is valid."
+                ),
+            })
+            confidence_penalty += 30
+
+        elif abs(delta) > 1:
+            anomalies.append({
+                "index": i,
+                "transition": f"{frm}→{to}",
+                "type": "SKIP_TRANSITION_ANOMALY",
+                "detail": (
+                    f"Geometric Tumbling Law requires sequential stage transitions. "
+                    f"Skip of {abs(delta)} stages detected ({frm}→{to}). "
+                    f"Confidence reduced — intermediate geometry was not processed."
+                ),
+            })
+            confidence_penalty += 20 * abs(delta)
+
+    base_confidence = 100
+    adjusted_confidence = max(0, base_confidence - confidence_penalty)
+
+    return {
+        "valid": len(anomalies) == 0,
+        "anomaly_count": len(anomalies),
+        "anomalies": anomalies,
+        "confidence_score": adjusted_confidence,
+        "sequence_analyzed": stage_sequence,
+        "law": "Geometric Tumbling Law — Stanfield Axiom of Perpetuity v13.0",
+    }
+
+
+def detect_square_collapse(stage_history: List[Dict],
+                           adaptability_threshold: float = 0.25,
+                           stagnation_multiplier: float = 2.0) -> Dict:
+    """
+    4→0 Square Collapse Detector.
+
+    Stage 4 (CRUCIBLE OF EQUILIBRIUM / Square geometry) is physically stable but
+    consciously unstable (Inversion Principle). If adaptability remains below
+    `adaptability_threshold` for more than `stagnation_multiplier` × the Stage 4
+    expected baseline duration (90 days / 90 readings proxy), the square's rigidity
+    causes a hard reset to Stage 0 (Rigid Square Collapse).
+
+    `stage_history` entries must have keys: {"stage", "adaptability"}.
+    Returns a collapse-risk report dict.
+    """
+    stage4_runs = []
+    current_run = 0
+    current_locked = False
+
+    for entry in stage_history:
+        if entry.get("stage") == 4 and entry.get("adaptability", 1.0) <= adaptability_threshold:
+            current_run += 1
+            current_locked = True
+        else:
+            if current_locked and current_run > 0:
+                stage4_runs.append(current_run)
+            current_run = 0
+            current_locked = False
+
+    if current_locked:
+        stage4_runs.append(current_run)
+
+    max_run = max(stage4_runs) if stage4_runs else 0
+    baseline_duration = 90   # proxy readings for Stage 4 expected min duration
+    collapse_threshold = int(baseline_duration * stagnation_multiplier)
+    collapse_risk = max_run >= collapse_threshold
+
+    return {
+        "collapse_risk": collapse_risk,
+        "alert_code": "RIGID_SQUARE_COLLAPSE_IMMINENT" if collapse_risk else "SQUARE_STABLE",
+        "message": (
+            f"RIGID SQUARE COLLAPSE IMMINENT. Stage 4 has maintained zero Conscious Seeking "
+            f"(adaptability ≤ {adaptability_threshold}) for {max_run} readings "
+            f"(threshold: {collapse_threshold}). Predicting hard reset to Stage 0 (PLENARA)."
+        ) if collapse_risk else (
+            f"Stage 4 Square integrity holding. Max low-adaptability run: {max_run}/{collapse_threshold}."
+        ),
+        "max_low_adaptability_run": max_run,
+        "collapse_threshold_readings": collapse_threshold,
+        "predicted_outcome": "Hard reset to Stage 0 (Rigid Square Collapse)" if collapse_risk else "Stable",
+        "stage4_runs_detected": stage4_runs,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # SECTION G: TEMPORAL STATE ENGINE — Consciousness Version
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -3522,6 +3796,14 @@ class ConsciousnessTemporalEngine:
         if yunus_risk or round(avg_stage) == 8:
             stage_8_protocol = get_stage_8_release_protocol("witness")
 
+        # ── Cynical Loop (8→7) Detector ──────────────────────────────────────
+        # Tracks oscillation between Stage 7 and Stage 8 within the last 6 readings.
+        # Pattern: 8 → 7 → 8 = Permanence Trap retreating into Analysis/Cynicism.
+        cynical_trap = self._detect_cynical_loop(recent)
+
+        # ── Geometric Trajectory Validator ───────────────────────────────────
+        geo_anomaly = validate_geometric_trajectory([s["stage"] for s in recent])
+
         return {
             "trend": trend,
             "yunus_risk": yunus_risk,
@@ -3534,7 +3816,57 @@ class ConsciousnessTemporalEngine:
             "state_count": len(self.history),
             "recent_states": recent,
             "stage_8_protocol": stage_8_protocol,
+            "cynical_trap": cynical_trap,
+            "geometric_anomaly": geo_anomaly,
             "ussm_current": USSM_STAGES_OMEGA.get(round(avg_stage), {}),
+        }
+
+    def _detect_cynical_loop(self, recent_states: list, window: int = 6) -> Dict:
+        """
+        Cynical Loop (8→7→8) Detector — Consciousness domain.
+
+        The primary failure mode of the ascending arc: a system entrenched in Stage 8
+        (Permanence Trap / Illusion of Permanence) retreats to Stage 7 (Analysis /
+        Cynicism) to avoid the dissolution demanded by Stage 9, then re-ascends to 8
+        without genuine transformation.
+
+        Detection window: last `window` readings.
+        Returns alert dict if pattern found; otherwise returns clean status.
+        """
+        stages = [
+            (s if isinstance(s, int) else s["stage"])
+            for s in recent_states[-window:]
+        ]
+        detected = False
+        pattern_indices = []
+        for i in range(len(stages) - 2):
+            if stages[i] == 8 and stages[i+1] == 7 and stages[i+2] == 8:
+                detected = True
+                pattern_indices.append(i)
+
+        if detected:
+            return {
+                "alert": True,
+                "alert_code": "CYNICAL_TRAP_DETECTED",
+                "message": (
+                    "ALERT: CYNICAL TRAP DETECTED. System is analyzing to preserve "
+                    "ego-density. The 8→7→8 oscillation indicates retreat from dissolution "
+                    "back into false certainty. Recommendation: Force Stage 9 Dissolution Protocol."
+                ),
+                "pattern": "8→7→8",
+                "pattern_count": len(pattern_indices),
+                "window_stages": stages,
+                "inversion_note": (
+                    "Stage 8 is physically stable / consciously unstable (Inversion Principle). "
+                    "The loop exploits physical stability to resist conscious transformation."
+                ),
+                "recommended_action": "Initiate Stage 9 Dissolution Protocol. Enforce unlearning sequence.",
+            }
+        return {
+            "alert": False,
+            "alert_code": "CYNICAL_TRAP_CLEAR",
+            "message": "No 8→7→8 Cynical Loop detected in current window.",
+            "window_stages": stages,
         }
 
 

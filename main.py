@@ -34,7 +34,7 @@
    GET  /health                        → liveness probe
 
  Author : Richard L. Stanfield / Meridian Axiom Alignment Technologies (MAAT)
- Version: 1.1 — March 2026
+ Version: 1.2 — April 2026 | v13.0 Systemic Sovereignty Update
 ================================================================================
 """
 
@@ -94,9 +94,10 @@ app = FastAPI(
         "Meridian Axiom Alignment Technologies (MAAT) — "
         "Predictive stage intelligence for human consciousness, "
         "organizational health, and physical infrastructure. "
-        "Powered by Stanfield's Axiom of Perpetuity (SAP)."
+        "Powered by Stanfield's Axiom of Perpetuity (SAP). "
+        "v13.0: Geometric Tumbling Law | Inversion Principle | Cynical Loop (8→7→8) Detector."
     ),
-    version="1.1.0",
+    version="1.2.0",
     contact={"name": "Richard L. Stanfield", "email": "LuminarkMeridian@gmail.com"},
     license_info={"name": "Proprietary — Meridian Axiom Alignment Technologies (MAAT)"},
 )
@@ -355,6 +356,21 @@ async def overwatch_analyze(infra: InfraInput):
         result = get_overwatch().analyze_system(
             infra.system_type, infra.system_id, payload
         )
+
+        # v13.0: Inject Geometric Tumbling Law fields into response
+        try:
+            from LatestLUMINARK_OVERWATCH_PRIME_ULTRA import USSM_STAGES_ULTRA
+        except ImportError:
+            from LUMINARK_OVERWATCH_PRIME_ULTRA import USSM_STAGES_ULTRA
+
+        stage = result.get("stage") or result.get("sap_stage", 0)
+        stage_meta = USSM_STAGES_ULTRA.get(stage, {})
+        result["tumbling_mechanism"]   = stage_meta.get("tumbling_mechanism", "")
+        result["universal_attributes"] = stage_meta.get("universal_attributes", "")
+        result["physical_stability"]   = stage_meta.get("physical_stability")
+        result["conscious_stability"]  = stage_meta.get("conscious_stability")
+        result["inversion_active"]     = (stage % 2 == 0)  # Even = physically stable / consciously unstable
+
         return _wrap(result, "/overwatch/analyze")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -445,6 +461,178 @@ async def overwatch_harrowing_status(system_id: str):
     try:
         result = get_overwatch().get_harrowing_status(system_id)
         return _wrap(result, f"/overwatch/harrowing_status/{system_id}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/overwatch/cynical_loop",
+          summary="Cynical Loop (8→7→8) detector — infrastructure Permanence Trap oscillation")
+async def overwatch_cynical_loop(payload: dict):
+    """
+    Detects the 8→7→8 Cynical Loop in an infrastructure system's stage history.
+
+    The Cynical Loop is the primary failure mode of the ascending arc in physical systems:
+    Stage 8 (Rigidity Risk / Octagon — Peak Consolidation) retreats to Stage 7 (Scaled /
+    analysis/distillation mode) to avoid the dissolution demanded by Stage 9, then
+    re-ascends to Stage 8 without genuine structural transformation.
+
+    This oscillation is physically invisible to conventional monitoring — the system
+    LOOKS optimal at both Stage 7 and Stage 8. The 8→7→8 pattern provides predictive
+    lead-time on system failure unavailable to any other model.
+
+    POST body: {"stage_sequence": [int, ...], "system_id": "optional-string"}
+    """
+    try:
+        try:
+            from LatestLUMINARK_OVERWATCH_PRIME_ULTRA import TemporalStateEngine
+        except ImportError:
+            from LUMINARK_OVERWATCH_PRIME_ULTRA import TemporalStateEngine
+
+        stage_sequence = payload.get("stage_sequence", [])
+        system_id = payload.get("system_id", "unknown")
+
+        if not stage_sequence:
+            raise ValueError("stage_sequence must be a non-empty list of integers (0–9).")
+
+        engine = TemporalStateEngine()
+        # Populate history with provided sequence for analysis
+        for s in stage_sequence:
+            engine.record_state(
+                stage=int(s),
+                adaptability=0.3,  # conservative default for detection purposes
+                rigidity=0.7,
+                coherence=0.5,
+            )
+
+        result = engine._detect_cynical_loop([int(s) for s in stage_sequence])
+        result["system_id"] = system_id
+        result["stage_sequence_length"] = len(stage_sequence)
+        return _wrap(result, "/overwatch/cynical_loop")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/overwatch/geometric_validate",
+          summary="Geometric Trajectory Validator — enforce Tumbling Law on stage sequence")
+async def overwatch_geometric_validate(payload: dict):
+    """
+    Validates a stage sequence against the Geometric Tumbling Law.
+
+    Rules enforced:
+      • Sequential transitions (n→n+1 or n→n-1) are geometrically valid.
+      • Stage 5 (Pentagon) is a hard bifurcation — regression is a structural violation.
+      • Skip-transitions (|Δstage| > 1) are Structural Anomalies that reduce confidence
+        by 20 points per stage skipped.
+
+    Returns: valid (bool), anomaly list, confidence_score (0–100).
+    POST body: {"stage_sequence": [int, ...]}
+    """
+    try:
+        try:
+            from LatestLUMINARK_OVERWATCH_PRIME_ULTRA import validate_geometric_trajectory_ultra
+        except ImportError:
+            from LUMINARK_OVERWATCH_PRIME_ULTRA import validate_geometric_trajectory_ultra
+
+        stage_sequence = payload.get("stage_sequence", [])
+        if not stage_sequence:
+            raise ValueError("stage_sequence must be a non-empty list of integers (0–9).")
+
+        result = validate_geometric_trajectory_ultra([int(s) for s in stage_sequence])
+        return _wrap(result, "/overwatch/geometric_validate")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/omega/cynical_loop",
+          summary="Cynical Loop (8→7→8) detector — consciousness domain")
+async def omega_cynical_loop(payload: dict):
+    """
+    Detects the 8→7→8 Cynical Loop in a consciousness or organisational assessment history.
+
+    In conscious entities and organisations, Stage 8 (VESSEL OF GROUNDING — Permanence Trap)
+    retreats to Stage 7 (LENS OF DISTILLATION — Analysis/Cynicism) to avoid the ego-dissolution
+    of Stage 9, then re-ascends without genuine transformation. This pattern is the primary
+    failure mode of the ascending arc for conscious substrates.
+
+    POST body: {"stage_sequence": [int, ...]}
+    """
+    try:
+        from LUMINARK_CONSCIOUSNESS_ENGINE_OMEGA import ConsciousnessTemporalEngine
+
+        stage_sequence = payload.get("stage_sequence", [])
+        if not stage_sequence:
+            raise ValueError("stage_sequence must be a non-empty list of integers (0–9).")
+
+        engine = ConsciousnessTemporalEngine()
+        for s in stage_sequence:
+            engine.record_assessment(stage=int(s), adaptability=0.3, rigidity=0.7, coherence=0.5)
+
+        result = engine._detect_cynical_loop([int(s) for s in stage_sequence])
+        return _wrap(result, "/omega/cynical_loop")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/omega/geometric_validate",
+          summary="Geometric Trajectory Validator — consciousness domain")
+async def omega_geometric_validate(payload: dict):
+    """
+    Validates a consciousness stage sequence against the Geometric Tumbling Law.
+    POST body: {"stage_sequence": [int, ...]}
+    """
+    try:
+        from LUMINARK_CONSCIOUSNESS_ENGINE_OMEGA import validate_geometric_trajectory
+
+        stage_sequence = payload.get("stage_sequence", [])
+        if not stage_sequence:
+            raise ValueError("stage_sequence must be a non-empty list of integers (0–9).")
+
+        result = validate_geometric_trajectory([int(s) for s in stage_sequence])
+        return _wrap(result, "/omega/geometric_validate")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/overwatch/stage_profile/{stage}",
+         summary="Full stage profile — universal + tumbling mechanism (substrate-aware)")
+async def overwatch_stage_profile(stage: int, substrate: str = "physical_system"):
+    """
+    Returns the full SAP stage metadata for a given stage (0–9).
+    For physical_system substrate: returns universal_attributes + tumbling_mechanism only.
+    For conscious_entity substrate: returns full profile including observer_attributes.
+
+    Query params:
+      stage     — integer 0–9
+      substrate — 'physical_system' (default) or 'conscious_entity'
+    """
+    if stage < 0 or stage > 9:
+        raise HTTPException(status_code=400, detail="Stage must be 0–9.")
+    try:
+        try:
+            from LatestLUMINARK_OVERWATCH_PRIME_ULTRA import USSM_STAGES_ULTRA
+        except ImportError:
+            from LUMINARK_OVERWATCH_PRIME_ULTRA import USSM_STAGES_ULTRA
+
+        profile = dict(USSM_STAGES_ULTRA.get(stage, {}))
+        # Suppress observer_attributes for physical systems (Substrate-Independent Claim)
+        if substrate == "physical_system":
+            profile.pop("observer_attributes", None)
+
+        return _wrap({
+            "stage": stage,
+            "substrate": substrate,
+            "profile": profile,
+            "tumbling_mechanism": profile.get("tumbling_mechanism", ""),
+            "universal_attributes": profile.get("universal_attributes", ""),
+            "physical_stability": profile.get("physical_stability"),
+            "conscious_stability": profile.get("conscious_stability"),
+            "inversion_principle": (
+                "Even stages (0,2,4,6,8): Physically Stable / Consciously Unstable. "
+                "Odd stages (1,3,5,7,9): Physically Unstable / Consciously Stable."
+                if stage % 2 == 0 else
+                "Odd stage: Physically Unstable / Consciously Stable."
+            ),
+        }, f"/overwatch/stage_profile/{stage}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

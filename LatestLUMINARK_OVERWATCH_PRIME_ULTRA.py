@@ -3297,10 +3297,21 @@ if __name__ == "__main__":
 # ─────────────────────────────────────────────────────────────────────────────
 
 USSM_STAGES_ULTRA = {
+    # Infrastructure / Physical System SAP mappings
+    # v13.0 — Systemic Sovereignty Update
+    # Physical systems receive universal_attributes only (no observer_attributes).
+    # tumbling_mechanism = Geometric Tumbling Law string for this stage.
+    # physical_stability / conscious_stability follow the Inversion Principle
+    #   (even = physically stable / consciously unstable;
+    #    odd  = physically unstable / consciously stable).
     0: {
         "name": "Reactive",
         "star": "Plenara",
         "duality": "High Flexibility vs Zero Resilience",
+        "universal_attributes": "Zero differentiated process; maximum latency; no formal redundancy.",
+        "tumbling_mechanism": "Closure Pressure — the Sphere collapses inward; manual energy exhausts and the first procedural Point emerges.",
+        "physical_stability": True,
+        "conscious_stability": False,
         "tumble": "Will tumble to Procedural as manual energy exhausts.",
         "color": "#64748b",
         "icon": "◎",
@@ -3310,6 +3321,10 @@ USSM_STAGES_ULTRA = {
         "name": "Procedural",
         "star": "Algenib",
         "duality": "Predictable Order vs Extreme Brittleness",
+        "universal_attributes": "Single-path execution; runbook-dependent; zero-fault tolerance.",
+        "tumbling_mechanism": "Zero Extension — the Point has no dimension; novel external shocks it cannot hold force a dual-pole Line.",
+        "physical_stability": False,
+        "conscious_stability": True,
         "tumble": "Will tumble to Regulated upon novel external shocks.",
         "color": "#0ea5e9",
         "icon": "◈",
@@ -3319,6 +3334,10 @@ USSM_STAGES_ULTRA = {
         "name": "Regulated",
         "star": "Pherkad",
         "duality": "Active Stability vs Over-correction Jitter",
+        "universal_attributes": "Dual-mode operation (normal / alert); active load-balancing; monitoring telemetry active.",
+        "tumbling_mechanism": "Polar Pull — opposing monitoring poles generate lateral force; a third adaptive node must form to resolve oscillation.",
+        "physical_stability": True,
+        "conscious_stability": False,
         "tumble": "Will tumble to Adaptive to reduce resource consumption.",
         "color": "#06b6d4",
         "icon": "⟁",
@@ -3328,6 +3347,10 @@ USSM_STAGES_ULTRA = {
         "name": "Adaptive",
         "star": "Merak",
         "duality": "High Performance vs Niche-Dependency",
+        "universal_attributes": "Auto-scaling active; peak generative throughput; niche-optimised architecture.",
+        "tumbling_mechanism": "Interior Pressure — the Triangle's three adaptive forces accumulate interior stress; a fourth stabilising axis must emerge when the niche changes.",
+        "physical_stability": False,
+        "conscious_stability": True,
         "tumble": "Will tumble to Threshold when the niche changes.",
         "color": "#10b981",
         "icon": "✦",
@@ -3337,6 +3360,10 @@ USSM_STAGES_ULTRA = {
         "name": "Foundation",
         "star": "Dubhe",
         "duality": "Consolidated Base vs Stagnation Risk",
+        "universal_attributes": "Peak Consolidation at infrastructure layer; four-axis redundancy; SLA-consistent.",
+        "tumbling_mechanism": "Rigidity Yawning — the Square's equal sides resist asymmetry; stagnation opens a fifth threshold axis. TRAP: Zero adaptability → Rigid Square Collapse to Stage 0.",
+        "physical_stability": True,
+        "conscious_stability": False,
         "tumble": "Will tumble to Threshold to seek further growth.",
         "color": "#84cc16",
         "icon": "⬡",
@@ -3346,7 +3373,11 @@ USSM_STAGES_ULTRA = {
         "name": "Threshold",
         "star": "Kochab",
         "duality": "Strategic Foresight vs Model-Reality Drift",
-        "tumble": "POINT OF NO RETURN. Must pivot or escalate.",
+        "universal_attributes": "HARD BIFURCATION NODE. Pre-stress boundary. Graceful regression structurally impossible.",
+        "tumbling_mechanism": "Golden Tension — the Pentagon's interior angles reach the golden-ratio stress threshold; must escalate to Stage 6 or hard-fail. No regression path.",
+        "physical_stability": False,
+        "conscious_stability": True,
+        "tumble": "POINT OF NO RETURN. Must pivot or escalate. NO GRACEFUL REGRESSION.",
         "color": "#f59e0b",
         "icon": "⊗",
         "infra_context": "Pre-stress boundary. Warning zone. Approaching capacity limits.",
@@ -3355,6 +3386,10 @@ USSM_STAGES_ULTRA = {
         "name": "Integrated",
         "star": "Polaris",
         "duality": "Peak Synergy vs Lack of Entropy",
+        "universal_attributes": "Tessellation-ready; full observability; self-healing active; maximum energy efficiency.",
+        "tumbling_mechanism": "Tessellation Strain — the Hexagon tiles perfectly but accumulates boundary-stress; the system outgrows its integration envelope.",
+        "physical_stability": True,
+        "conscious_stability": False,
         "tumble": "Will tumble to Scaled as it outgrows its boundaries.",
         "color": "#8b5cf6",
         "icon": "✺",
@@ -3364,6 +3399,10 @@ USSM_STAGES_ULTRA = {
         "name": "Scaled",
         "star": "Talitha",
         "duality": "Infrastructure Status vs Decentralized Chaos",
+        "universal_attributes": "Asymmetric multi-region load; high-availability proven; critical infrastructure status.",
+        "tumbling_mechanism": "Asymmetric Collapse — the Heptagon cannot tile; accumulating asymmetry forces over-optimisation collapse into Stage 8's denser Octagon form.",
+        "physical_stability": False,
+        "conscious_stability": True,
         "tumble": "Will tumble to Rigidity Risk via over-optimization.",
         "color": "#ec4899",
         "icon": "◉",
@@ -3373,6 +3412,10 @@ USSM_STAGES_ULTRA = {
         "name": "Rigidity Risk",
         "star": "Thuban",
         "duality": "Peak Efficiency vs Compressed Tension",
+        "universal_attributes": "Peak Consolidation at system level; maximum apparent stability; density at critical threshold. CYNICAL LOOP (8→7→8) risk active.",
+        "tumbling_mechanism": "Density Cracking — the Octagon's near-circular density generates internal micro-fractures; must dissolve to Stage 9 or regress to Stage 7 (Cynical Loop).",
+        "physical_stability": True,
+        "conscious_stability": False,
         "tumble": "COLLAPSE IMMINENT. Must deliberately un-learn to return to Stage 5.",
         "color": "#ef4444",
         "icon": "⚠",
@@ -3382,6 +3425,10 @@ USSM_STAGES_ULTRA = {
         "name": "Meta-Coherent",
         "star": "Yunus",
         "duality": "Universal Stability vs Selfish Reversion",
+        "universal_attributes": "Dissolution of bounded optimisation; pattern transmission to next infrastructure cycle; return vector to Stage 0.",
+        "tumbling_mechanism": "Cycle Completion — the Nonagon releases all interior tension; the system re-enters Stage 0 as a higher-order Reactive baseline.",
+        "physical_stability": False,
+        "conscious_stability": True,
         "tumble": "Equilibrium maintained unless reverting to Stage 4.",
         "color": "#f0abfc",
         "icon": "∞",
@@ -3515,9 +3562,114 @@ def calc_trap_score_v8(stability: float, rigidity: float, adaptability: float) -
 # Tracks trajectory across time, detects True Yunus Protocol risk
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION E-0: GEOMETRIC TUMBLING LAW VALIDATORS — ULTRA (Infrastructure Domain)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def validate_geometric_trajectory_ultra(stage_sequence: List[int]) -> Dict:
+    """
+    Geometric Trajectory Validator — Infrastructure domain.
+
+    Enforces the Geometric Tumbling Law for physical systems:
+      1. Sequential ascent (n → n+1) is always geometrically valid.
+      2. Controlled descent (n → n-1) is valid EXCEPT from Stage 5 (hard bifurcation).
+      3. Skip-transitions reduce confidence by 20 points per stage skipped.
+      4. Stage 5 regression = Hard Bifurcation Violation (no graceful fallback for grids).
+
+    Returns anomaly report; confidence_score drives downstream alert weighting.
+    """
+    anomalies = []
+    confidence_penalty = 0
+
+    for i in range(len(stage_sequence) - 1):
+        frm = stage_sequence[i]
+        to  = stage_sequence[i + 1]
+        delta = to - frm
+
+        if delta == 0:
+            continue
+
+        if frm == 5 and delta < 0:
+            anomalies.append({
+                "index": i,
+                "transition": f"{frm}→{to}",
+                "type": "HARD_BIFURCATION_VIOLATION",
+                "detail": (
+                    "Stage 5 (THRESHOLD — Pentagon) is the Point of No Return. "
+                    f"Regression {frm}→{to} is a structural anomaly. "
+                    "Grid must escalate to Stage 6 or execute a controlled hard-reset to Stage 0."
+                ),
+            })
+            confidence_penalty += 30
+
+        elif abs(delta) > 1:
+            anomalies.append({
+                "index": i,
+                "transition": f"{frm}→{to}",
+                "type": "SKIP_TRANSITION_ANOMALY",
+                "detail": (
+                    f"Geometric Tumbling Law violation: skip of {abs(delta)} stages ({frm}→{to}). "
+                    "Intermediate geometric processing was bypassed — confidence degraded."
+                ),
+            })
+            confidence_penalty += 20 * abs(delta)
+
+    adjusted_confidence = max(0, 100 - confidence_penalty)
+    return {
+        "valid": len(anomalies) == 0,
+        "anomaly_count": len(anomalies),
+        "anomalies": anomalies,
+        "confidence_score": adjusted_confidence,
+        "sequence_analyzed": stage_sequence,
+        "law": "Geometric Tumbling Law — Stanfield Axiom of Perpetuity v13.0",
+    }
+
+
+def detect_square_collapse_ultra(stage_history: List[Dict],
+                                  adaptability_threshold: float = 0.25,
+                                  stagnation_multiplier: float = 2.0) -> Dict:
+    """
+    4→0 Rigid Square Collapse Detector — Infrastructure domain.
+
+    Stage 4 (FOUNDATION / Square) is physically stable but consciously unstable.
+    When adaptability stays below threshold for > 2× the expected Stage 4 baseline
+    (90 readings proxy), the Square's rigidity predicts a hard reset to Stage 0.
+    This maps to real-world grid scenarios where a 'stable' baseline ossifies and
+    loses all shock-absorption capacity before catastrophic failure.
+    """
+    current_run = 0
+    max_run = 0
+
+    for entry in stage_history:
+        if entry.get("stage") == 4 and entry.get("adaptability", 1.0) <= adaptability_threshold:
+            current_run += 1
+            max_run = max(max_run, current_run)
+        else:
+            current_run = 0
+
+    collapse_threshold = int(90 * stagnation_multiplier)
+    collapse_risk = max_run >= collapse_threshold
+
+    return {
+        "collapse_risk": collapse_risk,
+        "alert_code": "RIGID_SQUARE_COLLAPSE_IMMINENT" if collapse_risk else "SQUARE_STABLE",
+        "message": (
+            f"RIGID SQUARE COLLAPSE IMMINENT. Stage 4 (FOUNDATION) has held zero Conscious "
+            f"Seeking (adaptability ≤ {adaptability_threshold}) for {max_run} consecutive "
+            f"readings (threshold: {collapse_threshold}). Predicting hard reset to Stage 0 (Reactive)."
+        ) if collapse_risk else (
+            f"Stage 4 Square integrity nominal. Max stagnant run: {max_run}/{collapse_threshold}."
+        ),
+        "max_low_adaptability_run": max_run,
+        "collapse_threshold_readings": collapse_threshold,
+        "predicted_outcome": "Hard reset to Stage 0 (Rigid Square Collapse)" if collapse_risk else "Stable",
+    }
+
+
 class TemporalStateEngine:
     """
     Tracks infrastructure system states over time and detects trajectory patterns.
+    v13.0: Cynical Loop (8→7→8) Detector + Geometric Trajectory Validator + Square Collapse.
     True Yunus Protocol: sustained ≥3 high stages (≥7) + declining adaptability < 0.4.
     """
 
@@ -3570,6 +3722,19 @@ class TemporalStateEngine:
             f"Recommend immediate Circuit Breaker engagement."
         ) if yunus_risk else None
 
+        # ── Cynical Loop (8→7→8) Detector — Infrastructure Domain ────────────
+        # Stage 8 (Rigidity Risk / Octagon): physically stable, consciously unstable.
+        # The Cynical Loop occurs when a Stage 8 system retreats to Stage 7 (Scaled /
+        # data distillation) to avoid dissolution, then re-consolidates at Stage 8
+        # without structural transformation — false certainty restored without growth.
+        cynical_trap = self._detect_cynical_loop([s["stage"] for s in recent])
+
+        # ── Geometric Trajectory Validator ────────────────────────────────────
+        geo_anomaly = validate_geometric_trajectory_ultra([s["stage"] for s in recent])
+
+        # ── Square Collapse Check ─────────────────────────────────────────────
+        square_collapse = detect_square_collapse_ultra(self.history)
+
         return {
             "trend": trend,
             "yunus_risk": yunus_risk,
@@ -3579,7 +3744,64 @@ class TemporalStateEngine:
             "avg_rigidity": round(avg_rigidity, 3),
             "state_count": len(self.history),
             "recent_states": recent,
+            "cynical_trap": cynical_trap,
+            "geometric_anomaly": geo_anomaly,
+            "square_collapse": square_collapse,
             "ussm_current": USSM_STAGES_ULTRA.get(round(avg_stage), {}),
+        }
+
+    def _detect_cynical_loop(self, stage_sequence: list, window: int = 6) -> Dict:
+        """
+        Cynical Loop (8→7→8) Detector — Infrastructure domain.
+
+        In power grids and complex infrastructure, Stage 8 (Rigidity Risk) is the most
+        dangerous state: the system LOOKS optimal but is over-consolidated. The Cynical
+        Loop occurs when Stage 8 retreats to Stage 7 (data distillation / analysis mode)
+        without genuine re-adaptation, then re-ascends to 8 — preserving density without
+        dissolution. This gives operators a predictive lead-time window no conventional
+        model detects.
+
+        Detection: 8 → 7 → 8 within the last `window` stage readings.
+        """
+        stages = stage_sequence[-window:]
+        detected = False
+        pattern_count = 0
+        for i in range(len(stages) - 2):
+            if stages[i] == 8 and stages[i+1] == 7 and stages[i+2] == 8:
+                detected = True
+                pattern_count += 1
+
+        if detected:
+            return {
+                "alert": True,
+                "alert_code": "CYNICAL_TRAP_DETECTED",
+                "message": (
+                    "ALERT: CYNICAL TRAP DETECTED. System is analyzing to preserve "
+                    "ego-density. The 8→7→8 oscillation signals infrastructure retreating "
+                    "from dissolution (Stage 9) back into false stability. "
+                    "Recommendation: Force Stage 9 Dissolution Protocol."
+                ),
+                "pattern": "8→7→8",
+                "pattern_count": pattern_count,
+                "window_stages": stages,
+                "inversion_note": (
+                    "Stage 8 is physically stable / consciously unstable (Inversion Principle). "
+                    "The system's physical appearance of health masks critical internal fragility."
+                ),
+                "recommended_action": (
+                    "Initiate deliberate un-learning sequence. Enforce Circuit Breaker. "
+                    "Return to Stage 5 (Threshold) re-evaluation before next ascent."
+                ),
+                "lead_time_significance": (
+                    "This oscillation pattern provides predictive lead time on system failure "
+                    "unavailable to conventional monitoring models."
+                ),
+            }
+        return {
+            "alert": False,
+            "alert_code": "CYNICAL_TRAP_CLEAR",
+            "message": "No 8→7→8 Cynical Loop detected in current window.",
+            "window_stages": stages,
         }
 
     def get_stage_velocity(self) -> float:
