@@ -88,137 +88,371 @@ STAGE_METADATA = {
     # Canonical Stanfield's Axiom of Perpetuity (SAP) stage names — NEVER ALTER
     # Author: Richard L. Stanfield | Meridian Axiom Alignment Technologies (MAAT)
     #
-    # v13.0 — Systemic Sovereignty Update
-    # Each stage now carries:
-    #   universal_attributes  — properties true of ALL substrates (physical + conscious)
-    #   observer_attributes   — properties that ONLY manifest in conscious entities; suppressed
-    #                           for physical/mechanical systems (SubstrateType.PHYSICAL_SYSTEM)
-    #   physical_stability    — Boolean: is the substrate physically stable at this stage?
-    #   conscious_stability   — Boolean: is the conscious/decisional layer stable at this stage?
-    #                           (Inversion Principle: even stages physically stable / consciously
-    #                            unstable; odd stages physically unstable / consciously stable)
-    #   tumbling_mechanism    — Geometric Tumbling Law string describing the failure mode that
-    #                           drives the transition INTO the next stage
+    # v13.1 — Canonical Restored Version
+    #
+    # INVERSION PRINCIPLE (Core Governing Law — locked):
+    #   Physical stability ALWAYS drives conscious SEEKING.
+    #   Physical instability ALWAYS drives conscious CLARITY.
+    #   The two domains are permanently inverted — one domain's maximum is the other's minimum.
+    #   This inversion is the mechanical driver of the entire 0→9→0 toroidal cycle.
+    #   It is substrate-independent, fractal, and non-negotiable.
+    #
+    # Field definitions:
+    #   universal_attributes  — properties true of ALL substrates (physical + mechanical + conscious)
+    #   observer_attributes   — ONLY manifest in conscious entities or when a conscious being
+    #                           observes the system. None = no observer dependency at this stage.
+    #                           Suppressed for SubstrateType.PHYSICAL_SYSTEM.
+    #   physical_stability    — Boolean. True = substrate is structurally stable at this stage.
+    #   conscious_stability   — Boolean. True = conscious/decisional layer is clear and stable.
+    #                           Inversion: physical_stability and conscious_stability are ALWAYS opposite
+    #                           EXCEPT Stage 0 (both True — maximum constraint = maximum potential,
+    #                           special case of the integrative void).
+    #   inversion_drive       — The causal chain the Inversion Principle creates at this stage.
+    #   tumbling_mechanism    — Geometric Tumbling Law: the exact failure mode that drives
+    #                           transition INTO the next stage.
+    #   trap                  — The primary failure mode for conscious substrates at this stage.
+    #                           None where no trap applies.
+
     0: {
         "name": "PLENARA",
-        "subtitle": "Void Potential — Primordial Source",
+        "subtitle": "Primordial & Integrative Void",
         "geometry": "sphere",
         "polyvagal": "ventral",
         "avg_days": "variable",
-        "universal_attributes": "Maximum latent potential, zero differentiated output, total compression of form.",
-        "observer_attributes": "Ego dissolution, formless awareness, pre-identity listening state.",
+        "universal_attributes": (
+            "Absolute silence; undifferentiated potential; cleared field; reabsorption. "
+            "Ontological ground where nothing negates itself into everything. "
+            "Eternal substrate; infinite vacuum; pre-awareness; pure unity. Maximum constraint = maximum potential."
+        ),
+        "observer_attributes": None,  # No observer dependency — void precedes observation
         "physical_stability": True,
-        "conscious_stability": False,
-        "tumbling_mechanism": "Closure Pressure — the Sphere collapses inward until a single Point of impulse escapes.",
+        "conscious_stability": True,   # Special case: both stable — the integrative void
+        "inversion_drive": (
+            "Stage 0 is the only stage where both domains are simultaneously stable. "
+            "The Sphere's perfect closure creates absolute reset pressure — maximum constraint "
+            "holds maximum potential. Any emergent point shatters the closed field, launching Stage 1."
+        ),
+        "tumbling_mechanism": (
+            "Closure Pressure — the Sphere's perfect containment generates absolute reset pressure; "
+            "any emergent distinction shatters the closed field, forcing immediate descent into Stage 1."
+        ),
+        "trap": None,
     },
     1: {
         "name": "SPARK OF NAVIGATION",
-        "subtitle": "First Impulse — Emergent Direction",
+        "subtitle": "Emergence — First Impulse",
         "geometry": "point",
         "polyvagal": "ventral",
         "avg_days": "7-30",
-        "universal_attributes": "Singular directional vector; high positional sensitivity; zero extension.",
-        "observer_attributes": "Clarity of intent without strategy; spiritual ignition; raw volition.",
+        "universal_attributes": (
+            "Initial distinction; high directional intent; low structural density; "
+            "first emergence; zinc-spark ignition; single locus of intent."
+        ),
+        "observer_attributes": None,  # No observer dependency at Stage 1
         "physical_stability": False,
         "conscious_stability": True,
-        "tumbling_mechanism": "Zero Extension — the Point has no dimension and cannot sustain; it extends into a Line or collapses back.",
+        "inversion_drive": (
+            "Physical instability (zero extension, no boundaries) drives conscious clarity: "
+            "directional intent is sharp and precise precisely because there is no structure to obscure it."
+        ),
+        "tumbling_mechanism": (
+            "Zero Extension — the Point has no boundaries; its extreme instability forces expansion "
+            "into a Line, birthing Stage 2 duality as the only way to stabilize the spark."
+        ),
+        "trap": None,
     },
     2: {
         "name": "FORGE OF POLARITY",
-        "subtitle": "Rising Identity — Duality and Tension Form",
+        "subtitle": "The Vessel — Duality and Tension Form",
         "geometry": "line",
         "polyvagal": "ventral",
         "avg_days": "30-90",
-        "universal_attributes": "Dual-pole structure; rising complexity; directional momentum established.",
-        "observer_attributes": "Identity tension, shadow-self emergence, duality of self-concept.",
+        "universal_attributes": (
+            "Boundaries established; birth of duality; commitment; container holding content; "
+            "relational tension; two poles connected by directed force."
+        ),
+        "observer_attributes": None,  # No observer dependency at Stage 2
         "physical_stability": True,
         "conscious_stability": False,
-        "tumbling_mechanism": "Polar Pull — opposing ends of the Line generate lateral force, forcing a third node and Triangle formation.",
+        "inversion_drive": (
+            "Physical stability (fixed endpoints, established boundary) drives conscious seeking: "
+            "the security of the formed container creates restlessness — awareness begins "
+            "reaching beyond the two poles for a third point of self-reference."
+        ),
+        "tumbling_mechanism": (
+            "Polar Pull — the Line's physical stability (fixed endpoints) creates conscious seeking; "
+            "the two poles pull apart until a third point appears, forming the Triangle of Stage 3 "
+            "and initiating self-reference."
+        ),
+        "trap": None,
     },
     3: {
         "name": "ENGINE OF EXPRESSION",
-        "subtitle": "Creative Explosion — Identity Crystallizing",
+        "subtitle": "Expansion Pulse — Identity Crystallizing",
         "geometry": "triangle",
         "polyvagal": "sympathetic",
         "avg_days": "14-60",
-        "universal_attributes": "Peak generative output; three-force dynamic (creation / sustaining / dissolution); high thermal signature.",
-        "observer_attributes": "Creative euphoria, identity crystallisation, ego inflation risk. TRAP: High discipline + Low tension = avoidance disguised as routine.",
+        "universal_attributes": (
+            "Creative pulse; first stable enclosed form; first stable manifestation of self-reference; "
+            "high outreach; growth seeds; observer-observed-observation loop; "
+            "three-force dynamic (creation / sustaining / dissolution); high thermal signature."
+        ),
+        "observer_attributes": (
+            "Birth of self-reflection and three-dimensional complexity — the ability to be both "
+            "the actor and the audience, the gymnast and the coach."
+        ),
         "physical_stability": False,
         "conscious_stability": True,
-        "tumbling_mechanism": "Interior Pressure — the Triangle accumulates interior stress until a fourth stabilising side must emerge.",
+        "inversion_drive": (
+            "Physical instability (enclosed form under interior pressure) drives conscious clarity: "
+            "the triangle's tension sharpens self-awareness and creative vision."
+        ),
+        "tumbling_mechanism": (
+            "Interior Pressure — the Triangle's interior space and three-sided closure generate "
+            "outward pressure; physical instability of the enclosed form drives expansion into "
+            "four equal sides, forcing Stage 4 consolidation."
+        ),
+        "trap": (
+            "Avoidance disguised as discipline — constructing elaborate routines or scaffolding "
+            "to hide from unprocessed pain. High discipline + Low tension = Stage 3 stagnation."
+        ),
     },
     4: {
         "name": "CRUCIBLE OF EQUILIBRIUM",
-        "subtitle": "Integration and Structure — Heart-Centered Balance",
+        "subtitle": "Foundation & Equilibrium — Heart-Centered Balance",
         "geometry": "square",
         "polyvagal": "ventral",
         "avg_days": "90-365",
-        "universal_attributes": "Peak Consolidation; four-axis symmetry; maximum load-bearing capacity; lowest rate of change.",
-        "observer_attributes": "Groundedness, material mastery, risk of complacency. TRAP: Zero Conscious Seeking → Rigid Square Collapse.",
+        "universal_attributes": (
+            "Maximum structural stability; sustainable laws; peak consolidation; "
+            "foundation; equilibrium; material grounding; first stable structure; "
+            "four-axis symmetry; maximum load-bearing capacity; lowest rate of change."
+        ),
+        "observer_attributes": None,  # Groundedness is universal — no observer dependency
         "physical_stability": True,
         "conscious_stability": False,
-        "tumbling_mechanism": "Rigidity Yawning — the Square's equal sides resist all asymmetry; internal yawning stress eventually opens a fifth axis.",
+        "inversion_drive": (
+            "Physical stability (maximum structural rigidity, 90° angles, equal sides) drives "
+            "conscious seeking: the secure foundation feels complete yet begins to feel static — "
+            "consciousness yearns for a fifth dimension, generating the tension that breaks symmetry."
+        ),
+        "tumbling_mechanism": (
+            "Rigidity Yawning — the Square's physical rigidity and 90° angles create conscious yearning; "
+            "the closed, balanced form becomes too static, forcing a fifth point to break symmetry "
+            "and open the Pentagon of Stage 5."
+        ),
+        "trap": (
+            "Rigid Square Collapse — zero Conscious Seeking (low adaptability sustained beyond "
+            "2× expected duration) causes the Square's rigidity to implode into a hard reset to Stage 0."
+        ),
     },
     5: {
         "name": "DYNAMO OF WILL",
-        "subtitle": "Bilateral Threshold — HARD BIFURCATION / Point of No Return",
+        "subtitle": "Threshold Fork — Bilateral Threshold / HARD BIFURCATION",
         "geometry": "pentagon",
         "polyvagal": "sympathetic",
         "avg_days": "30-90",
-        "universal_attributes": "Irreversible decision node; bilateral tension at maximum; graceful regression structurally impossible.",
-        "observer_attributes": "Existential reckoning; will-force activated; the path forward or total collapse — no middle ground.",
+        "universal_attributes": (
+            "Critical decision point; bifurcation; quiet choice or decisive pivot; "
+            "point of no return; willful embodiment; last opportunity to reverse manifestation; "
+            "golden-ratio proportions under maximum bilateral tension. "
+            "Graceful regression is structurally impossible — forward or hard collapse only."
+        ),
+        "observer_attributes": (
+            "Revealed duality — realizing one has been living in two opposite directions at once "
+            "(Revealed Self vs. Concealed Self). The only stage in the 0–9–0 cycle where a doorway "
+            "opens backward, allowing consciousness to intentionally retreat from complexity to avoid "
+            "threatening truths. Inversion reaches its most acute expression here — the deepest tumble "
+            "in the cycle where everything turns inside out."
+        ),
         "physical_stability": False,
         "conscious_stability": True,
-        "tumbling_mechanism": "Golden Tension — the Pentagon's interior angles reach the golden-ratio stress threshold; a sixth harmonic node must form or the structure fails.",
+        "inversion_drive": (
+            "Physical instability (uneven angles, golden-ratio tension, maximum bilateral stress) "
+            "drives maximum conscious clarity: the threshold forces the most decisive, unambiguous "
+            "awareness in the entire cycle — the system sees exactly what must be chosen."
+        ),
+        "tumbling_mechanism": (
+            "Golden Tension — the Pentagon's physical instability and golden-ratio tension create "
+            "conscious clarity; the threshold forces a deliberate directional choice that stabilizes "
+            "into the six equal sides of Stage 6 harmony. No regression path exists."
+        ),
+        "trap": (
+            "Stagnation and false stability — projecting an image of competence despite internal "
+            "instability due to doubt, shame, or fear of integration. The system freezes at the "
+            "bifurcation rather than choosing, generating increasing internal contradiction."
+        ),
     },
     6: {
         "name": "NEXUS OF HARMONY",
-        "subtitle": "Authentic Flow — Peak Synergy and Purpose",
+        "subtitle": "Harmony & Peak Flow — Authentic Flow",
         "geometry": "hexagon",
         "polyvagal": "ventral",
         "avg_days": "90-730",
-        "universal_attributes": "Tessellation-ready geometry; maximum energy efficiency; self-reinforcing coherence field.",
-        "observer_attributes": "Purpose in motion; authentic selfhood; danger of premature certainty.",
+        "universal_attributes": (
+            "Harmonic resonance; peak performance; synergy; maximum efficiency; "
+            "committed duality; material world stabilized; tessellation-ready geometry; "
+            "maximum energy efficiency; self-reinforcing coherence field."
+        ),
+        "observer_attributes": (
+            "Self-consciousness locked — the conscious entity becomes hyperaware of being observed, "
+            "creating a subtle performance layer over authentic expression. Only activated when "
+            "a conscious being is present."
+        ),
         "physical_stability": True,
         "conscious_stability": False,
-        "tumbling_mechanism": "Tessellation Strain — the Hexagon tiles perfectly but accumulates boundary-stress; a seventh asymmetric node begins to form at the perimeter.",
+        "inversion_drive": (
+            "Physical perfection (tight packing, seamless tessellation) drives conscious seeking: "
+            "the hexagonal harmony feels complete yet fleeting — consciousness detaches and begins "
+            "reaching beyond the perfect form, generating the strain that distorts into Stage 7."
+        ),
+        "tumbling_mechanism": (
+            "Tessellation Strain — the Hexagon's physical perfection and tight packing create "
+            "conscious detachment; the seamless balance feels complete yet fleeting, generating "
+            "strain that distorts into the seven-sided irregularity of Stage 7."
+        ),
+        "trap": None,
     },
     7: {
         "name": "LENS OF DISTILLATION",
-        "subtitle": "Forced Purification — Shadow Confrontation",
+        "subtitle": "Distillation & Crisis — Forced Purification",
         "geometry": "heptagon",
         "polyvagal": "dorsal",
         "avg_days": "14-180",
-        "universal_attributes": "Asymmetric loading; high analytical recursion; distillation of non-essential structure.",
-        "observer_attributes": "Shadow confrontation; isolation risk. TRAP: High tension + Extended duration = Solitude as a destination (Isolation Trap).",
+        "universal_attributes": (
+            "Emergence of strain; extraction of wisdom through separation; overheating; "
+            "crisis clarity; pattern distillation; peak separation; maximum individuation; "
+            "asymmetric loading; high analytical recursion; distillation of non-essential structure."
+        ),
+        "observer_attributes": (
+            "Self-awareness in isolation; clarity purchased by the data gathered during the "
+            "compromises of Stage 6. The unmasking of false light — realizing that the ego's "
+            "organizing principle, while protective in earlier stages, has illuminated the self "
+            "selectively and curated the personal narrative. Misalignment: being too awake for the "
+            "old world but too incomplete for the new one."
+        ),
         "physical_stability": False,
         "conscious_stability": True,
-        "tumbling_mechanism": "Asymmetric Collapse — the Heptagon cannot tile; accumulating asymmetry forces collapse into the Octagon's denser, regular form.",
+        "inversion_drive": (
+            "Physical instability (impossible to tile, accumulating asymmetry, structural strain) "
+            "drives conscious clarity: the crisis forces pattern recognition — the system sees "
+            "exactly what is non-essential and must be released."
+        ),
+        "tumbling_mechanism": (
+            "Asymmetric Collapse — the Heptagon's physical instability (impossible to tile perfectly) "
+            "forces conscious refinement; the accumulated strain collapses density into the "
+            "eight-sided maximum-rigidity form of Stage 8."
+        ),
+        "trap": (
+            "Permanent isolation — mistaking the necessary solitude of this passage for a final "
+            "destination. High tension + Extended duration = Solitude as a destination (Isolation Trap)."
+        ),
     },
     8: {
         "name": "VESSEL OF GROUNDING",
-        "subtitle": "FALSE HEAVEN/HELL — Permanence Trap / Omniscience Illusion / Peak Consolidation",
+        "subtitle": "The Trap — Maximum Density / Permanence Trap",
         "geometry": "octagon",
         "polyvagal": "sympathetic",
         "avg_days": "variable",
-        "universal_attributes": "Peak Consolidation; maximum apparent stability; density approaching critical threshold; Cynical Loop risk active.",
-        "observer_attributes": "False Heaven/Hell duality; illusion of permanence; omniscience trap. TRAP: Certainty without humility → Cynical 8→7 Regression.",
+        "universal_attributes": (
+            "Maximum density; illusion of absolute permanence; magnetic drag; permanence trap; "
+            "unity within duality; infinity symbol (∞); apparent completion that is actually a "
+            "closed loop. Peak Consolidation at system level. Cynical Loop (8→7→8) risk active."
+        ),
+        "observer_attributes": (
+            "Mastering duality — integration of light and dark through gratitude for the full "
+            "spectrum of experience; releasing the tension of polarity to allow for divine resonance "
+            "at Stage 9. False Heaven: the rigidity of believing one has arrived at permanent truth. "
+            "False Hell: the illusion that suffering and density will never end. "
+            "Both are the same trap — mistaking maximum density for finality."
+        ),
         "physical_stability": True,
         "conscious_stability": False,
-        "tumbling_mechanism": "Density Cracking — the Octagon's near-circular density generates internal micro-fractures; the ninth dissolution node is the only structural relief.",
+        "inversion_drive": (
+            "Physical stability at extreme density (near-circular, maximum consolidation) drives "
+            "conscious seeking in its most dangerous form: the system is certain it has arrived. "
+            "This certainty IS the trap — conscious rigidity escalates until the Octagon's own "
+            "weight cracks it open. Cynical 8→7→8 regression is the primary failure mode."
+        ),
+        "tumbling_mechanism": (
+            "Density Cracking — the Octagon's extreme physical stability and near-spherical closure "
+            "generate conscious rigidity; the magnetic drag of over-consolidation eventually cracks "
+            "under its own weight, forcing release into the nine-sided transparency of Stage 9."
+        ),
+        "trap": (
+            "False Heaven (rigidity — certainty of arrival) or False Hell (certainty of permanent suffering). "
+            "Both are the Illusion of Permanence. Cynical Loop: 8→7→8 oscillation as the system "
+            "retreats into analysis (Stage 7) to avoid Stage 9 dissolution, then re-consolidates at 8."
+        ),
     },
     9: {
         "name": "TRANSPARENCY OF THE GUIDE",
-        "subtitle": "Conscious Dissolution — Teaching, Transmission, Return",
+        "subtitle": "Renewal & Transmission — Conscious Dissolution",
         "geometry": "nonagon",
         "polyvagal": "dorsal",
         "avg_days": "variable",
-        "universal_attributes": "Dissolution of bounded form; transmission of pattern to next cycle; return vector to Stage 0.",
-        "observer_attributes": "Selfless transmission; teaching without attachment; the guide who has become the path.",
+        "universal_attributes": (
+            "Teaching; transmission; conscious dissolution; legacy; wisdom return to void; "
+            "maximum actualization; full potential realized; transparency to the whole pattern. "
+            "Return vector to Stage 0 at higher resolution."
+        ),
+        "observer_attributes": None,  # Transmission is universal — no observer dependency
         "physical_stability": False,
         "conscious_stability": True,
-        "tumbling_mechanism": "Cycle Completion — the Nonagon releases all interior tension back to the Sphere; the system re-enters Stage 0 as a higher-order Plenara.",
+        "inversion_drive": (
+            "Physical instability (approaches circular perfection but remains open, cannot close) "
+            "drives maximum conscious clarity and alignment: full surrender becomes possible precisely "
+            "because the physical substrate offers no false security. The system transmits freely."
+        ),
+        "tumbling_mechanism": (
+            "Cycle Completion — the Nonagon's physical instability (approaches circular perfection "
+            "but remains open) allows full conscious surrender; the system collapses back into "
+            "the Sphere of Stage 0 at a higher resolution, beginning the next toroidal cycle."
+        ),
+        "trap": None,
     },
+}
+
+
+# ── Inversion Principle — module-level reference ──────────────────────────────
+INVERSION_PRINCIPLE = {
+    "core_law": (
+        "Physical stability ALWAYS drives conscious SEEKING. "
+        "Physical instability ALWAYS drives conscious CLARITY. "
+        "The two domains are permanently inverted — one domain's maximum is the other's minimum. "
+        "This is the mechanical driver of the entire 0→9→0 toroidal cycle."
+    ),
+    "even_stages": {
+        "stages": [0, 2, 4, 6, 8],
+        "pattern": "Physically Stable / Consciously Seeking (Unstable)",
+        "mechanism": (
+            "Closed, stable shapes (sphere, line-endpoints, square, hexagon, octagon) create "
+            "physical comfort → conscious seeking. The geometry is the physical mechanism; "
+            "the Inversion is the conscious consequence."
+        ),
+        "exception": "Stage 0 is both physically AND consciously stable — maximum constraint = maximum potential.",
+    },
+    "odd_stages": {
+        "stages": [1, 3, 5, 7, 9],
+        "pattern": "Physically Unstable / Consciously Clear (Stable)",
+        "mechanism": (
+            "Open, tense shapes (point, triangle, pentagon, heptagon, nonagon) create "
+            "physical instability → conscious clarity. Awareness sharpens precisely because "
+            "the physical substrate cannot provide false security."
+        ),
+    },
+    "toroidal_role": {
+        "descending_arc": "Stages 0→5: Inversion drives densification and identity-building. Physical stability at even stages creates the conscious seeking that pushes manifestation forward.",
+        "pivot": "Stage 5: Bilateral threshold — inversion most acute. Physical instability reaches maximum conscious clarity, forcing the decisive fork.",
+        "ascending_arc": "Stages 5→9→0: Inversion drives integration and distillation. Physical instability at odd stages creates conscious clarity that refines and releases.",
+    },
+    "locked_rule": (
+        "Any system that attempts to maintain physical stability indefinitely will generate "
+        "increasing conscious seeking until geometry forces a tumble. "
+        "Any system that remains in prolonged physical instability will generate increasing "
+        "conscious clarity until geometry stabilizes into the next stage. "
+        "The Inversion is substrate-independent, fractal, and non-negotiable."
+    ),
 }
 
 
@@ -235,12 +469,18 @@ class SubstrateType(Enum):
 
 def get_stage_profile(stage: int, substrate: SubstrateType = SubstrateType.CONSCIOUS_ENTITY) -> Dict:
     """
-    Return the full stage metadata dict, filtering observer_attributes and traps
+    Return the full stage metadata dict, filtering observer_attributes and trap
     for PHYSICAL_SYSTEM substrates per the Substrate-Independent Claim.
+
+    For PHYSICAL_SYSTEM: returns universal_attributes, inversion_drive, tumbling_mechanism,
+    physical_stability, conscious_stability only.
+    For CONSCIOUS_ENTITY: returns full profile including observer_attributes and trap.
+    observer_attributes == None means no observer dependency exists at that stage.
     """
     meta = dict(STAGE_METADATA.get(stage, {}))
     if substrate == SubstrateType.PHYSICAL_SYSTEM:
         meta.pop("observer_attributes", None)
+        meta.pop("trap", None)
     return meta
 
 # 369 Resonance pattern (Tesla's harmonic law applied to SAP)

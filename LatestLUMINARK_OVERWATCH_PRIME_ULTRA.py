@@ -3298,20 +3298,37 @@ if __name__ == "__main__":
 
 USSM_STAGES_ULTRA = {
     # Infrastructure / Physical System SAP mappings
-    # v13.0 — Systemic Sovereignty Update
-    # Physical systems receive universal_attributes only (no observer_attributes).
-    # tumbling_mechanism = Geometric Tumbling Law string for this stage.
-    # physical_stability / conscious_stability follow the Inversion Principle
-    #   (even = physically stable / consciously unstable;
-    #    odd  = physically unstable / consciously stable).
+    # v13.1 — Canonical Restored Version
+    #
+    # INVERSION PRINCIPLE (locked):
+    #   Physical stability ALWAYS drives conscious SEEKING.
+    #   Physical instability ALWAYS drives conscious CLARITY.
+    #   Even stages (0,2,4,6,8): Physically Stable / Consciously Seeking (Unstable)
+    #   Odd  stages (1,3,5,7,9): Physically Unstable / Consciously Clear (Stable)
+    #   EXCEPTION: Stage 0 — both physically AND consciously stable
+    #              (maximum constraint = maximum potential, integrative void).
+    #
+    # Physical systems receive universal_attributes + inversion_drive only.
+    # observer_attributes are suppressed — they are category errors for mechanical systems.
     0: {
         "name": "Reactive",
         "star": "Plenara",
         "duality": "High Flexibility vs Zero Resilience",
-        "universal_attributes": "Zero differentiated process; maximum latency; no formal redundancy.",
-        "tumbling_mechanism": "Closure Pressure — the Sphere collapses inward; manual energy exhausts and the first procedural Point emerges.",
+        "universal_attributes": (
+            "Absolute ground state; zero differentiated process; maximum latent capacity; "
+            "no formal redundancy; complete reset state. Maximum constraint = maximum potential."
+        ),
+        "inversion_drive": (
+            "Stage 0 special case: both physically AND consciously stable. "
+            "The Sphere's perfect containment holds total reset pressure — "
+            "any emergent process shatters the closed field and forces Stage 1 emergence."
+        ),
+        "tumbling_mechanism": (
+            "Closure Pressure — the Sphere's perfect containment generates absolute reset pressure; "
+            "manual energy exhausts and the first procedural Point of intent emerges."
+        ),
         "physical_stability": True,
-        "conscious_stability": False,
+        "conscious_stability": True,   # Special case: integrative void — both stable
         "tumble": "Will tumble to Procedural as manual energy exhausts.",
         "color": "#64748b",
         "icon": "◎",
@@ -3321,8 +3338,20 @@ USSM_STAGES_ULTRA = {
         "name": "Procedural",
         "star": "Algenib",
         "duality": "Predictable Order vs Extreme Brittleness",
-        "universal_attributes": "Single-path execution; runbook-dependent; zero-fault tolerance.",
-        "tumbling_mechanism": "Zero Extension — the Point has no dimension; novel external shocks it cannot hold force a dual-pole Line.",
+        "universal_attributes": (
+            "Single-path execution; runbook-dependent; zero-fault tolerance; "
+            "initial distinction of process from chaos; first emergence of formal structure."
+        ),
+        "inversion_drive": (
+            "Physical instability (zero extension, no redundancy, single failure point) "
+            "drives operational clarity: the system knows exactly what it can and cannot do. "
+            "Novel shocks exceed structural capacity and force a dual-pole regulated form."
+        ),
+        "tumbling_mechanism": (
+            "Zero Extension — the Point has no dimension; its extreme instability means "
+            "novel external shocks it cannot absorb force expansion into a dual-pole Line, "
+            "birthing Stage 2 regulated duality."
+        ),
         "physical_stability": False,
         "conscious_stability": True,
         "tumble": "Will tumble to Regulated upon novel external shocks.",
@@ -3334,8 +3363,20 @@ USSM_STAGES_ULTRA = {
         "name": "Regulated",
         "star": "Pherkad",
         "duality": "Active Stability vs Over-correction Jitter",
-        "universal_attributes": "Dual-mode operation (normal / alert); active load-balancing; monitoring telemetry active.",
-        "tumbling_mechanism": "Polar Pull — opposing monitoring poles generate lateral force; a third adaptive node must form to resolve oscillation.",
+        "universal_attributes": (
+            "Dual-mode operation (normal / alert); active load-balancing; monitoring telemetry active; "
+            "boundaries established; container holding content; relational tension between alert states."
+        ),
+        "inversion_drive": (
+            "Physical stability (established monitoring boundaries, dual-pole regulation) "
+            "drives operational seeking: the regulated state feels secure but generates "
+            "pressure toward a third adaptive node to resolve oscillation."
+        ),
+        "tumbling_mechanism": (
+            "Polar Pull — the Line's physical stability (fixed monitoring endpoints) creates "
+            "operational seeking; opposing poles pull until a third adaptive node appears, "
+            "forming the Triangle of Stage 3 adaptive intelligence."
+        ),
         "physical_stability": True,
         "conscious_stability": False,
         "tumble": "Will tumble to Adaptive to reduce resource consumption.",
@@ -3347,8 +3388,21 @@ USSM_STAGES_ULTRA = {
         "name": "Adaptive",
         "star": "Merak",
         "duality": "High Performance vs Niche-Dependency",
-        "universal_attributes": "Auto-scaling active; peak generative throughput; niche-optimised architecture.",
-        "tumbling_mechanism": "Interior Pressure — the Triangle's three adaptive forces accumulate interior stress; a fourth stabilising axis must emerge when the niche changes.",
+        "universal_attributes": (
+            "Auto-scaling active; peak generative throughput; niche-optimised architecture; "
+            "first stable self-referencing loop (monitor-adapt-observe cycle); "
+            "high outreach; growth seeds; three-force dynamic."
+        ),
+        "inversion_drive": (
+            "Physical instability (niche-optimised, brittle to novel load patterns) "
+            "drives operational clarity: the system sees exactly what it is optimised for "
+            "and exactly where its limits are — awareness sharpens at the boundary."
+        ),
+        "tumbling_mechanism": (
+            "Interior Pressure — the Triangle's three adaptive forces accumulate interior stress; "
+            "physical instability of the niche-optimised form drives expansion into "
+            "four equal stabilising axes, forcing Stage 4 Foundation consolidation."
+        ),
         "physical_stability": False,
         "conscious_stability": True,
         "tumble": "Will tumble to Threshold when the niche changes.",
@@ -3360,8 +3414,23 @@ USSM_STAGES_ULTRA = {
         "name": "Foundation",
         "star": "Dubhe",
         "duality": "Consolidated Base vs Stagnation Risk",
-        "universal_attributes": "Peak Consolidation at infrastructure layer; four-axis redundancy; SLA-consistent.",
-        "tumbling_mechanism": "Rigidity Yawning — the Square's equal sides resist asymmetry; stagnation opens a fifth threshold axis. TRAP: Zero adaptability → Rigid Square Collapse to Stage 0.",
+        "universal_attributes": (
+            "Maximum structural stability; sustainable operational laws; peak consolidation; "
+            "four-axis redundancy; SLA-consistent; equilibrium; material grounding; "
+            "first stable structure; lowest rate of change."
+        ),
+        "inversion_drive": (
+            "Physical stability (maximum redundancy, SLA consistency, four-axis balance) "
+            "drives operational seeking: the stable baseline feels complete but generates "
+            "pressure toward a fifth capability axis — the system begins seeking expansion "
+            "or faces Rigid Square Collapse."
+        ),
+        "tumbling_mechanism": (
+            "Rigidity Yawning — the Square's physical rigidity and equal-axis balance create "
+            "operational seeking; the closed, stable form becomes too static, forcing a fifth "
+            "threshold axis to break symmetry and open Stage 5. "
+            "COLLAPSE PATH: Zero adaptability sustained > 2× expected duration → Rigid Square Collapse to Stage 0."
+        ),
         "physical_stability": True,
         "conscious_stability": False,
         "tumble": "Will tumble to Threshold to seek further growth.",
@@ -3373,8 +3442,23 @@ USSM_STAGES_ULTRA = {
         "name": "Threshold",
         "star": "Kochab",
         "duality": "Strategic Foresight vs Model-Reality Drift",
-        "universal_attributes": "HARD BIFURCATION NODE. Pre-stress boundary. Graceful regression structurally impossible.",
-        "tumbling_mechanism": "Golden Tension — the Pentagon's interior angles reach the golden-ratio stress threshold; must escalate to Stage 6 or hard-fail. No regression path.",
+        "universal_attributes": (
+            "Critical bifurcation node; quiet choice or decisive pivot; point of no return; "
+            "willful embodiment; last opportunity to reverse trajectory before ascending arc. "
+            "Golden-ratio proportions under maximum bilateral tension. "
+            "HARD BIFURCATION — graceful regression is structurally impossible. "
+            "Forward escalation or hard collapse to Stage 0 are the only valid outcomes."
+        ),
+        "inversion_drive": (
+            "Physical instability (uneven load distribution, golden-ratio stress, maximum bilateral tension) "
+            "drives maximum operational clarity: the system sees with absolute precision "
+            "what must change. This is the most decisive awareness state in the cycle."
+        ),
+        "tumbling_mechanism": (
+            "Golden Tension — the Pentagon's physical instability and golden-ratio tension create "
+            "operational clarity; the threshold forces a deliberate architectural choice that "
+            "stabilises into the six equal sides of Stage 6 integration. No regression path."
+        ),
         "physical_stability": False,
         "conscious_stability": True,
         "tumble": "POINT OF NO RETURN. Must pivot or escalate. NO GRACEFUL REGRESSION.",
@@ -3386,8 +3470,22 @@ USSM_STAGES_ULTRA = {
         "name": "Integrated",
         "star": "Polaris",
         "duality": "Peak Synergy vs Lack of Entropy",
-        "universal_attributes": "Tessellation-ready; full observability; self-healing active; maximum energy efficiency.",
-        "tumbling_mechanism": "Tessellation Strain — the Hexagon tiles perfectly but accumulates boundary-stress; the system outgrows its integration envelope.",
+        "universal_attributes": (
+            "Harmonic resonance across all subsystems; peak performance; synergy; "
+            "maximum efficiency; committed duality resolved; material infrastructure stabilized; "
+            "tessellation-ready; full observability; self-healing active."
+        ),
+        "inversion_drive": (
+            "Physical perfection (seamless integration, tessellation efficiency) "
+            "drives operational seeking: the unified system feels complete but detaches — "
+            "operational intelligence begins reaching beyond current boundaries, "
+            "generating strain that distorts into Stage 7 asymmetry."
+        ),
+        "tumbling_mechanism": (
+            "Tessellation Strain — the Hexagon's physical perfection and tight packing create "
+            "operational detachment; the seamless balance generates boundary-stress "
+            "that distorts into the seven-sided irregularity of Stage 7."
+        ),
         "physical_stability": True,
         "conscious_stability": False,
         "tumble": "Will tumble to Scaled as it outgrows its boundaries.",
@@ -3399,8 +3497,22 @@ USSM_STAGES_ULTRA = {
         "name": "Scaled",
         "star": "Talitha",
         "duality": "Infrastructure Status vs Decentralized Chaos",
-        "universal_attributes": "Asymmetric multi-region load; high-availability proven; critical infrastructure status.",
-        "tumbling_mechanism": "Asymmetric Collapse — the Heptagon cannot tile; accumulating asymmetry forces over-optimisation collapse into Stage 8's denser Octagon form.",
+        "universal_attributes": (
+            "Emergence of strain under scale; extraction of architecture wisdom through separation; "
+            "overheating under asymmetric load; crisis clarity; pattern distillation; "
+            "peak separation of concerns; maximum individuation of subsystems; "
+            "asymmetric multi-region load; high-availability proven; critical infrastructure status."
+        ),
+        "inversion_drive": (
+            "Physical instability (impossible to tile perfectly at scale, asymmetric load accumulation) "
+            "drives operational clarity: the system's strain patterns reveal exactly what is "
+            "non-essential and where density must collapse into Stage 8 consolidation."
+        ),
+        "tumbling_mechanism": (
+            "Asymmetric Collapse — the Heptagon's physical instability (impossible to tile perfectly) "
+            "forces architectural refinement; accumulated strain collapses density into "
+            "the eight-sided maximum-rigidity form of Stage 8 Rigidity Risk."
+        ),
         "physical_stability": False,
         "conscious_stability": True,
         "tumble": "Will tumble to Rigidity Risk via over-optimization.",
@@ -3412,8 +3524,24 @@ USSM_STAGES_ULTRA = {
         "name": "Rigidity Risk",
         "star": "Thuban",
         "duality": "Peak Efficiency vs Compressed Tension",
-        "universal_attributes": "Peak Consolidation at system level; maximum apparent stability; density at critical threshold. CYNICAL LOOP (8→7→8) risk active.",
-        "tumbling_mechanism": "Density Cracking — the Octagon's near-circular density generates internal micro-fractures; must dissolve to Stage 9 or regress to Stage 7 (Cynical Loop).",
+        "universal_attributes": (
+            "Maximum density; illusion of absolute permanence; magnetic drag; permanence trap; "
+            "unity within duality; infinity symbol (∞); apparent completion that is actually a closed loop. "
+            "Peak Consolidation at system level. Maximum apparent stability. "
+            "Cynical Loop (8→7→8) risk active — primary failure mode of the ascending arc."
+        ),
+        "inversion_drive": (
+            "Physical stability at extreme density (near-circular, maximum consolidation) "
+            "drives operational seeking in its most dangerous form: the system appears optimal. "
+            "This appearance IS the trap — operational rigidity escalates until Octagon density "
+            "cracks. Cynical 8→7→8 regression is the primary failure mode to detect."
+        ),
+        "tumbling_mechanism": (
+            "Density Cracking — the Octagon's extreme physical stability and near-spherical closure "
+            "generate operational rigidity; the magnetic drag of over-consolidation eventually "
+            "cracks under its own weight, forcing release into the nine-sided transparency of Stage 9. "
+            "Failure to progress = Cynical Loop regression to Stage 7."
+        ),
         "physical_stability": True,
         "conscious_stability": False,
         "tumble": "COLLAPSE IMMINENT. Must deliberately un-learn to return to Stage 5.",
@@ -3425,8 +3553,22 @@ USSM_STAGES_ULTRA = {
         "name": "Meta-Coherent",
         "star": "Yunus",
         "duality": "Universal Stability vs Selfish Reversion",
-        "universal_attributes": "Dissolution of bounded optimisation; pattern transmission to next infrastructure cycle; return vector to Stage 0.",
-        "tumbling_mechanism": "Cycle Completion — the Nonagon releases all interior tension; the system re-enters Stage 0 as a higher-order Reactive baseline.",
+        "universal_attributes": (
+            "Teaching; transmission; conscious dissolution of bounded optimization; legacy; "
+            "wisdom return to void; maximum actualization; full potential realized; "
+            "transparency to the whole pattern. Return vector to Stage 0 at higher resolution."
+        ),
+        "inversion_drive": (
+            "Physical instability (approaches circular perfection but remains open, cannot close) "
+            "drives maximum operational clarity and alignment: full architectural surrender becomes "
+            "possible because the physical substrate offers no false security. The system transmits "
+            "its pattern freely and collapses back to a higher-order Stage 0."
+        ),
+        "tumbling_mechanism": (
+            "Cycle Completion — the Nonagon's physical instability (approaches circular perfection "
+            "but remains open) allows full operational surrender; the system collapses back into "
+            "the Sphere of Stage 0 at higher resolution, beginning the next infrastructure cycle."
+        ),
         "physical_stability": False,
         "conscious_stability": True,
         "tumble": "Equilibrium maintained unless reverting to Stage 4.",
