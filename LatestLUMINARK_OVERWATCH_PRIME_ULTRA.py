@@ -19,7 +19,7 @@
  Conceptual framework and project direction: Richard Stanfield, according to the project owner. AI-generated code and supporting implementation mechanisms.
  No patent claims are asserted.
 
- Author: Consolidated by LUMINARK AI Build System  —  March 2026
+ Concept origin and project direction: Richard Stanfield (according to the project owner); software implementation generated with AI assistance — March 2026
 ================================================================================
 """
 
@@ -778,7 +778,7 @@ class HurricaneValidationEngine:
         self.analyzer = PowerGridAnalyzer()
 
     def run_validation(self, timeline: List[Dict]) -> Dict:
-        """Run LUMINARK predictions against historical timeline and score accuracy."""
+        """Compare rule outputs with hand-authored expected stages; report scenario match rates only."""
         results = []
         correct = 0
         for event in timeline:
@@ -797,14 +797,14 @@ class HurricaneValidationEngine:
                 "within_1_stage":  within_1,
                 "trap_score":      self.engine.calculate_trap_score(nsdt_data, predicted_stage).normalized_score,
             })
-        accuracy = (correct / len(timeline)) * 100
+        scenario_match_rate = (correct / len(timeline)) * 100
         within_1_count = sum(1 for r in results if r["within_1_stage"])
         return {
             "total_events":        len(timeline),
             "exact_matches":       correct,
             "within_1_stage":      within_1_count,
-            "exact_accuracy_pct":  round(accuracy, 1),
-            "within_1_accuracy_pct": round((within_1_count / len(timeline)) * 100, 1),
+            "exact_scenario_match_pct": round(scenario_match_rate, 1),
+            "within_1_stage_match_pct": round((within_1_count / len(timeline)) * 100, 1),
             "events":              results,
         }
 
@@ -823,8 +823,8 @@ class HurricaneValidationEngine:
             "texas_uri":            uri,
             "combined": {
                 "total_events":          total,
-                "exact_accuracy_pct":    round(exact / total * 100, 1),
-                "within_1_accuracy_pct": round(w1    / total * 100, 1),
+                "exact_scenario_match_pct": round(exact / total * 100, 1),
+                "within_1_stage_match_pct": round(w1 / total * 100, 1),
             },
         }
 
@@ -1798,7 +1798,7 @@ class LuminarkOverwatchPrimeUltra:
         return self.consensus.aggregate(nsdt_list)
 
     def run_historical_validation(self) -> Dict:
-        """Run the hand-authored historical-event scenario examples."""
+        """Run the hand-authored historical-event scenario examples; not an independent validation."""
         return self.validator.run_all_validations()
 
     def system_status(self, system_id: str) -> Dict:
@@ -1987,11 +1987,11 @@ def run_demo():
     val = overwatch.run_historical_validation()
     combined = val["combined"]
     print(f"  Total Scenario Records:     {combined['total_events']}")
-    print(f"  Exact Scenario Match Rate:  {combined['exact_accuracy_pct']}%")
-    print(f"  Within 1 Stage Match Rate:  {combined['within_1_accuracy_pct']}%")
-    print(f"\n  Milton Scenario Match Rate: {val['hurricane_milton']['exact_accuracy_pct']}%")
-    print(f"  Helene Scenario Match Rate: {val['hurricane_helene']['exact_accuracy_pct']}%")
-    print(f"  Texas Uri Scenario Match Rate: {val['texas_uri']['exact_accuracy_pct']}%")
+    print(f"  Exact Scenario Match Rate:  {combined['exact_scenario_match_pct']}%")
+    print(f"  Within 1 Stage Match Rate:  {combined['within_1_stage_match_pct']}%")
+    print(f"\n  Milton Scenario Match Rate: {val['hurricane_milton']['exact_scenario_match_pct']}%")
+    print(f"  Helene Scenario Match Rate: {val['hurricane_helene']['exact_scenario_match_pct']}%")
+    print(f"  Texas Uri Scenario Match Rate: {val['texas_uri']['exact_scenario_match_pct']}%")
 
     # ── Demo 4: Illustrative OEM Licensing Concept ───────────────────────────
     print("\n🏭 [4] Illustrative OEM Licensing Concept (not an existing offer)")
