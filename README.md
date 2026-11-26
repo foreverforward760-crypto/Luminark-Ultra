@@ -19,7 +19,13 @@ Statements in earlier documentation about 91–97% correlation, broad validation
 
 Before any performance claim is made, the underlying datasets, source records, labels, calculation methods, evaluation splits, baselines, and complete test results must be independently checked. Unit tests and demonstrations alone do not establish predictive accuracy.
 
-The system should be treated as experimental decision-support software. It is not a certified safety system, clinical instrument, financial product, or validated infrastructure-control system.
+The system should be treated as an experimental research prototype. It is not suitable as the basis for safety, clinical, financial, or infrastructure-control decisions.
+
+## Conceptual provenance
+
+The project owner states that the underlying concepts, product idea, and 0-9-0 / SAP framework applications in this repository originated with him. AI systems generated the implementation code and suggested technical mechanisms used to express those concepts. NSDT and the Container Rule were introduced by AI as supporting implementation mechanisms within the owner's framework, not as independent conceptual origins.
+
+This records the project owner's account; it is not a legal determination of copyright ownership, inventorship, or exclusive rights.
 
 ## Patent and legal status
 
