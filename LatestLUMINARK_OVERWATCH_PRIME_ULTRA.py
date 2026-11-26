@@ -717,7 +717,7 @@ class VehicleFleetAnalyzer(BaseDomainAnalyzer):
         return self._build_report(nsdt, data.get("fleet_name", "Vehicle Fleet"), {
             "maintenance_alert": maintenance_due > 10,
             "breakdown_risk":    "HIGH" if breakdown_rate > 5 else "MODERATE" if breakdown_rate > 2 else "LOW",
-            "oem_licensing_note": "Per-unit royalty model applicable — contact LUMINARK for OEM integration",
+            "oem_licensing_note": "Potential licensing concept only; no OEM integration or agreement is established",
         })
 
 
@@ -729,9 +729,9 @@ class HurricaneValidationEngine:
     """
     Uses hand-authored historical-event scenarios for retrospective illustration; it is not an independent validation study.
 
-    These are the definitive real-world validation events for LUMINARK OVERWATCH.
-    Milton hit TECO's service territory directly — highest-value validation case.
-    Both events retrospectively scored against NSDT predictions.
+    The timelines are illustrative, hand-authored examples. They are not
+    time-aligned measurements from grid telemetry. The expected stages are
+    assumptions used to exercise the rules, not independently labeled outcomes.
     """
 
     MILTON_TIMELINE = [
@@ -1898,18 +1898,18 @@ class LuminarkOverwatchPrimeUltra:
     def get_oem_licensing_info(self) -> Dict:
         """OEM Intel Inside licensing model information."""
         return {
-            "model": "OEM Embedded Per-Unit Royalty (Intel Inside Architecture)",
+            "model": "Illustrative OEM licensing concept only; no current commercial offering",
             "target_markets": [
-                "Commercial vehicles (fleet telemetry integration)",
-                "HVAC systems (building automation)",
-                "Heavy equipment (construction, mining)",
-                "Consumer electronics (predictive maintenance)",
-                "Medical devices (FDA-regulated monitoring)",
+                "Illustrative area to investigate: commercial vehicles",
+                "Illustrative area to investigate: building systems",
+                "Illustrative area to investigate: heavy equipment",
+                "Illustrative area to investigate: consumer electronics",
+                "Illustrative area to investigate: medical-device monitoring (requires regulatory review)",
             ],
-            "royalty_structure": "Per-unit fee at manufacturing — embedded in OEM firmware",
+            "royalty_structure": "No royalty terms, OEM agreements, or integrations are currently established",
             "patent_status":     "No patent application filed; draft materials only",
             "contact":           "Richard Stanfield — LUMINARK OVERWATCH PRIME",
-            "validation":        "Historical event scenario examples only; not independent validation",
+            "validation":        "Hand-authored historical-event scenarios only; not independent validation",
         }
 
 
@@ -1993,8 +1993,8 @@ def run_demo():
     print(f"  Helene Scenario Match Rate: {val['hurricane_helene']['exact_accuracy_pct']}%")
     print(f"  Texas Uri Scenario Match Rate: {val['texas_uri']['exact_accuracy_pct']}%")
 
-    # ── Demo 4: OEM Licensing ────────────────────────────────────────────────
-    print("\n🏭 [4] OEM Licensing Model")
+    # ── Demo 4: Illustrative OEM Licensing Concept ───────────────────────────
+    print("\n🏭 [4] Illustrative OEM Licensing Concept (not an existing offer)")
     print("-"*50)
     oem = overwatch.get_oem_licensing_info()
     print(f"  Model:   {oem['model']}")
