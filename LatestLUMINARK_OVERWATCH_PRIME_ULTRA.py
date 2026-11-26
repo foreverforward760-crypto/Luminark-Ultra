@@ -722,7 +722,7 @@ class VehicleFleetAnalyzer(BaseDomainAnalyzer):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 4: HURRICANE VALIDATION ENGINE  (Case Studies — Milton & Helene 2024)
+# SECTION 4: HISTORICAL EVENT SCENARIO REPLAY (Milton, Helene, Texas Uri)
 # ─────────────────────────────────────────────────────────────────────────────
 
 class HurricaneValidationEngine:
@@ -809,7 +809,7 @@ class HurricaneValidationEngine:
         }
 
     def run_all_validations(self) -> Dict:
-        """Run all three validation datasets and report combined accuracy."""
+        """Run three hand-authored event scenarios and report scenario match rates."""
         milton = self.run_validation(self.MILTON_TIMELINE)
         helene = self.run_validation(self.HELENE_TIMELINE)
         uri    = self.run_validation(self.TEXAS_URI_TIMELINE)
@@ -1798,7 +1798,7 @@ class LuminarkOverwatchPrimeUltra:
         return self.consensus.aggregate(nsdt_list)
 
     def run_historical_validation(self) -> Dict:
-        """Run all three hurricane/event validation datasets."""
+        """Run the hand-authored historical-event scenario examples."""
         return self.validator.run_all_validations()
 
     def system_status(self, system_id: str) -> Dict:
@@ -1981,8 +1981,8 @@ def run_demo():
     print(f"  TrapScore:  {w['trap_score']['normalized']} / 100  [{w['trap_score']['risk_level']}]")
     print(f"  Contamination: {w.get('contamination_status', 'N/A')}")
 
-    # ── Demo 3: Hurricane Validation ─────────────────────────────────────────
-    print("\n🌀 [3] Historical Hurricane Validation (Milton + Helene + Uri)")
+    # ── Demo 3: Historical Event Scenario Replay ─────────────────────────────
+    print("\n🌀 [3] Historical Event Scenario Replay (hand-authored inputs)")
     print("-"*50)
     val = overwatch.run_historical_validation()
     combined = val["combined"]
